@@ -1,49 +1,63 @@
 import { useLocation } from 'wouter';
-import { Layout, Menu, type MenuProps } from 'antd';
-import { supplierMeta } from '@/modules/supplier/meta';
-import { mealMeta } from '@/modules/meal/meta';
-import { materialMeta } from '@/modules/material/meta';
-import { censusMeta } from '@/modules/census/meta';
-import { processingMeta } from '@/modules/processing/meta';
-import { dishMeta } from '@/modules/dish/meta';
-import { procurementMeta } from '@/modules/procurement/meta';
+import { Layout, Menu } from 'antd';
+import { findRouteByPath, routes, type RouteConfig } from '@/Routes';
+import { useMemo } from 'react';
 
 const { Sider } = Layout;
 
-export type MenuItem = Required<MenuProps>['items'][number];
-
-export const items: MenuItem[] = [
-  ...mealMeta,
-  ...materialMeta,
-  ...censusMeta,
-  ...procurementMeta,
-  ...processingMeta,
-  ...dishMeta,
-  ...supplierMeta,
-];
-
 export default function Sidebar() {
-  const [location, navigate] = useLocation();
+  const [location, setLocation] = useLocation();
+
+  // Generate Menu Items (Recursive)
+  const menuItems = useMemo(() => {
+    const formatMenuItems = (configs: RouteConfig[]): any[] => {
+      return configs
+        .filter((r) => r.showInMenu)
+        .map((r) => ({
+          key: r.path,
+          icon: r.icon,
+          label: r.title,
+          children: r.children?.some((c) => c.showInMenu)
+            ? formatMenuItems(r.children)
+            : undefined,
+        }));
+    };
+    return formatMenuItems(routes);
+  }, [routes]);
+
+  // Find Active Key (Recursive)
+  const selectedKey = useMemo(() => {
+    const getActiveKey = (path: string): string => {
+      const route = findRouteByPath(routes, path);
+
+      if (route && route.showInMenu) {
+        return route.path;
+      }
+
+      const lastSlashIndex = path.lastIndexOf('/');
+      if (lastSlashIndex <= 0) return '/';
+
+      return getActiveKey(path.substring(0, lastSlashIndex));
+    };
+
+    return getActiveKey(location);
+  }, [location]);
 
   return (
     <Sider
       breakpoint="lg"
       collapsedWidth="0"
       trigger={null}
-      width={220}
+      width={230}
       theme="light"
-      className="h-full overflow-auto"
+      className="h-full"
     >
       <Menu
-        items={items}
         mode="inline"
-        selectedKeys={[location]}
-        onClick={({ key }) => {
-          if (typeof key === 'string') {
-            navigate(key);
-          }
-        }}
-        className="h-full border-none"
+        items={menuItems}
+        selectedKeys={[selectedKey]}
+        onClick={(e) => setLocation(e.key)}
+        className="border-none"
       />
     </Sider>
   );
