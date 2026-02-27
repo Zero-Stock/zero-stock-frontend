@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+
+# Env
+.env.local
+
+# Editor directories and files
+.vscode/
+.cursor/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# AI
+.claude/
+.ai/
+
+dist
+dist-ssr
+*.local
