@@ -1,8 +1,17 @@
 import { Route } from 'wouter';
 import { type ReactNode, type ComponentType } from 'react';
 
-import { HomeOutlined, DatabaseOutlined } from '@ant-design/icons';
-import HomePage from './modules/auth/components/HomePage';
+import {
+  HomeOutlined,
+  DatabaseOutlined,
+  ReadOutlined,
+  TeamOutlined,
+  ProfileOutlined,
+  ShoppingCartOutlined,
+  FireOutlined,
+  ShopOutlined,
+} from '@ant-design/icons';
+import HomePage from './modules/auth/pages/HomePage';
 import MaterialListPage from './modules/material/pages/MaterialListPage';
 import MaterialCreatePage from './modules/material/pages/MaterialCreatePage';
 
@@ -23,6 +32,55 @@ export const routes: RouteConfig[] = [
     showInMenu: false,
     component: HomePage,
   },
+
+  {
+    path: '/meal',
+    title: 'Meals',
+    icon: <ReadOutlined />,
+    showInMenu: true,
+    // component: MealListPage,
+  },
+
+  {
+    path: '/census',
+    title: 'Census',
+    icon: <TeamOutlined />,
+    showInMenu: true,
+    // component: CensusListPage,
+  },
+
+  {
+    path: '/procurement',
+    title: 'Procurement',
+    icon: <ShoppingCartOutlined />,
+    showInMenu: true,
+    // component: ProcurementListPage,
+  },
+
+  {
+    path: '/processing',
+    title: 'Processing',
+    icon: <ProfileOutlined />,
+    showInMenu: true,
+    // component: ProcessingListPage,
+  },
+
+  {
+    path: '/dish',
+    title: 'Dishes',
+    icon: <FireOutlined />,
+    showInMenu: true,
+    // component: DishListPage,
+  },
+
+  {
+    path: '/supplier',
+    title: 'Supplier',
+    icon: <ShopOutlined />,
+    showInMenu: true,
+    // component: SupplierListPage,
+  },
+
   {
     path: '/material',
     title: 'Materials',
