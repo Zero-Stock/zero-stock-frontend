@@ -1,5 +1,3 @@
-'use client';
-
 import { Form, Input, Modal, Select } from 'antd';
 import { useEffect } from 'react';
 import { type RawMaterial } from '../mockdata';

@@ -1,5 +1,3 @@
-'use client';
-
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
