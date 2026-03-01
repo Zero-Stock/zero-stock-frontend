@@ -20,6 +20,7 @@ import type { TranslationKey } from './shared/i18n/translations';
 import SupplierListPage from './modules/supplier/pages/SupplierListPage';
 import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
+import MealListPage from './modules/meal/pages/MealListPage';
 
 export interface RouteConfig {
   path: string;
