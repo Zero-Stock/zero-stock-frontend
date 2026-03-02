@@ -1,68 +1,9 @@
-// ─── Backend API types (matching API_USAGE.md §9-14) ───
+// Re-export all types from DTOs for backwards compatibility
+export type { PaginatedResponse } from './dtos/paginated.dto';
+export type { Dish, DishIngredient, DishIngredientWrite, DishWritePayload } from './dtos/dish.dto';
+export type { DishFormIngredient, DishFormValues } from './dtos/dish-form.dto';
 
-/** DRF paginated response wrapper */
-export interface PaginatedResponse<T> {
-    count: number;
-    next: string | null;
-    previous: string | null;
-    results: T[];
-}
-
-/** Ingredient in GET /api/dishes/{id}/ response (read-only) */
-export interface DishIngredient {
-    id: number;
-    raw_material: number;           // RawMaterial ID
-    raw_material_name: string;      // e.g. "牛肉"
-    processing: number | null;      // ProcessedMaterial ID (nullable)
-    processing_name: string;        // e.g. "切块"
-    yield_rate: number;             // e.g. 0.95
-    net_quantity: string;           // kg, e.g. "0.150"
-}
-
-/** Ingredient for POST/PUT /api/dishes/ (write-only) */
-export interface DishIngredientWrite {
-    raw_material: number;
-    processing: number | null;
-    net_quantity: string;            // kg
-}
-
-/** Full dish from GET /api/dishes/ or GET /api/dishes/{id}/ */
-export interface Dish {
-    id: number;
-    name: string;
-    seasonings: string;             // 调料
-    cooking_method: string;         // 制作工艺
-    ingredients: DishIngredient[];   // read-only ingredient list
-}
-
-/** Payload for POST/PUT /api/dishes/ */
-export interface DishWritePayload {
-    name: string;
-    seasonings: string;
-    cooking_method: string;
-    ingredients_write: DishIngredientWrite[];
-}
-
-// ─── Frontend form types ───
-// The edit form works with friendlier field names for display,
-// then we convert to DishWritePayload before sending to API.
-
-export interface DishFormIngredient {
-    id?: number;
-    raw_material_id?: number;  // backend ID, carried through for writes
-    processing_id?: number | null;
-    material: string;        // raw_material_name (display)
-    category: string;        // material category name
-    processing: string;      // processing_name (display)
-    quantity: number;         // grams (UI shows grams, API uses kg)
-}
-
-export interface DishFormValues {
-    name: string;
-    ingredients: DishFormIngredient[];
-    seasonings: string;
-    cooking_method: string;
-}
+import type { Dish } from './dtos/dish.dto';
 
 // ─── Mock data ───
 

@@ -1,80 +1,11 @@
-// ─── Backend API types (matching API_USAGE.md) ───
+// Re-export all types from DTOs for backwards compatibility
+export type { DietCategory } from './dtos/diet.dto';
+export type { WeeklyMenuRow, WeeklyMenuBatchItem } from './dtos/menu.dto';
+export type { DishItem, DishDetail, DishIngredient, DayPlan, WeeklyPlan } from './dtos/meal-plan.dto';
+export { DAY_LABELS, MEAL_TIME_MAP } from './dtos/meal-plan.dto';
 
-/** GET /api/diets/ response item */
-export interface DietCategory {
-    id: number;
-    name: string;
-}
-
-/** A single dish in the weekly menu (from dish_names / dishes array) */
-export interface DishItem {
-    id: number;       // dish ID from backend
-    name: string;     // dish name (from dish_names)
-    count?: number;   // servings – displayed as x1, x2...
-}
-
-// Re-export dish types from the dish module (single source of truth)
-export type { DishIngredient, Dish as DishDetail } from '@/modules/dish/mockdata';
-
-/**
- * A single row from GET /api/weekly-menus/ response.
- * Each row = one (company, diet_category, day_of_week, meal_time) slot.
- */
-export interface WeeklyMenuRow {
-    id: number;
-    company: number;
-    company_name: string;
-    diet_category: number;
-    diet_category_name: string;
-    day_of_week: number;      // 1=Monday ... 7=Sunday
-    day_display: string;      // "Monday", "Tuesday", ...
-    meal_time: 'B' | 'L' | 'D';  // Breakfast, Lunch, Dinner
-    meal_display: string;     // "Breakfast", "Lunch", "Dinner"
-    dishes: number[];         // dish IDs
-    dish_names: string[];     // dish names (parallel array)
-}
-
-/** POST /api/weekly-menus/batch/ request item */
-export interface WeeklyMenuBatchItem {
-    company: number;
-    diet_category: number;
-    day_of_week: number;
-    meal_time: 'B' | 'L' | 'D';
-    dishes: number[];
-}
-
-// ─── Frontend UI types ───
-
-export interface DayPlan {
-    dayOfWeek: string;       // e.g. "周一"
-    dayNumber: number;       // 1-7
-    breakfast: DishItem[];
-    lunch: DishItem[];
-    dinner: DishItem[];
-}
-
-export interface WeeklyPlan {
-    diet_category_id: number;
-    days: DayPlan[];
-}
-
-// ─── Constants ───
-
-export const DAY_LABELS: Record<number, string> = {
-    1: '周一',
-    2: '周二',
-    3: '周三',
-    4: '周四',
-    5: '周五',
-    6: '周六',
-    7: '周日',
-};
-
-export const MEAL_TIME_MAP: Record<string, 'B' | 'L' | 'D'> = {
-    breakfast: 'B',
-    lunch: 'L',
-    dinner: 'D',
-};
+import type { DietCategory } from './dtos/diet.dto';
+import type { WeeklyMenuRow } from './dtos/menu.dto';
 
 // ─── Mock data ───
 
