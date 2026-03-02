@@ -14,6 +14,8 @@ import {
 import HomePage from './modules/auth/pages/HomePage';
 import MaterialListPage from './modules/material/pages/MaterialListPage';
 import MaterialCreatePage from './modules/material/pages/MaterialCreatePage';
+import MealListPage from './modules/meal/pages/MealListPage';
+import DishListPage from './modules/dish/pages/DishListPage';
 
 export interface RouteConfig {
   path: string;
@@ -38,7 +40,7 @@ export const routes: RouteConfig[] = [
     title: 'Meals',
     icon: <ReadOutlined />,
     showInMenu: true,
-    // component: MealListPage,
+    component: MealListPage,
   },
 
   {
@@ -70,7 +72,7 @@ export const routes: RouteConfig[] = [
     title: 'Dishes',
     icon: <FireOutlined />,
     showInMenu: true,
-    // component: DishListPage,
+    component: DishListPage,
   },
 
   {
