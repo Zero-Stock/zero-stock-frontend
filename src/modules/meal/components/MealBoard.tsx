@@ -98,8 +98,8 @@ export default function MealBoard() {
         const filtered = menuRows.filter(
             (r) => r.diet_category === selectedCategoryId,
         );
-        return rowsToDayPlans(filtered);
-    }, [menuRows, selectedCategoryId]);
+        return rowsToDayPlans(filtered, (d) => t(`day${d}` as any));
+    }, [menuRows, selectedCategoryId, t]);
 
     // ─── Fetch dish details (ingredients) for display ───
     const [dishDetails, setDishDetails] = useState<Map<number, DishDetail>>(new Map());
@@ -439,6 +439,21 @@ export default function MealBoard() {
           .ant-layout-content {
             margin: 0 !important;
             padding: 0 !important;
+            overflow: visible !important;
+            min-height: auto !important;
+          }
+          /* Force all parent containers to allow overflow so it prints multiple pages */
+          html, body, #root, .ant-layout, .ant-pro-layout, .ant-pro-layout-content, div {
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+          /* Override Tailwind utility classes and inline styles */
+          [style*="overflow: hidden"], [style*="overflow: auto"], [style*="height: 100vh"] {
+            overflow: visible !important;
+            height: auto !important;
           }
           .print-row { display: block !important; }
           .print-col {
