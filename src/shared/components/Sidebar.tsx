@@ -2,11 +2,13 @@ import { useLocation } from 'wouter';
 import { Layout, Menu } from 'antd';
 import { findRouteByPath, routes, type RouteConfig } from '@/Routes';
 import { useMemo } from 'react';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { Sider } = Layout;
 
 export default function Sidebar() {
   const [location, setLocation] = useLocation();
+  const { t } = useTranslation();
 
   // Generate Menu Items (Recursive)
   const menuItems = useMemo(() => {
@@ -16,14 +18,14 @@ export default function Sidebar() {
         .map((r) => ({
           key: r.path,
           icon: r.icon,
-          label: r.title,
+          label: r.titleKey ? t(r.titleKey) : r.title,
           children: r.children?.some((c) => c.showInMenu)
             ? formatMenuItems(r.children)
             : undefined,
         }));
     };
     return formatMenuItems(routes);
-  }, [routes]);
+  }, [routes, t]);
 
   // Find Active Key (Recursive)
   const selectedKey = useMemo(() => {
@@ -62,3 +64,4 @@ export default function Sidebar() {
     </Sider>
   );
 }
+

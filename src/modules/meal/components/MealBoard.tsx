@@ -27,12 +27,14 @@ import { apiClient } from '@/shared/api/apiClient.client';
 import { fetchDishDetails } from '../dishService';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
 import MealEditModal from './MealEditModal';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { Title, Text } = Typography;
 
 const COMPANY_ID = 1; // TODO: get from auth context
 
 export default function MealBoard() {
+    const { t } = useTranslation();
     const [dietCategories, setDietCategories] = useState<DietCategory[]>([]);
     const [newCategoryName, setNewCategoryName] = useState('');
     const inputRef = useRef<InputRef>(null);
@@ -51,7 +53,7 @@ export default function MealBoard() {
             }
         } catch (err) {
             console.error('Failed to fetch diets:', err);
-            message.error('加载套餐类别失败');
+            message.error(t('mealLoadDietsFailed'));
         }
     }, []);
 
@@ -67,7 +69,7 @@ export default function MealBoard() {
             setMenuRows(data.results);
         } catch (err) {
             console.error('Failed to fetch weekly menus:', err);
-            message.error('加载周菜单失败');
+            message.error(t('mealLoadMenuFailed'));
         } finally {
             setLoading(false);
         }
@@ -83,7 +85,7 @@ export default function MealBoard() {
             setAllDishes(data.results);
         } catch (err) {
             console.error('Failed to fetch dishes:', err);
-            message.error('加载菜品列表失败');
+            message.error(t('mealLoadDishesFailed'));
         }
     }, []);
 
@@ -96,8 +98,8 @@ export default function MealBoard() {
         const filtered = menuRows.filter(
             (r) => r.diet_category === selectedCategoryId,
         );
-        return rowsToDayPlans(filtered);
-    }, [menuRows, selectedCategoryId]);
+        return rowsToDayPlans(filtered, (d) => t(`day${d}` as any));
+    }, [menuRows, selectedCategoryId, t]);
 
     // ─── Fetch dish details (ingredients) for display ───
     const [dishDetails, setDishDetails] = useState<Map<number, DishDetail>>(new Map());
@@ -138,10 +140,10 @@ export default function MealBoard() {
                 setSelectedCategoryId(newCategory.id);
                 setNewCategoryName('');
                 setSelectOpen(false); // close dropdown so it refreshes on reopen
-                message.success('套餐类别已创建');
+                message.success(t('mealDietCreated'));
             } catch (err) {
                 console.error('Failed to create diet:', err);
-                message.error('创建套餐类别失败');
+                message.error(t('mealDietCreateFailed'));
             }
         }
     };
@@ -150,27 +152,27 @@ export default function MealBoard() {
     const handleRenameDiet = (diet: DietCategory) => {
         let newName = diet.name;
         Modal.confirm({
-            title: '重命名套餐类别',
+            title: t('mealRenameTitle'),
             content: (
                 <Input
                     defaultValue={diet.name}
                     onChange={(e) => { newName = e.target.value; }}
-                    placeholder="输入新名称"
+                    placeholder={t('mealRenameInput')}
                 />
             ),
-            okText: '保存',
-            cancelText: '取消',
+            okText: t('save'),
+            cancelText: t('cancel'),
             onOk: async () => {
                 if (!newName || newName === diet.name) return;
                 try {
                     await apiClient.put<DietCategory>(`/api/diets/${diet.id}/`, {
                         body: { name: newName },
                     });
-                    message.success('套餐类别已重命名');
+                    message.success(t('mealDietRenamed'));
                     fetchDiets();
                 } catch (err) {
                     console.error('Failed to rename diet:', err);
-                    message.error('重命名失败');
+                    message.error(t('mealDietRenameFailed'));
                 }
             },
         });
@@ -180,7 +182,7 @@ export default function MealBoard() {
     const handleDeleteDiet = async (dietId: number) => {
         try {
             await apiClient.delete(`/api/diets/${dietId}/`);
-            message.success('套餐类别已删除');
+            message.success(t('mealDietDeleted'));
             const remaining = dietCategories.filter((c) => c.id !== dietId);
             setDietCategories(remaining);
             if (selectedCategoryId === dietId) {
@@ -188,7 +190,7 @@ export default function MealBoard() {
             }
         } catch (err) {
             console.error('Failed to delete diet:', err);
-            message.error('删除失败');
+            message.error(t('mealDietDeleteFailed'));
         }
     };
 
@@ -212,12 +214,12 @@ export default function MealBoard() {
             await apiClient.post('/api/weekly-menus/batch/', {
                 body: batchItems,
             });
-            message.success('菜单已保存');
+            message.success(t('mealSaved'));
             setIsModalVisible(false);
             fetchMenus(); // refresh from API
         } catch (err) {
             console.error('Failed to save weekly menu:', err);
-            message.error('保存菜单失败');
+            message.error(t('mealSaveFailed'));
         }
     };
 
@@ -225,18 +227,18 @@ export default function MealBoard() {
         window.print();
     };
 
-    const renderMealSection = (title: string, dishes: DishItem[]) => (
+    const renderMealSection = (sectionTitle: string, dishes: DishItem[]) => (
         <div className="mb-3">
             <Text
                 strong
                 className="print-meal-title mb-1 block"
                 style={{ color: '#1890ff' }}
             >
-                {title}
+                {sectionTitle}
             </Text>
             {dishes.length === 0 ? (
                 <Text type="secondary" italic>
-                    无
+                    {t('none')}
                 </Text>
             ) : (
                 <ul className="m-0 list-disc pl-4">
@@ -294,17 +296,17 @@ export default function MealBoard() {
                                 onClick={() => handleEdit(day)}
                                 className="no-print"
                             >
-                                编辑
+                                {t('edit')}
                             </Button>
                         }
                         className="print-card h-full"
                         styles={{ body: { padding: '12px' } }}
                     >
-                        {renderMealSection('早餐', day.breakfast)}
+                        {renderMealSection(t('mealBreakfast'), day.breakfast)}
                         <Divider className="print-divider !my-2" />
-                        {renderMealSection('午餐', day.lunch)}
+                        {renderMealSection(t('mealLunch'), day.lunch)}
                         <Divider className="print-divider !my-2" />
-                        {renderMealSection('晚餐', day.dinner)}
+                        {renderMealSection(t('mealDinner'), day.dinner)}
                     </Card>
                 </Col>
             ))}
@@ -315,7 +317,7 @@ export default function MealBoard() {
         <div>
             <div className="no-print mb-6 flex items-center justify-between">
                 <Title level={2} className="!m-0">
-                    标准菜谱安排 (Standard Cycle Menu)
+                    {t('mealBoardTitle')}
                 </Title>
                 <Space>
                     <Select
@@ -353,11 +355,11 @@ export default function MealBoard() {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 Modal.confirm({
-                                                    title: '确认删除',
-                                                    content: `确定要删除套餐类别「${diet.name}」吗？该类别下的所有菜单数据也将被删除。`,
-                                                    okText: '删除',
+                                                    title: t('mealDeleteConfirm'),
+                                                    content: t('mealDeleteConfirmContent', { name: diet.name }),
+                                                    okText: t('delete'),
                                                     okType: 'danger',
-                                                    cancelText: '取消',
+                                                    cancelText: t('cancel'),
                                                     onOk: () => handleDeleteDiet(diet.id),
                                                 });
                                             }}
@@ -372,7 +374,7 @@ export default function MealBoard() {
                                 <Divider className="!my-2" />
                                 <Space className="px-2 pb-1">
                                     <Input
-                                        placeholder="新套餐名称"
+                                        placeholder={t('mealNewDietPlaceholder')}
                                         ref={inputRef}
                                         value={newCategoryName}
                                         onChange={(e) => setNewCategoryName(e.target.value)}
@@ -384,25 +386,25 @@ export default function MealBoard() {
                                         icon={<PlusOutlined />}
                                         onClick={addDietCategory}
                                     >
-                                        添加
+                                        {t('mealAddDiet')}
                                     </Button>
                                 </Space>
                             </>
                         )}
                     />
-                    <Button onClick={handlePrint}>导出 PDF / 打印</Button>
+                    <Button onClick={handlePrint}>{t('dishExportPdf')}</Button>
                 </Space>
             </div>
 
             {/* Print Header */}
             <div className="print-only mb-5 hidden text-center">
                 <Title level={2} className="!m-0">
-                    标准菜谱
+                    {t('mealPrintTitle')}
                 </Title>
                 <Title level={3} className="!my-2">
                     {dietCategories.find((c) => c.id === selectedCategoryId)?.name ??
-                        '未知套餐'}
-                    配料表
+                        t('mealUnknownDiet')}
+                    {t('mealConfigSheet')}
                 </Title>
             </div>
 
@@ -437,6 +439,21 @@ export default function MealBoard() {
           .ant-layout-content {
             margin: 0 !important;
             padding: 0 !important;
+            overflow: visible !important;
+            min-height: auto !important;
+          }
+          /* Force all parent containers to allow overflow so it prints multiple pages */
+          html, body, #root, .ant-layout, .ant-pro-layout, .ant-pro-layout-content, div {
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+          /* Override Tailwind utility classes and inline styles */
+          [style*="overflow: hidden"], [style*="overflow: auto"], [style*="height: 100vh"] {
+            overflow: visible !important;
+            height: auto !important;
           }
           .print-row { display: block !important; }
           .print-col {
