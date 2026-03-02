@@ -3,6 +3,7 @@ import { Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../mockdata';
 import type { Dish } from '@/modules/dish/mockdata';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 interface MealEditModalProps {
     visible: boolean;
@@ -20,6 +21,7 @@ export default function MealEditModal({
     availableDishes,
 }: MealEditModalProps) {
     const [form] = Form.useForm();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (visible && dayData) {
@@ -74,18 +76,18 @@ export default function MealEditModal({
                                 <Form.Item
                                     {...restField}
                                     name={[fieldName, 'id']}
-                                    rules={[{ required: true, message: '请选择菜品' }]}
+                                    rules={[{ required: true, message: t('mealSelectDishRequired') }]}
                                     className="!m-0 min-w-0 flex-1"
                                 >
                                     <Select
                                         showSearch
-                                        placeholder="选择菜品"
+                                        placeholder={t('mealSelectDish')}
                                         optionFilterProp="label"
                                         options={availableDishes.map((d) => ({
                                             label: d.name,
                                             value: d.id,
                                         }))}
-                                        notFoundContent="暂无菜品"
+                                        notFoundContent={t('mealNoDishes')}
                                     />
                                 </Form.Item>
 
@@ -118,7 +120,7 @@ export default function MealEditModal({
                                 block
                                 icon={<PlusOutlined />}
                             >
-                                添加菜品
+                                {t('mealAddDish')}
                             </Button>
                         </Form.Item>
                     </>
@@ -129,7 +131,7 @@ export default function MealEditModal({
 
     return (
         <Modal
-            title={dayData ? `编辑 ${dayData.dayOfWeek} 食谱` : '编辑食谱'}
+            title={dayData ? t('mealEditTitle', { day: dayData.dayOfWeek }) : t('mealEditTitleGeneric')}
             open={visible}
             onOk={handleOk}
             onCancel={() => {
@@ -137,14 +139,14 @@ export default function MealEditModal({
                 onCancel();
             }}
             width={600}
-            okText="保存"
-            cancelText="取消"
+            okText={t('save')}
+            cancelText={t('cancel')}
             forceRender
         >
             <Form form={form} layout="vertical">
-                {renderDishList('breakfast', '早餐')}
-                {renderDishList('lunch', '午餐')}
-                {renderDishList('dinner', '晚餐')}
+                {renderDishList('breakfast', t('mealBreakfast'))}
+                {renderDishList('lunch', t('mealLunch'))}
+                {renderDishList('dinner', t('mealDinner'))}
             </Form>
         </Modal>
     );

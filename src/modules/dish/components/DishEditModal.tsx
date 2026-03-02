@@ -4,6 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { Dish, DishFormValues, DishFormIngredient, PaginatedResponse } from '../mockdata';
 import { dishToFormValues } from '../apiAdapter';
 import { apiClient } from '@/shared/api/apiClient.client';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { TextArea } = Input;
 
@@ -23,11 +24,6 @@ interface RawMaterial {
     specs: ProcessedMaterial[];  // processing methods for this material
 }
 
-interface MaterialCategory {
-    id: number;
-    name: string;
-}
-
 interface DishEditModalProps {
     visible: boolean;
     record: Dish | null;
@@ -43,9 +39,9 @@ export default function DishEditModal({
 }: DishEditModalProps) {
     const [form] = Form.useForm();
     const [materials, setMaterials] = useState<RawMaterial[]>([]);
-    const [categories, setCategories] = useState<MaterialCategory[]>([]);
+    const { t } = useTranslation();
 
-    // ─── Fetch materials and categories from API ───
+    // ─── Fetch materials from API ───
     const fetchMaterials = useCallback(async () => {
         try {
             const data = await apiClient.get<PaginatedResponse<RawMaterial>>(
@@ -58,23 +54,11 @@ export default function DishEditModal({
         }
     }, []);
 
-    const fetchCategories = useCallback(async () => {
-        try {
-            const data = await apiClient.get<MaterialCategory[]>(
-                '/api/material-categories/',
-            );
-            setCategories(data);
-        } catch (err) {
-            console.error('Failed to fetch categories:', err);
-        }
-    }, []);
-
     useEffect(() => {
         if (visible) {
             fetchMaterials();
-            fetchCategories();
         }
-    }, [visible, fetchMaterials, fetchCategories]);
+    }, [visible, fetchMaterials]);
 
     useEffect(() => {
         if (visible && record) {
@@ -123,7 +107,7 @@ export default function DishEditModal({
 
     return (
         <Modal
-            title={record ? '编辑菜品' : '新建菜品'}
+            title={record ? t('dishEditTitle') : t('dishCreateTitle')}
             open={visible}
             onOk={handleOk}
             onCancel={() => {
@@ -131,23 +115,23 @@ export default function DishEditModal({
                 onCancel();
             }}
             width={700}
-            okText="保存"
-            cancelText="取消"
+            okText={t('save')}
+            cancelText={t('cancel')}
             forceRender
         >
             <Form form={form} layout="vertical">
                 <Form.Item
                     name="name"
-                    label="菜品名"
-                    rules={[{ required: true, message: '请输入菜品名' }]}
+                    label={t('dishNameLabel')}
+                    rules={[{ required: true, message: t('dishNameRequired') }]}
                 >
-                    <Input placeholder="例如：西红柿打卤面" />
+                    <Input placeholder={t('dishNamePlaceholder')} />
                 </Form.Item>
 
-                <div className="mb-2 font-semibold">食材物料</div>
+                <div className="mb-2 font-semibold">{t('dishIngredientLabel')}</div>
                 {materials.length === 0 && (
                     <div className="mb-2 text-amber-500 text-sm">
-                        ⚠ 暂无原料数据，请先在原料管理页面添加原料
+                        {t('dishNoMaterial')}
                     </div>
                 )}
                 <Form.List name="ingredients">
@@ -175,14 +159,14 @@ export default function DishEditModal({
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: '选择原料',
+                                                    message: t('dishMaterialRequired'),
                                                 },
                                             ]}
                                             className="!m-0"
                                         >
                                             <Select
                                                 showSearch
-                                                placeholder="选择原料"
+                                                placeholder={t('dishSelectMaterial')}
                                                 optionFilterProp="label"
                                                 options={materials.map((m) => ({
                                                     label: `${m.name}${m.category_name ? ` (${m.category_name})` : ''}`,
@@ -198,7 +182,7 @@ export default function DishEditModal({
                                                 }}
                                                 notFoundContent={
                                                     <div className="p-2 text-center text-gray-400">
-                                                        无原料数据
+                                                        {t('dishNoMaterialData')}
                                                     </div>
                                                 }
                                             />
@@ -213,7 +197,7 @@ export default function DishEditModal({
                                             <Select
                                                 showSearch
                                                 allowClear
-                                                placeholder="加工方式"
+                                                placeholder={t('dishSelectProcessing')}
                                                 optionFilterProp="label"
                                                 options={getProcessingOptions(
                                                     form.getFieldValue([
@@ -224,7 +208,7 @@ export default function DishEditModal({
                                                 )}
                                                 notFoundContent={
                                                     <div className="p-2 text-center text-gray-400">
-                                                        无加工规格
+                                                        {t('dishNoProcessing')}
                                                     </div>
                                                 }
                                             />
@@ -237,14 +221,14 @@ export default function DishEditModal({
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: '输入克重',
+                                                    message: t('dishWeightRequired'),
                                                 },
                                             ]}
                                             className="!m-0"
                                         >
                                             <InputNumber
                                                 min={1}
-                                                placeholder="重量(g)"
+                                                placeholder={t('dishWeightPlaceholder')}
                                                 className="!w-full"
                                             />
                                         </Form.Item>
@@ -268,31 +252,31 @@ export default function DishEditModal({
                                     block
                                     icon={<PlusOutlined />}
                                 >
-                                    添加食材
+                                    {t('dishAddIngredient')}
                                 </Button>
                             </Form.Item>
                         </>
                     )}
                 </Form.List>
 
-                <div className="mb-2 font-semibold">调料 (g)</div>
+                <div className="mb-2 font-semibold">{t('dishSeasoningsLabel')}</div>
                 <Form.Item
                     name="seasonings"
-                    rules={[{ required: true, message: '请填写调料' }]}
+                    rules={[{ required: true, message: t('dishSeasoningsRequired') }]}
                 >
                     <TextArea
-                        placeholder="盐2g, 糖1g"
+                        placeholder={t('dishSeasoningsPlaceholder')}
                         autoSize={{ minRows: 2, maxRows: 4 }}
                     />
                 </Form.Item>
 
-                <div className="mb-2 font-semibold">具体制作工艺</div>
+                <div className="mb-2 font-semibold">{t('dishCookingMethodLabel')}</div>
                 <Form.Item
                     name="cooking_method"
-                    rules={[{ required: true, message: '请填写制作工艺' }]}
+                    rules={[{ required: true, message: t('dishCookingMethodRequired') }]}
                 >
                     <TextArea
-                        placeholder={'1. 去皮前膀加盐煎至两面金黄\n2. 炒西红柿'}
+                        placeholder={t('dishCookingMethodPlaceholder')}
                         autoSize={{ minRows: 4, maxRows: 8 }}
                     />
                 </Form.Item>
