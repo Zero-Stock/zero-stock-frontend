@@ -1,25 +1,15 @@
 import { useEffect } from 'react';
-<<<<<<< HEAD
 import { Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../mockdata';
 import type { Dish } from '@/modules/dish/mockdata';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
-=======
-import { Modal, Form, Input, Button, InputNumber } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { DayPlan, DishItem } from '../mockdata';
->>>>>>> 1baf30c (init meal module)
 
 interface MealEditModalProps {
     visible: boolean;
     dayData: DayPlan | null;
     onCancel: () => void;
     onSave: (updatedDay: DayPlan) => void;
-<<<<<<< HEAD
     availableDishes: Dish[];
-=======
->>>>>>> 1baf30c (init meal module)
 }
 
 export default function MealEditModal({
@@ -27,15 +17,9 @@ export default function MealEditModal({
     dayData,
     onCancel,
     onSave,
-<<<<<<< HEAD
     availableDishes,
 }: MealEditModalProps) {
     const [form] = Form.useForm();
-    const { t } = useTranslation();
-=======
-}: MealEditModalProps) {
-    const [form] = Form.useForm();
->>>>>>> 1baf30c (init meal module)
 
     useEffect(() => {
         if (visible && dayData) {
@@ -52,7 +36,6 @@ export default function MealEditModal({
     const handleOk = () => {
         form.validateFields().then((values) => {
             if (dayData) {
-<<<<<<< HEAD
                 const assignIds = (dishes: any[] | undefined) => {
                     return (dishes || []).map((dish) => {
                         const targetDish = availableDishes.find((d) => d.id === dish.id);
@@ -63,15 +46,6 @@ export default function MealEditModal({
                             name: targetDish ? targetDish.name : '未知菜品',
                         };
                     });
-=======
-                const assignIds = (dishes: DishItem[] | undefined) => {
-                    return (dishes || []).map((dish) => ({
-                        ...dish,
-                        count: dish.count ?? 1,
-                        // If no backend ID yet, assign a temporary negative ID
-                        id: dish.id ?? -(Date.now() + Math.floor(Math.random() * 10000)),
-                    }));
->>>>>>> 1baf30c (init meal module)
                 };
 
                 onSave({
@@ -99,28 +73,20 @@ export default function MealEditModal({
                                 {/* Dish name – takes remaining space */}
                                 <Form.Item
                                     {...restField}
-<<<<<<< HEAD
                                     name={[fieldName, 'id']}
-                                    rules={[{ required: true, message: t('mealSelectDishRequired') }]}
+                                    rules={[{ required: true, message: '请选择菜品' }]}
                                     className="!m-0 min-w-0 flex-1"
                                 >
                                     <Select
                                         showSearch
-                                        placeholder={t('mealSelectDish')}
+                                        placeholder="选择菜品"
                                         optionFilterProp="label"
                                         options={availableDishes.map((d) => ({
                                             label: d.name,
                                             value: d.id,
                                         }))}
-                                        notFoundContent={t('mealNoDishes')}
+                                        notFoundContent="暂无菜品"
                                     />
-=======
-                                    name={[fieldName, 'name']}
-                                    rules={[{ required: true, message: '请输入菜品名' }]}
-                                    className="!m-0 min-w-0 flex-1"
-                                >
-                                    <Input placeholder="菜品名 (如: 西红柿打卤面)" />
->>>>>>> 1baf30c (init meal module)
                                 </Form.Item>
 
                                 {/* 'x' label + spinner, pushed right */}
@@ -152,11 +118,7 @@ export default function MealEditModal({
                                 block
                                 icon={<PlusOutlined />}
                             >
-<<<<<<< HEAD
-                                {t('mealAddDish')}
-=======
                                 添加菜品
->>>>>>> 1baf30c (init meal module)
                             </Button>
                         </Form.Item>
                     </>
@@ -167,11 +129,7 @@ export default function MealEditModal({
 
     return (
         <Modal
-<<<<<<< HEAD
-            title={dayData ? t('mealEditTitle', { day: dayData.dayOfWeek }) : t('mealEditTitleGeneric')}
-=======
             title={dayData ? `编辑 ${dayData.dayOfWeek} 食谱` : '编辑食谱'}
->>>>>>> 1baf30c (init meal module)
             open={visible}
             onOk={handleOk}
             onCancel={() => {
@@ -179,16 +137,6 @@ export default function MealEditModal({
                 onCancel();
             }}
             width={600}
-<<<<<<< HEAD
-            okText={t('save')}
-            cancelText={t('cancel')}
-            forceRender
-        >
-            <Form form={form} layout="vertical">
-                {renderDishList('breakfast', t('mealBreakfast'))}
-                {renderDishList('lunch', t('mealLunch'))}
-                {renderDishList('dinner', t('mealDinner'))}
-=======
             okText="保存"
             cancelText="取消"
             forceRender
@@ -197,7 +145,6 @@ export default function MealEditModal({
                 {renderDishList('breakfast', '早餐')}
                 {renderDishList('lunch', '午餐')}
                 {renderDishList('dinner', '晚餐')}
->>>>>>> 1baf30c (init meal module)
             </Form>
         </Modal>
     );

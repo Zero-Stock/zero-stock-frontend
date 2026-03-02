@@ -21,6 +21,7 @@ import SupplierListPage from './modules/supplier/pages/SupplierListPage';
 import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
 import MealListPage from './modules/meal/pages/MealListPage';
+import DishListPage from './modules/dish/pages/DishListPage';
 
 export interface RouteConfig {
   path: string;
