@@ -8,18 +8,21 @@ import {
     Select,
     Space,
     Typography,
+    message,
+    Spin,
 } from 'antd';
 import type { InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
-    mockDietCategories,
-    mockWeeklyMenuRows,
     type DishItem,
     type DayPlan,
     type DietCategory,
     type DishDetail,
+    type WeeklyMenuRow,
 } from '../mockdata';
+import type { PaginatedResponse, Dish } from '@/modules/dish/mockdata';
+import { apiClient } from '@/shared/api/apiClient.client';
 import { fetchDishDetails } from '../dishService';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
 import MealEditModal from './MealEditModal';
@@ -29,17 +32,63 @@ const { Title, Text } = Typography;
 const COMPANY_ID = 1; // TODO: get from auth context
 
 export default function MealBoard() {
-    const [dietCategories, setDietCategories] =
-        useState<DietCategory[]>(mockDietCategories);
+    const [dietCategories, setDietCategories] = useState<DietCategory[]>([]);
     const [newCategoryName, setNewCategoryName] = useState('');
     const inputRef = useRef<InputRef>(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
+    const [menuRows, setMenuRows] = useState<WeeklyMenuRow[]>([]);
+    const [allDishes, setAllDishes] = useState<Dish[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const [selectedCategoryId, setSelectedCategoryId] = useState<number>(
-        mockDietCategories[0].id,
-    );
+    // ─── Fetch diet categories from API ───
+    const fetchDiets = useCallback(async () => {
+        try {
+            const data = await apiClient.get<DietCategory[]>('/api/diets/');
+            setDietCategories(data);
+            if (data.length > 0 && selectedCategoryId === 0) {
+                setSelectedCategoryId(data[0].id);
+            }
+        } catch (err) {
+            console.error('Failed to fetch diets:', err);
+            message.error('加载套餐类别失败');
+        }
+    }, []);
 
-    // In real usage this would come from GET /api/weekly-menus/?diet_category=X
-    const [menuRows, setMenuRows] = useState(mockWeeklyMenuRows);
+    // ─── Fetch weekly menus from API ───
+    const fetchMenus = useCallback(async () => {
+        if (!selectedCategoryId) return;
+        setLoading(true);
+        try {
+            const data = await apiClient.get<PaginatedResponse<WeeklyMenuRow>>(
+                '/api/weekly-menus/',
+                { query: { company: COMPANY_ID, diet_category: selectedCategoryId, page_size: 200 } },
+            );
+            setMenuRows(data.results);
+        } catch (err) {
+            console.error('Failed to fetch weekly menus:', err);
+            message.error('加载周菜单失败');
+        } finally {
+            setLoading(false);
+        }
+    }, [selectedCategoryId]);
+
+    // ─── Fetch all dishes for the Select dropdown ───
+    const fetchAllDishes = useCallback(async () => {
+        try {
+            const data = await apiClient.get<PaginatedResponse<Dish>>(
+                '/api/dishes/',
+                { query: { page_size: 500 } },
+            );
+            setAllDishes(data.results);
+        } catch (err) {
+            console.error('Failed to fetch dishes:', err);
+            message.error('加载菜品列表失败');
+        }
+    }, []);
+
+    useEffect(() => { fetchDiets(); }, [fetchDiets]);
+    useEffect(() => { fetchMenus(); }, [fetchMenus]);
+    useEffect(() => { fetchAllDishes(); }, [fetchAllDishes]);
 
     // Convert flat rows → grouped day plans for the selected diet category
     const dayPlans = useMemo(() => {
@@ -68,7 +117,7 @@ export default function MealBoard() {
         loadDishDetails();
     }, [loadDishDetails]);
 
-    const addDietCategory = (
+    const addDietCategory = async (
         e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
     ) => {
         e.preventDefault();
@@ -77,17 +126,19 @@ export default function MealBoard() {
             newCategoryName &&
             !dietCategories.some((c) => c.name === newCategoryName)
         ) {
-            // In real usage: POST /api/diets/ { name: newCategoryName }
-            const newCategory = {
-                id: Date.now(),
-                name: newCategoryName,
-            };
-            setDietCategories([...dietCategories, newCategory]);
-            setSelectedCategoryId(newCategory.id);
-            setNewCategoryName('');
-            setTimeout(() => {
-                inputRef.current?.focus();
-            }, 0);
+            try {
+                const newCategory = await apiClient.post<DietCategory>('/api/diets/', {
+                    body: { name: newCategoryName },
+                });
+                setDietCategories([...dietCategories, newCategory]);
+                setSelectedCategoryId(newCategory.id);
+                setNewCategoryName('');
+                message.success('套餐类别已创建');
+                setTimeout(() => inputRef.current?.focus(), 0);
+            } catch (err) {
+                console.error('Failed to create diet:', err);
+                message.error('创建套餐类别失败');
+            }
         }
     };
 
@@ -99,56 +150,25 @@ export default function MealBoard() {
         setIsModalVisible(true);
     };
 
-    const handleSave = (updatedDay: DayPlan) => {
+    const handleSave = async (updatedDay: DayPlan) => {
         // Build the batch payload for POST /api/weekly-menus/batch/
         const batchItems = dayPlanToBatchItems(
             updatedDay,
             COMPANY_ID,
             selectedCategoryId,
         );
-        console.log(
-            'Would POST /api/weekly-menus/batch/ with:',
-            JSON.stringify(batchItems, null, 2),
-        );
 
-        // Update local state (simulate API success)
-        setMenuRows((prev) => {
-            // Remove old rows for this day + diet_category
-            const kept = prev.filter(
-                (r) =>
-                    !(
-                        r.diet_category === selectedCategoryId &&
-                        r.day_of_week === updatedDay.dayNumber
-                    ),
-            );
-            // Add new rows
-            const newRows = batchItems.map((item, idx) => ({
-                id: Date.now() + idx,
-                company: item.company,
-                company_name: 'XX医院',
-                diet_category: item.diet_category,
-                diet_category_name:
-                    dietCategories.find((c) => c.id === item.diet_category)?.name ?? '',
-                day_of_week: item.day_of_week,
-                day_display: '',
-                meal_time: item.meal_time,
-                meal_display: '',
-                dishes: item.dishes,
-                // For mock: we need to preserve the names
-                dish_names: item.dishes.map((dishId) => {
-                    // Look up name from the meal slots in updatedDay
-                    const allDishes = [
-                        ...updatedDay.breakfast,
-                        ...updatedDay.lunch,
-                        ...updatedDay.dinner,
-                    ];
-                    return allDishes.find((d) => d.id === dishId)?.name ?? `菜品#${dishId}`;
-                }),
-            }));
-            return [...kept, ...newRows];
-        });
-
-        setIsModalVisible(false);
+        try {
+            await apiClient.post('/api/weekly-menus/batch/', {
+                body: batchItems,
+            });
+            message.success('菜单已保存');
+            setIsModalVisible(false);
+            fetchMenus(); // refresh from API
+        } catch (err) {
+            console.error('Failed to save weekly menu:', err);
+            message.error('保存菜单失败');
+        }
     };
 
     const handlePrint = () => {
@@ -296,11 +316,14 @@ export default function MealBoard() {
                 </Title>
             </div>
 
-            {renderDayCards(dayPlans)}
+            <Spin spinning={loading}>
+                {renderDayCards(dayPlans)}
+            </Spin>
 
             <MealEditModal
                 visible={isModalVisible}
                 dayData={editingDay}
+                availableDishes={allDishes}
                 onCancel={() => setIsModalVisible(false)}
                 onSave={handleSave}
             />

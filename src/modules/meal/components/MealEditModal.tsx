@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
-import { Modal, Form, Input, Button, InputNumber } from 'antd';
+import { Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../mockdata';
+import type { Dish } from '@/modules/dish/mockdata';
 
 interface MealEditModalProps {
     visible: boolean;
     dayData: DayPlan | null;
     onCancel: () => void;
     onSave: (updatedDay: DayPlan) => void;
+    availableDishes: Dish[];
 }
 
 export default function MealEditModal({
@@ -15,6 +17,7 @@ export default function MealEditModal({
     dayData,
     onCancel,
     onSave,
+    availableDishes,
 }: MealEditModalProps) {
     const [form] = Form.useForm();
 
@@ -33,13 +36,16 @@ export default function MealEditModal({
     const handleOk = () => {
         form.validateFields().then((values) => {
             if (dayData) {
-                const assignIds = (dishes: DishItem[] | undefined) => {
-                    return (dishes || []).map((dish) => ({
-                        ...dish,
-                        count: dish.count ?? 1,
-                        // If no backend ID yet, assign a temporary negative ID
-                        id: dish.id ?? -(Date.now() + Math.floor(Math.random() * 10000)),
-                    }));
+                const assignIds = (dishes: any[] | undefined) => {
+                    return (dishes || []).map((dish) => {
+                        const targetDish = availableDishes.find((d) => d.id === dish.id);
+                        return {
+                            ...dish,
+                            count: dish.count ?? 1,
+                            id: dish.id,
+                            name: targetDish ? targetDish.name : '未知菜品',
+                        };
+                    });
                 };
 
                 onSave({
@@ -67,11 +73,20 @@ export default function MealEditModal({
                                 {/* Dish name – takes remaining space */}
                                 <Form.Item
                                     {...restField}
-                                    name={[fieldName, 'name']}
-                                    rules={[{ required: true, message: '请输入菜品名' }]}
+                                    name={[fieldName, 'id']}
+                                    rules={[{ required: true, message: '请选择菜品' }]}
                                     className="!m-0 min-w-0 flex-1"
                                 >
-                                    <Input placeholder="菜品名 (如: 西红柿打卤面)" />
+                                    <Select
+                                        showSearch
+                                        placeholder="选择菜品"
+                                        optionFilterProp="label"
+                                        options={availableDishes.map((d) => ({
+                                            label: d.name,
+                                            value: d.id,
+                                        }))}
+                                        notFoundContent="暂无菜品"
+                                    />
                                 </Form.Item>
 
                                 {/* 'x' label + spinner, pushed right */}
