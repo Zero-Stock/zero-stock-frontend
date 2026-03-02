@@ -25,16 +25,6 @@ export interface WeeklyPlan {
 
 // ─── Constants ───
 
-export const DAY_LABELS: Record<number, string> = {
-    1: '周一',
-    2: '周二',
-    3: '周三',
-    4: '周四',
-    5: '周五',
-    6: '周六',
-    7: '周日',
-};
-
 export const MEAL_TIME_MAP: Record<string, 'B' | 'L' | 'D'> = {
     breakfast: 'B',
     lunch: 'L',
