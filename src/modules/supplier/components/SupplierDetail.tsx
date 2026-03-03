@@ -1,7 +1,8 @@
-import { Button, Space, Typography } from 'antd';
+import { Button, Space, Typography, Spin } from 'antd';
 import { useLocation } from 'wouter';
-import { useEffect, useState } from 'react';
-import { getSupplierById, updateSupplier, type Supplier } from '../mockdata';
+import { useState } from 'react';
+import { useSupplierDetail } from '../hooks/useSupplierDetail';
+import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import SupplierEditModal from './SupplierEditModal';
 import SupplierMaterialTable from './SupplierMaterialTable';
 
@@ -10,12 +11,19 @@ const { Title, Text } = Typography;
 export default function SupplierDetail({ supplierId }: { supplierId: string }) {
   const [, navigate] = useLocation();
 
-  const [supplier, setSupplier] = useState<Supplier | null>(null);
+  const idNum = Number(supplierId);
+  const { supplier, isLoading, mutate } = useSupplierDetail(idNum);
+  const { trigger: updateTrigger } = useSupplierUpdate();
+
   const [editOpen, setEditOpen] = useState(false);
 
-  useEffect(() => {
-    setSupplier(getSupplierById(supplierId));
-  }, [supplierId]);
+  if (isLoading) {
+    return (
+      <div style={{ padding: 24 }}>
+        <Spin />
+      </div>
+    );
+  }
 
   if (!supplier) {
     return (
@@ -25,6 +33,8 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
       </div>
     );
   }
+
+  console.log('supplier:', supplier);
 
   return (
     <div style={{ padding: 24 }}>
@@ -37,7 +47,7 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
             {supplier.name}
           </Title>
           <Text type="secondary">
-            {supplier.contact} · {supplier.address}
+            {supplier.contact_person} · {supplier.phone} · {supplier.address}
           </Text>
         </div>
 
@@ -55,11 +65,17 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
 
       <SupplierEditModal
         open={editOpen}
-        supplier={supplier}
+        supplier={{
+          id: supplier.id,
+          name: supplier.name,
+          contact_person: supplier.contact_person,
+          phone: supplier.phone,
+          address: supplier.address,
+        }}
         onCancel={() => setEditOpen(false)}
-        onSave={(next) => {
-          updateSupplier(next);
-          setSupplier(next);
+        onSave={async (next) => {
+          await updateTrigger(next);
+          mutate();
           setEditOpen(false);
         }}
       />

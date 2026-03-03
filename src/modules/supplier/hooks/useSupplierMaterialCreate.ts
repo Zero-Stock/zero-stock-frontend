@@ -1,10 +1,10 @@
 import { apiClient } from '@/shared/api/apiClient.client';
 import type { SupplierMaterialCreateDto } from '../dtos/supplierMaterialCreate.dto';
 
-export function useSupplierMaterialCreate(supplierId: number) {
+export function useSupplierMaterialCreate() {
   return {
     trigger: async (data: SupplierMaterialCreateDto) => {
-      return apiClient.post(`/api/suppliers/${supplierId}/materials/`, {
+      return apiClient.post('/api/supplier-materials/', {
         body: data,
       });
     },

@@ -1,5 +1,7 @@
 import useSWR from 'swr';
-import { apiClient } from '@/shared/api/apiClient.client';
+import { useMemo } from 'react';
+import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
+import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
 import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
 
 export interface SupplierListPayload {
@@ -7,29 +9,28 @@ export interface SupplierListPayload {
 }
 
 export function useSupplierList(payload?: SupplierListPayload) {
-  const { data, error, isLoading, mutate } = useSWR<SupplierPreviewDto[]>(
-    ['/api/suppliers/', payload ?? {}],
-    async ([path, payload]) => {
-      const qs = new URLSearchParams();
-      if (payload?.search) qs.set('search', payload.search);
+  const qs = useMemo(() => {
+    const p = new URLSearchParams();
+    const search = payload?.search?.trim();
 
-      const url = qs.toString() ? `${path}?${qs.toString()}` : path;
+    if (search) p.set('search', search);
+    const s = p.toString();
 
-      const res = await apiClient.get<
-        SupplierPreviewDto[] | { results: SupplierPreviewDto[] }
-      >(url);
+    return s ? `?${s}` : '';
+  }, [payload?.search]);
 
-      // ✅ 兼容两种形状：数组 or {results:数组}
-      if (Array.isArray(res)) return res;
-      if (res && Array.isArray((res as any).results))
-        return (res as any).results;
+  const key: SWRKey = {
+    url: `/api/suppliers/${qs}`,
+    method: 'GET',
+    options: {},
+  };
 
-      return [];
-    },
-  );
+  const { data, error, isLoading, mutate } =
+    useSWR<ApiListResponseDto<SupplierPreviewDto[]>>(key);
 
   return {
-    suppliers: Array.isArray(data) ? data : [],
+    suppliers: data?.results.results ?? [],
+    total: data?.results?.total ?? 0,
     isLoading,
     isError: error,
     mutate,

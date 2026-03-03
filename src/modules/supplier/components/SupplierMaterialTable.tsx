@@ -3,22 +3,34 @@ import { useMemo, useState } from 'react';
 
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
+import { useSupplierMaterialUpdate } from '../hooks/useSupplierMaterialUpdate';
 import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
+import type { ColumnsType } from 'antd/es/table';
 
 const { Title } = Typography;
 
-export default function SupplierMaterialTable({
-  supplierId,
-}: {
+interface SupplierMaterialTableProps {
   supplierId: number;
-}) {
+}
+
+export default function SupplierMaterialTable(
+  props: SupplierMaterialTableProps,
+) {
+  const { supplierId } = props;
+  const { t } = useTranslation();
   const [keyword, setKeyword] = useState('');
 
-  const { materials, isLoading, mutate } = useSupplierMaterials(supplierId);
-  const { trigger: createTrigger } = useSupplierMaterialCreate(supplierId);
+  const { materials, isLoading, mutate } = useSupplierMaterials({
+    supplier: supplierId,
+  });
+  const { trigger: createTrigger } = useSupplierMaterialCreate();
+  const { trigger: updateTrigger } = useSupplierMaterialUpdate();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] =
+    useState<SupplierMaterialDto | null>(null);
 
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
@@ -38,18 +50,13 @@ export default function SupplierMaterialTable({
     [materials],
   );
 
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 90 },
+  const columns: ColumnsType<SupplierMaterialDto> = [
     {
-      title: 'Raw Material ID',
-      dataIndex: 'raw_material',
-      key: 'raw_material',
-      width: 140,
-      sorter: (a: SupplierMaterialDto, b: SupplierMaterialDto) =>
-        a.raw_material - b.raw_material,
-      defaultSortOrder: 'ascend' as const,
+      title: 'Name',
+      dataIndex: 'raw_material_name',
+      key: 'raw_material_name',
+      width: 120,
     },
-    { title: 'Name', dataIndex: 'raw_material_name', key: 'raw_material_name' },
     { title: 'Unit', dataIndex: 'unit_name', key: 'unit_name', width: 120 },
     {
       title: 'kg/unit',
@@ -60,6 +67,33 @@ export default function SupplierMaterialTable({
     { title: 'Price', dataIndex: 'price', key: 'price', width: 120 },
     { title: 'Notes', dataIndex: 'notes', key: 'notes' },
     // ⚠️ 文档没写 PATCH/DELETE，所以这里先不放 Edit/Delete
+    {
+      title: 'Actions',
+      key: 'actions',
+      width: 200,
+      render: (_, record: SupplierMaterialDto) => (
+        <Space size="small">
+          <Button
+            type="link"
+            onClick={() => {
+              setEditingMaterial(record);
+              setModalOpen(true);
+            }}
+            className="p-0!"
+          >
+            Edit
+          </Button>
+          <Button
+            type="link"
+            danger
+            onClick={() => console.log('Delete:', record)}
+            className="p-0!"
+          >
+            {t('delete')}
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   return (
@@ -86,6 +120,7 @@ export default function SupplierMaterialTable({
           <Button
             type="primary"
             onClick={() => {
+              setEditingMaterial(null);
               setModalOpen(true);
             }}
           >
@@ -104,13 +139,27 @@ export default function SupplierMaterialTable({
 
       <SupplierMaterialUpsertModal
         open={modalOpen}
+        initialValues={editingMaterial}
         existingRawMaterialIds={existingRawMaterialIds}
-        onCancel={() => setModalOpen(false)}
-        onSave={async (payload) => {
-          await createTrigger(payload);
-          message.success('Added');
+        onCancel={() => {
           setModalOpen(false);
-          mutate(); // ✅ 刷新 materials
+          setEditingMaterial(null);
+        }}
+        onSave={async (payload) => {
+          if (editingMaterial) {
+            await updateTrigger({
+              id: payload.id,
+              ...payload,
+              supplier: supplierId,
+            });
+            message.success('Updated');
+          } else {
+            await createTrigger({ ...payload, supplier: supplierId });
+            message.success('Added');
+          }
+          setModalOpen(false);
+          setEditingMaterial(null);
+          mutate();
         }}
       />
     </div>

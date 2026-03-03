@@ -34,8 +34,8 @@ export default function SupplierEditModal({
       phone: values.phone,
       address: values.address,
     };
+
     onSave(updated);
-    form.resetFields();
   };
 
   return (
@@ -43,13 +43,10 @@ export default function SupplierEditModal({
       title="Edit Supplier"
       open={open}
       onOk={handleOk}
-      onCancel={() => {
-        form.resetFields();
-        onCancel();
-      }}
+      onCancel={onCancel}
       okText="Save"
       cancelText="Cancel"
-      destroyOnClose
+      destroyOnHidden
     >
       <Form form={form} layout="vertical">
         <Form.Item label="ID" name="id">

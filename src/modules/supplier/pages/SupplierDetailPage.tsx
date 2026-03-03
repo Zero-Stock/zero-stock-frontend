@@ -1,10 +1,13 @@
 import SupplierDetail from '@/modules/supplier/components/SupplierDetail';
 
-export default async function SupplierDetailPage({
+interface SupplierDetailPageProps {
+  params: { supplierId: string };
+}
+
+export default function SupplierDetailPage({
   params,
-}: {
-  params: Promise<{ supplierId: string }>;
-}) {
-  const { supplierId } = await params;
+}: SupplierDetailPageProps) {
+  const { supplierId } = params;
+
   return <SupplierDetail supplierId={supplierId} />;
 }

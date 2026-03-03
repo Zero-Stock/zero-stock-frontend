@@ -1,25 +1,45 @@
-import { Modal, Form, Input, InputNumber } from 'antd';
-import type { SupplierMaterialCreateDto } from '../dtos/supplierMaterialCreate.dto';
+import { Modal, Form, Input, InputNumber, Select } from 'antd';
+import { useEffect } from 'react';
+import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
+import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
+
+export interface SupplierMaterialUpsertModalProps {
+  open: boolean;
+  initialValues?: SupplierMaterialDto | null;
+  existingRawMaterialIds: Set<number>;
+  onCancel: () => void;
+  onSave: (payload: any) => void;
+}
 
 export default function SupplierMaterialUpsertModal({
   open,
+  initialValues,
   existingRawMaterialIds,
   onCancel,
   onSave,
-}: {
-  open: boolean;
-  existingRawMaterialIds: Set<number>;
-  onCancel: () => void;
-  onSave: (payload: SupplierMaterialCreateDto) => void;
-}) {
+}: SupplierMaterialUpsertModalProps) {
   const [form] = Form.useForm();
+
+  // optionally pass page_size: 1000 or similar to fetch all materials, depending on backend pagination
+  const { materialOptions, isLoading } = useMaterialList({ page_size: 1000 });
+
+  useEffect(() => {
+    if (open) {
+      if (initialValues) {
+        form.setFieldsValue(initialValues);
+      } else {
+        form.resetFields();
+      }
+    }
+  }, [open, initialValues, form]);
 
   const handleOk = async () => {
     const v = await form.validateFields();
 
     const rawId = Number(v.raw_material);
-    if (existingRawMaterialIds.has(rawId)) {
-      // 同一供应商不能重复添加同一原料（后端规则）
+
+    // 同一供应商不能重复添加同一原料（后端规则），仅在新建时校验
+    if (!initialValues && existingRawMaterialIds.has(rawId)) {
       form.setFields([
         {
           name: 'raw_material',
@@ -29,20 +49,24 @@ export default function SupplierMaterialUpsertModal({
       return;
     }
 
-    const payload: SupplierMaterialCreateDto = {
+    const payload: any = {
       raw_material: rawId,
       unit_name: v.unit_name,
       kg_per_unit: String(v.kg_per_unit),
-      price: String(v.price),
+      price: v.price ? String(v.price) : null,
       notes: v.notes,
     };
+
+    if (initialValues) {
+      payload.id = initialValues.id;
+    }
+
     onSave(payload);
-    form.resetFields();
   };
 
   return (
     <Modal
-      title="Add Supplier Material"
+      title={initialValues ? 'Edit Supplier Material' : 'Add Supplier Material'}
       open={open}
       okText="Save"
       cancelText="Cancel"
@@ -55,11 +79,23 @@ export default function SupplierMaterialUpsertModal({
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          label="Raw Material ID"
+          label="Material Name"
           name="raw_material"
           rules={[{ required: true }]}
         >
-          <InputNumber style={{ width: '100%' }} min={1} />
+          <Select
+            allowClear
+            showSearch
+            loading={isLoading}
+            options={materialOptions}
+            disabled={!!initialValues}
+            filterOption={(input, option) =>
+              (option?.label ?? '')
+                .toString()
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          />
         </Form.Item>
 
         <Form.Item

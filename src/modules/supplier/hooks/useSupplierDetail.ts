@@ -1,17 +1,18 @@
 import useSWR from 'swr';
-import { apiClient } from '@/shared/api/apiClient.client';
 import type { SupplierDetailDto } from '../dtos/supplierDetail.dto';
+import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export function useSupplierDetail(supplierId?: number) {
-  const { data, error, isLoading, mutate } = useSWR<SupplierDetailDto | null>(
-    supplierId ? [`/api/suppliers/${supplierId}/`] : null,
-    async ([url]) => {
-      return apiClient.get<SupplierDetailDto>(url);
-    },
-  );
+  const key: SWRKey = {
+    url: `/api/suppliers/${supplierId}/`,
+  };
+
+  const { data, error, isLoading, mutate } =
+    useSWR<ApiResponseDto<SupplierDetailDto>>(key);
 
   return {
-    supplier: data,
+    supplier: data?.results,
     isLoading,
     isError: error,
     mutate,

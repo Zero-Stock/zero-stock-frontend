@@ -7,66 +7,83 @@ import {
   Typography,
   message,
 } from 'antd';
-import { useMemo } from 'react';
-import { mockRawMaterials } from '@/modules/material/mockdata';
-import {
-  createSupplierWithMaterials,
-  type SupplierMaterialInput,
-} from '../mockdata';
+import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
+import { useSupplierCreate } from '../hooks/useSupplierCreate';
+import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
+import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
 
 const { Title, Text } = Typography;
 
 type FormValues = {
   name: string;
-  contact: string;
+  contact_person: string;
+  phone: string;
   address: string;
   materials: Array<{
-    rawMaterialId?: string;
+    rawMaterialId?: number;
     price?: number;
     unit?: string;
+    kg_per_unit?: number;
   }>;
 };
 
 export default function SupplierCreateForm() {
   const [, navigate] = useLocation();
   const [form] = Form.useForm<FormValues>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const rawMaterialOptions = useMemo(
-    () =>
-      mockRawMaterials.map((rm) => ({
-        label: `${rm.name}（${rm.category}）`,
-        value: rm.id,
-      })),
-    [],
-  );
+  const { materialOptions } = useMaterialList();
+  const { trigger: createSupplier } = useSupplierCreate();
+  const { trigger: createMaterial } = useSupplierMaterialCreate();
 
-  const rawMaterialDefaultUnitById = useMemo(() => {
-    const m = new Map<string, string>();
-    mockRawMaterials.forEach((rm) => m.set(rm.id, rm.unit));
-    return m;
-  }, []);
-
-  const onFinish = (values: FormValues) => {
-    const materials: SupplierMaterialInput[] = (values.materials ?? []).map(
-      (row) => ({
-        rawMaterialId: row.rawMaterialId ?? '',
-        price: Number(row.price ?? 0),
-        unit: row.unit ?? '',
-      }),
-    );
-
-    const created = createSupplierWithMaterials(
-      {
+  const onFinish = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      const payload: SupplierCreateDto = {
         name: values.name,
-        contact: values.contact,
+        contact_person: values.contact_person,
+        phone: values.phone,
         address: values.address,
-      },
-      materials,
-    );
+      };
 
-    message.success('Supplier created');
-    navigate(`/supplier/${created.id}`);
+      const createdSupplier = await createSupplier(payload);
+      const supplierId =
+        (createdSupplier as any).results?.id || (createdSupplier as any).id;
+
+      if (!supplierId) {
+        message.error('Error retrieving created supplier ID.');
+        return;
+      }
+
+      // Create materials if any
+      const mRows = values.materials || [];
+      for (const row of mRows) {
+        if (row.rawMaterialId) {
+          try {
+            await createMaterial({
+              supplier: supplierId,
+              raw_material: row.rawMaterialId,
+              unit_name: row.unit || 'kg',
+              kg_per_unit: String(row.kg_per_unit || 1),
+              price: String(row.price || 0),
+            });
+          } catch (err) {
+            console.error(err);
+            message.warning(`Failed to add material ${row.rawMaterialId}`);
+          }
+        }
+      }
+
+      message.success('Supplier created');
+      navigate(`/supplier/${supplierId}`);
+    } catch (err) {
+      console.error(err);
+      message.error('Failed to create supplier');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -75,7 +92,14 @@ export default function SupplierCreateForm() {
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
-        materials: [{ rawMaterialId: undefined, price: undefined, unit: '' }],
+        materials: [
+          {
+            rawMaterialId: undefined,
+            price: undefined,
+            unit: '',
+            kg_per_unit: undefined,
+          },
+        ],
       }}
     >
       {/* ===== 基础信息 ===== */}
@@ -86,7 +110,7 @@ export default function SupplierCreateForm() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateColumns: '1fr 1fr 1fr 1fr',
           gap: 16,
           maxWidth: 1100,
         }}
@@ -99,24 +123,20 @@ export default function SupplierCreateForm() {
           <Input placeholder="Supplier name" />
         </Form.Item>
 
-        <Form.Item
-          label="Contact"
-          name="contact"
-          rules={[{ required: true, message: 'Required' }]}
-        >
-          <Input placeholder="Phone / WeChat / Email" />
+        <Form.Item label="Contact Person" name="contact_person">
+          <Input placeholder="Contact person name" />
         </Form.Item>
 
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: 'Required' }]}
-        >
+        <Form.Item label="Phone" name="phone">
+          <Input placeholder="Phone number" />
+        </Form.Item>
+
+        <Form.Item label="Address" name="address">
           <Input placeholder="Address" />
         </Form.Item>
       </div>
 
-      {/* ===== 明细信息（类似你截图） ===== */}
+      {/* ===== 明细信息 ===== */}
       <div style={{ marginTop: 24 }}>
         <Title level={4} style={{ marginBottom: 4 }}>
           Raw Material Details
@@ -135,11 +155,10 @@ export default function SupplierCreateForm() {
             maxWidth: 1100,
           }}
         >
-          {/* 表头 */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 120px',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 120px',
               gap: 16,
               padding: '8px 8px 12px',
               fontWeight: 600,
@@ -148,18 +167,19 @@ export default function SupplierCreateForm() {
             <div>Raw Material</div>
             <div>Price</div>
             <div>Unit (Spec)</div>
+            <div>kg/unit</div>
             <div></div>
           </div>
 
           <Form.List name="materials">
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field) => (
+                {fields.map(({ key, name, ...restField }) => (
                   <div
-                    key={field.key}
+                    key={key}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '2fr 1fr 1fr 120px',
+                      gridTemplateColumns: '2fr 1fr 1fr 1fr 120px',
                       gap: 16,
                       padding: '8px',
                       alignItems: 'center',
@@ -167,35 +187,20 @@ export default function SupplierCreateForm() {
                     }}
                   >
                     <Form.Item
-                      {...field}
-                      name={[field.name, 'rawMaterialId']}
+                      {...restField}
+                      name={[name, 'rawMaterialId']}
                       style={{ marginBottom: 0 }}
                     >
                       <Select
                         placeholder="Select raw material"
-                        options={rawMaterialOptions}
+                        options={materialOptions}
                         showSearch
-                        optionFilterProp="label"
-                        onChange={(val) => {
-                          // 如果 unit 没填，就自动带上默认 unit（用户可改）
-                          const current = form.getFieldValue([
-                            'materials',
-                            field.name,
-                            'unit',
-                          ]);
-                          if (!current) {
-                            form.setFieldValue(
-                              ['materials', field.name, 'unit'],
-                              rawMaterialDefaultUnitById.get(val) ?? '',
-                            );
-                          }
-                        }}
                       />
                     </Form.Item>
 
                     <Form.Item
-                      {...field}
-                      name={[field.name, 'price']}
+                      {...restField}
+                      name={[name, 'price']}
                       style={{ marginBottom: 0 }}
                     >
                       <InputNumber
@@ -206,11 +211,24 @@ export default function SupplierCreateForm() {
                     </Form.Item>
 
                     <Form.Item
-                      {...field}
-                      name={[field.name, 'unit']}
+                      {...restField}
+                      name={[name, 'unit']}
                       style={{ marginBottom: 0 }}
                     >
-                      <Input placeholder="e.g. {箱: 10kg}" />
+                      <Input placeholder="e.g. 箱 / 袋" />
+                    </Form.Item>
+
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'kg_per_unit']}
+                      style={{ marginBottom: 0 }}
+                    >
+                      <InputNumber
+                        min={0}
+                        step={0.01}
+                        style={{ width: '100%' }}
+                        placeholder="e.g. 10"
+                      />
                     </Form.Item>
 
                     <div
@@ -219,7 +237,7 @@ export default function SupplierCreateForm() {
                       <Button
                         danger
                         type="link"
-                        onClick={() => remove(field.name)}
+                        onClick={() => remove(name)} // <-- Use 'name' here
                       >
                         Remove
                       </Button>
@@ -227,6 +245,7 @@ export default function SupplierCreateForm() {
                   </div>
                 ))}
 
+                {/* Add button remains the same */}
                 <div style={{ marginTop: 12 }}>
                   <Button
                     type="dashed"
@@ -235,6 +254,7 @@ export default function SupplierCreateForm() {
                         rawMaterialId: undefined,
                         price: undefined,
                         unit: '',
+                        kg_per_unit: undefined,
                       })
                     }
                     style={{ width: '100%', height: 44, borderRadius: 10 }}
@@ -262,6 +282,7 @@ export default function SupplierCreateForm() {
           onClick={() => {
             navigate('/supplier');
           }}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>
@@ -269,6 +290,7 @@ export default function SupplierCreateForm() {
         <Button
           type="primary"
           htmlType="submit"
+          loading={isSubmitting}
           style={{ height: 40, borderRadius: 10 }}
         >
           Save
