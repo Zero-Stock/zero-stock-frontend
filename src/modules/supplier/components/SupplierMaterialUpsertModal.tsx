@@ -14,42 +14,44 @@ export default function SupplierMaterialUpsertModal({
 }) {
   const [form] = Form.useForm();
 
+  const handleOk = async () => {
+    const v = await form.validateFields();
+
+    const rawId = Number(v.raw_material);
+    if (existingRawMaterialIds.has(rawId)) {
+      // 同一供应商不能重复添加同一原料（后端规则）
+      form.setFields([
+        {
+          name: 'raw_material',
+          errors: ['This raw material already exists for this supplier.'],
+        },
+      ]);
+      return;
+    }
+
+    const payload: SupplierMaterialCreateDto = {
+      raw_material: rawId,
+      unit_name: v.unit_name,
+      kg_per_unit: String(v.kg_per_unit),
+      price: String(v.price),
+      notes: v.notes,
+    };
+    onSave(payload);
+    form.resetFields();
+  };
+
   return (
     <Modal
       title="Add Supplier Material"
       open={open}
       okText="Save"
       cancelText="Cancel"
-      destroyOnClose
+      destroyOnHidden
       onCancel={() => {
         form.resetFields();
         onCancel();
       }}
-      onOk={async () => {
-        const v = await form.validateFields();
-
-        const rawId = Number(v.raw_material);
-        if (existingRawMaterialIds.has(rawId)) {
-          // 同一供应商不能重复添加同一原料（后端规则）
-          form.setFields([
-            {
-              name: 'raw_material',
-              errors: ['This raw material already exists for this supplier.'],
-            },
-          ]);
-          return;
-        }
-
-        const payload: SupplierMaterialCreateDto = {
-          raw_material: rawId,
-          unit_name: v.unit_name,
-          kg_per_unit: String(v.kg_per_unit),
-          price: String(v.price),
-          notes: v.notes,
-        };
-        onSave(payload);
-        form.resetFields();
-      }}
+      onOk={handleOk}
     >
       <Form form={form} layout="vertical">
         <Form.Item

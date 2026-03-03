@@ -48,10 +48,6 @@ function AppContent() {
           >
             {locale === 'zh' ? 'EN' : '中文'}
           </Button>
-<<<<<<< HEAD
->>>>>>> d4ca226 (feat: add language tranlation)
-=======
->>>>>>> a0dd2e3 (Merge branch 'main' of git.uwaterloo.ca:651-canteen-system/zero-stock-frontend into feat-material)
         </div>
       </Header>
 
