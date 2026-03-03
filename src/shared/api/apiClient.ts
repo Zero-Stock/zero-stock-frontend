@@ -77,10 +77,7 @@ export class ApiClient {
     this.config = config;
   }
 
-  get<T>(
-    path: `/${string}`,
-    options?: Omit<RequestOptions, 'body' | 'formData'>,
-  ) {
+  get<T>(path: `/${string}`, options?: Omit<RequestOptions, 'formData'>) {
     return this.request<T>('GET', path, options);
   }
 
@@ -167,28 +164,28 @@ export class ApiClient {
       const data = await parseJsonSafe(res);
 
       if (!res.ok) {
-        const errorDetails = data?.error?.details || data;
         throw new ApiError({
-          message:
-            data?.error?.details?.message ||
-            data?.error?.details?.detail ||
-            data?.message ||
-            errorDetails?.error ||
-            `Request failed with status ${res.status}`,
+          message: data?.message,
           status: res.status,
           url,
-          code: data?.error?.type || data?.code,
-          details: errorDetails,
+          code: data?.error?.type,
+          details: data.error ?? data,
         });
       }
 
       // Automatically unwrap the standard backend envelope { message, error, results }
-      if (data && typeof data === 'object' && 'message' in data && 'error' in data && 'results' in data) {
+      if (
+        data &&
+        typeof data === 'object' &&
+        'message' in data &&
+        'error' in data &&
+        'results' in data
+      ) {
         return data.results as T;
       }
 
       return data as T;
-    } catch (err: unknown) {
+    } catch (err: ApiError | Error | unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         throw new ApiError({
           message: `Request timeout after ${ms}ms`,

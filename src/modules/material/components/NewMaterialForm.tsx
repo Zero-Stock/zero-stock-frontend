@@ -1,20 +1,24 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-
-const { Option } = Select;
+import { useLocation } from 'wouter';
+import { useMaterialCreate } from '../hooks/useMaterialCreate';
+import useMaterialCategories from '../hooks/useMaterialCategories';
 
 interface RawMaterialFields {
   name: string;
-  category: string;
-  unit: string;
-  conversion: string;
+  category: number;
+  yield_rate: number;
+  specs: string;
 }
 
 export default function NewMaterialForm() {
-  const [form] = Form.useForm();
+  const [, navigate] = useLocation();
+  const { trigger: createMaterial } = useMaterialCreate();
+  const { categoryOptions, isLoading: isLoadingCategories } =
+    useMaterialCategories();
 
-  const categories = ['冻品', '粮油', '肉类', '蔬菜'];
+  const [form] = Form.useForm();
 
   const columns: ColumnsType<{ key: number | string }> = [
     {
@@ -25,7 +29,7 @@ export default function NewMaterialForm() {
         <Form.Item
           name={[index, 'name']}
           rules={[{ required: true, message: 'Please input name' }]}
-          className="!mb-0"
+          className="mb-0!"
         >
           <Input placeholder="Input raw material name" />
         </Form.Item>
@@ -39,50 +43,59 @@ export default function NewMaterialForm() {
         <Form.Item
           name={[index, 'category']}
           rules={[{ required: true, message: 'Please select category' }]}
-          className="!mb-0"
+          className="mb-0!"
         >
-          <Select placeholder="Select category" className="w-full">
-            {categories.map((cat) => (
-              <Option key={cat} value={cat}>
-                {cat}
-              </Option>
-            ))}
-          </Select>
+          <Select
+            placeholder="Select category"
+            className="w-full"
+            options={categoryOptions}
+            loading={isLoadingCategories}
+          />
         </Form.Item>
       ),
     },
     {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
+      title: 'Yield Rate',
+      dataIndex: 'yield_rate',
+      key: 'yield_rate',
       render: (_, _record, index) => (
         <Form.Item
-          name={[index, 'unit']}
-          rules={[{ required: true, message: 'Please input unit' }]}
-          className="!mb-0"
+          name={[index, 'yield_rate']}
+          rules={[
+            {
+              required: true,
+              message: 'Please input yield rate',
+            },
+          ]}
+          className="mb-0!"
         >
-          <Input placeholder="e.g. 箱 / 袋 / kg" />
+          <Input placeholder="e.g. 0.8" />
         </Form.Item>
       ),
     },
     {
-      title: 'Conversion',
-      dataIndex: 'conversion',
-      key: 'conversion',
+      title: 'Specs',
+      dataIndex: 'specs',
+      key: 'specs',
       render: (_, _record, index) => (
-        <Form.Item
-          name={[index, 'conversion']}
-          rules={[{ required: true, message: 'Please input conversion' }]}
-          className="!mb-0"
-        >
-          <Input placeholder="e.g. 10kg" />
+        <Form.Item name={[index, 'specs']} className="mb-0!">
+          <Input placeholder="e.g. chunk, slice, shred" />
         </Form.Item>
       ),
     },
   ];
 
-  const onFinish = (values: { items: RawMaterialFields[] }) => {
-    console.log('Received values:', values);
+  const onFinish = async (values: { items: RawMaterialFields[] }) => {
+    const data = values.items.map((item) => ({
+      name: item.name,
+      category: item.category,
+      yield_rate: item.yield_rate,
+      specs: item.specs
+        .split(',')
+        .map((spec) => ({ method_name: spec.trim() })),
+    }));
+    await createMaterial(data);
+    navigate('/material');
   };
 
   return (
@@ -101,7 +114,7 @@ export default function NewMaterialForm() {
                   onClick={() => add()}
                   block
                   icon={<PlusOutlined />}
-                  className="mt-2"
+                  className="mt-1"
                 >
                   Add New Row
                 </Button>

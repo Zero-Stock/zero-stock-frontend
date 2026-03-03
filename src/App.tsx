@@ -33,7 +33,8 @@ function AppContent() {
         <span className="text-lg font-semibold">{t('appName')}</span>
         <div className="flex items-center gap-4">
           <span className="font-semibold">
-            {t('todayIs')}{currentDate.format('YYYY-MM-DD')}
+            {t('todayIs')}
+            {currentDate.format('YYYY-MM-DD')}
           </span>
           <DatePicker
             value={currentDate}

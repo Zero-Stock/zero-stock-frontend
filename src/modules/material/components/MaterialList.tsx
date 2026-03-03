@@ -1,54 +1,43 @@
-import { Button, Divider, Select, Space, Table, Typography } from 'antd';
+import { Button, Select, Space, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { mockRawMaterials, type RawMaterial } from '../mockdata';
+import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
+import { useMaterialList } from '../hooks/useMaterialList';
 
 import MaterialEditModal from './MaterialEditModal';
+import useMaterialCategories from '../hooks/useMaterialCategories';
 
 const { Title, Text } = Typography;
 
-const categories = ['冻品', '粮油', '肉类', '蔬菜'];
-
-const parseUnit = (unit: RawMaterial['unit']) => {
-  if (typeof unit === 'string') return null;
-
-  const [unitName, weight] = Object.entries(unit)[0] ?? [];
-  if (!unitName || !weight) return null;
-
-  return { unitName, weight };
-};
-
 export default function MaterialList() {
   const [, navigate] = useLocation();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<RawMaterial | null>(null);
+  const [editingRecord, setEditingRecord] = useState<MaterialPreviewDto | null>(
+    null,
+  );
 
-  const filteredData = useMemo(() => {
-    if (!selectedCategory) return mockRawMaterials;
-    return mockRawMaterials.filter(
-      (item) => item.category === selectedCategory,
-    );
+  const { categoryOptions, isLoading: isLoadingCategories } =
+    useMaterialCategories();
+
+  const payload = useMemo(() => {
+    return {
+      category: selectedCategory ?? undefined,
+    };
   }, [selectedCategory]);
+  const { materials, isLoading, mutate } = useMaterialList(payload);
 
-  const handleEdit = (record: RawMaterial) => {
+  const handleEdit = (record: MaterialPreviewDto) => {
     setEditingRecord(record);
     setIsEditModalOpen(true);
   };
 
-  const handleSave = (values: RawMaterial) => {
-    console.log('Saved values:', values);
-    setIsEditModalOpen(false);
-  };
-
-  const columns: ColumnsType<RawMaterial> = [
+  const columns: ColumnsType<MaterialPreviewDto> = [
     {
       title: 'Id',
       dataIndex: 'id',
       key: 'id',
-      sorter: (a, b) => Number(a.id) - Number(b.id),
-      defaultSortOrder: 'ascend',
     },
     {
       title: 'Name',
@@ -57,28 +46,23 @@ export default function MaterialList() {
     },
     {
       title: 'Category',
-      dataIndex: 'category',
-      key: 'category',
+      dataIndex: 'category_name',
+      key: 'category_name',
     },
     {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-      render: (unit: RawMaterial['unit']) => {
-        const parsedUnit = parseUnit(unit);
-
-        if (!parsedUnit) {
-          return <Text>{typeof unit === 'string' ? unit : '-'}</Text>;
-        }
-
-        return (
-          <Text>
-            {parsedUnit.unitName}
-            <Divider orientation="vertical" />1{parsedUnit.unitName} ={' '}
-            {parsedUnit.weight}
-          </Text>
-        );
-      },
+      title: 'Yield Rate',
+      dataIndex: 'current_yield_rate',
+      key: 'current_yield_rate',
+    },
+    {
+      title: 'Specs',
+      dataIndex: 'specs',
+      key: 'specs',
+      render: (specs: MaterialPreviewDto['specs']) => (
+        <Space orientation="vertical" size={0}>
+          <Text>{specs.map((spec) => spec.method_name).join(', ')}</Text>
+        </Space>
+      ),
     },
     {
       title: 'Operation',
@@ -92,7 +76,7 @@ export default function MaterialList() {
             type="link"
             danger
             onClick={() => console.log('Delete:', record)}
-            className="!p-0"
+            className="p-0"
           >
             Delete
           </Button>
@@ -104,7 +88,7 @@ export default function MaterialList() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <Title level={2} className="!m-0">
+        <Title level={2} className="m-0">
           Raw Materials
         </Title>
         <Button type="primary" onClick={() => navigate('/material/create')}>
@@ -117,25 +101,28 @@ export default function MaterialList() {
         <Select
           allowClear
           placeholder="All Categories"
-          className="w-[200px]"
+          className="w-50"
           onChange={(value) => setSelectedCategory(value)}
-          options={categories.map((cat) => ({ label: cat, value: cat }))}
+          options={categoryOptions}
+          loading={isLoadingCategories}
         />
       </div>
 
       <Table
         columns={columns}
-        dataSource={filteredData}
+        dataSource={materials}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        // scroll={{ y: '43vh' }}
+        loading={isLoading}
       />
 
       <MaterialEditModal
         visible={isEditModalOpen}
         record={editingRecord}
         onCancel={() => setIsEditModalOpen(false)}
-        onSave={handleSave}
+        onUpdated={() => {
+          mutate();
+        }}
       />
     </div>
   );
