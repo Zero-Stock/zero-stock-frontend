@@ -35,8 +35,17 @@ export function useMaterialList(payload?: MaterialListPayload) {
     }));
   }, [data]);
 
+  const materialOptions = useMemo(() => {
+    if (!data) return [];
+    return data.results.map((material) => ({
+      value: material.id,
+      label: material.name,
+    }));
+  }, [data]);
+
   return {
     materials,
+    materialOptions,
     isLoading,
     isError: error,
     mutate,
