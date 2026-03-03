@@ -33,7 +33,8 @@ function AppContent() {
         <span className="text-lg font-semibold">{t('appName')}</span>
         <div className="flex items-center gap-4">
           <span className="font-semibold">
-            {t('todayIs')}{currentDate.format('YYYY-MM-DD')}
+            {t('todayIs')}
+            {currentDate.format('YYYY-MM-DD')}
           </span>
           <DatePicker
             value={currentDate}
@@ -45,24 +46,12 @@ function AppContent() {
             onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
             style={{ fontSize: 16 }}
           >
-<<<<<<< HEAD
-            <Sidebar />
-
-            <Content className="h-full overflow-y-auto p-8">
-              <Switch>
-                {renderRoutes(routes)}
-                <Route component={NotFoundPage} />
-              </Switch>
-            </Content>
-          </Layout>
-
-          <Footer className="text-center" style={{ padding: '16px 0' }}>
-            Zero Stock ©{new Date().getFullYear()} Created by Zero Stock Team
-          </Footer>
-=======
             {locale === 'zh' ? 'EN' : '中文'}
           </Button>
+<<<<<<< HEAD
 >>>>>>> d4ca226 (feat: add language tranlation)
+=======
+>>>>>>> a0dd2e3 (Merge branch 'main' of git.uwaterloo.ca:651-canteen-system/zero-stock-frontend into feat-material)
         </div>
       </Header>
 
