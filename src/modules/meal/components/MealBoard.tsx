@@ -189,16 +189,31 @@ export default function MealBoard() {
     const handleDeleteDiet = async (dietId: number) => {
         try {
             await apiClient.delete(`/api/diets/${dietId}/`);
-            message.success(t('mealDietDeleted'));
-            const remaining = dietCategories.filter((c) => c.id !== dietId);
-            setDietCategories(remaining);
-            if (selectedCategoryId === dietId) {
-                setSelectedCategoryId(remaining.length > 0 ? remaining[0].id : 0);
-            }
         } catch (err) {
-            console.error('Failed to delete diet:', err);
-            message.error(t('mealDietDeleteFailed'));
+            // Some backends may delete successfully but still return a bad/empty response.
+            // We'll verify by reloading diets before deciding the final UI message.
+            console.warn('Delete diet request errored, verifying with fresh data...', err);
         }
+
+        try {
+            const response = await apiClient.get<{ results: DietCategory[] }>('/api/diets/');
+            const latest = response.results;
+            const deleted = !latest.some((c) => c.id === dietId);
+
+            setDietCategories(latest);
+            if (selectedCategoryId === dietId) {
+                setSelectedCategoryId(latest.length > 0 ? latest[0].id : 0);
+            }
+
+            if (deleted) {
+                message.success(t('mealDietDeleted'));
+                return;
+            }
+        } catch (syncErr) {
+            console.error('Failed to refresh diets after delete:', syncErr);
+        }
+
+        message.error(t('mealDietDeleteFailed'));
     };
 
     const [isModalVisible, setIsModalVisible] = useState(false);
