@@ -10,10 +10,14 @@ export function SWRConfigProvider({ children }: SWRConfigProviderProps) {
   return (
     <SWRConfig
       value={{
-        fetcher: async ([path, options]) => {
+        fetcher: async ([path, options]: [any, any]) => {
           const response = await authedApiClient.get(path, options);
           return response;
         },
+        revalidateOnFocus: false,
+        revalidateOnReconnect: true,
+        revalidateIfStale: true,
+        shouldRetryOnError: false,
       }}
     >
       {children}

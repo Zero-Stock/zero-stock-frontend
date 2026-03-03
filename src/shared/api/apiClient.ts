@@ -77,10 +77,7 @@ export class ApiClient {
     this.config = config;
   }
 
-  get<T>(
-    path: `/${string}`,
-    options?: Omit<RequestOptions, 'body' | 'formData'>,
-  ) {
+  get<T>(path: `/${string}`, options?: Omit<RequestOptions, 'formData'>) {
     return this.request<T>('GET', path, options);
   }
 
