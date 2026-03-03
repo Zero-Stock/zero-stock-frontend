@@ -49,7 +49,8 @@ export default function MealBoard() {
     const fetchDiets = useCallback(async () => {
         try {
             setLoadingDiets(true);
-            const data = await apiClient.get<DietCategory[]>('/api/diets/');
+            const response = await apiClient.get<{ results: DietCategory[] }>('/api/diets/');
+            const data = response.results;
             setDietCategories(data);
             if (data.length > 0 && selectedCategoryId === 0) {
                 setSelectedCategoryId(data[0].id);
@@ -67,11 +68,11 @@ export default function MealBoard() {
         if (!selectedCategoryId) return;
         setLoading(true);
         try {
-            const data = await apiClient.get<PaginatedResponse<WeeklyMenuRow>>(
+            const response = await apiClient.get<{ results: PaginatedResponse<WeeklyMenuRow> }>(
                 '/api/weekly-menus/',
                 { query: { company: COMPANY_ID, diet_category: selectedCategoryId, page_size: 200 } },
             );
-            setMenuRows(data.results);
+            setMenuRows(response.results.results);
         } catch (err) {
             console.error('Failed to fetch weekly menus:', err);
             message.error(t('mealLoadMenuFailed'));
@@ -83,11 +84,11 @@ export default function MealBoard() {
     // ─── Fetch all dishes for the Select dropdown ───
     const fetchAllDishes = useCallback(async () => {
         try {
-            const data = await apiClient.get<PaginatedResponse<Dish>>(
+            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
                 '/api/dishes/',
                 { query: { page_size: 500 } },
             );
-            setAllDishes(data.results);
+            setAllDishes(response.results.results);
         } catch (err) {
             console.error('Failed to fetch dishes:', err);
             message.error(t('mealLoadDishesFailed'));
@@ -138,9 +139,10 @@ export default function MealBoard() {
             !dietCategories.some((c) => c.name === newCategoryName)
         ) {
             try {
-                const newCategory = await apiClient.post<DietCategory>('/api/diets/', {
+                const response = await apiClient.post<{ results: DietCategory }>('/api/diets/', {
                     body: { name: newCategoryName },
                 });
+                const newCategory = response.results;
                 setDietCategories([...dietCategories, newCategory]);
                 setSelectedCategoryId(newCategory.id);
                 setNewCategoryName('');

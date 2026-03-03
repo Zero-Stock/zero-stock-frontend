@@ -37,11 +37,11 @@ export default function DishList() {
     const fetchDishes = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await apiClient.get<PaginatedResponse<Dish>>(
+            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
                 '/api/dishes/',
                 { query: { page_size: 200 } }, // fetch all for now
             );
-            setDishes(data.results);
+            setDishes(response.results.results);
         } catch (err) {
             console.error('Failed to fetch dishes:', err);
             message.error(t('dishLoadFailed'));
