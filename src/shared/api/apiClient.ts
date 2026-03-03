@@ -165,19 +165,16 @@ export class ApiClient {
 
       if (!res.ok) {
         throw new ApiError({
-          message:
-            data?.message ||
-            data?.error ||
-            `Request failed with status ${res.status}`,
+          message: data?.message,
           status: res.status,
           url,
-          code: data?.code,
-          details: data,
+          code: data?.error?.type,
+          details: data.error ?? data,
         });
       }
 
       return data as T;
-    } catch (err: unknown) {
+    } catch (err: ApiError | Error | unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         throw new ApiError({
           message: `Request timeout after ${ms}ms`,
