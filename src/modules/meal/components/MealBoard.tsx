@@ -3,6 +3,7 @@ import {
     Card,
     Col,
     Divider,
+    Empty,
     Input,
     Modal,
     Row,
@@ -42,10 +43,12 @@ export default function MealBoard() {
     const [menuRows, setMenuRows] = useState<WeeklyMenuRow[]>([]);
     const [allDishes, setAllDishes] = useState<Dish[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadingDiets, setLoadingDiets] = useState(true);
 
     // ─── Fetch diet categories from API ───
     const fetchDiets = useCallback(async () => {
         try {
+            setLoadingDiets(true);
             const data = await apiClient.get<DietCategory[]>('/api/diets/');
             setDietCategories(data);
             if (data.length > 0 && selectedCategoryId === 0) {
@@ -54,8 +57,10 @@ export default function MealBoard() {
         } catch (err) {
             console.error('Failed to fetch diets:', err);
             message.error(t('mealLoadDietsFailed'));
+        } finally {
+            setLoadingDiets(false);
         }
-    }, []);
+    }, [selectedCategoryId, t]);
 
     // ─── Fetch weekly menus from API ───
     const fetchMenus = useCallback(async () => {
@@ -408,9 +413,34 @@ export default function MealBoard() {
                 </Title>
             </div>
 
-            <Spin spinning={loading}>
-                {renderDayCards(dayPlans)}
-            </Spin>
+            {!loadingDiets && dietCategories.length === 0 ? (
+                <Card className="mt-8 text-center" styles={{ body: { padding: '40px 0' } }}>
+                    <Empty
+                        description={
+                            <div className="flex flex-col items-center">
+                                <Text strong className="text-lg">{t('mealNoDietTitle')}</Text>
+                                <Text type="secondary" className="mb-4 mt-1">{t('mealNoDietDesc')}</Text>
+                                <Space>
+                                    <Input
+                                        placeholder={t('mealNewDietPlaceholder')}
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        style={{ width: 200 }}
+                                        onPressEnter={(e) => addDietCategory(e as any)}
+                                    />
+                                    <Button type="primary" icon={<PlusOutlined />} onClick={addDietCategory}>
+                                        {t('mealAddDiet')}
+                                    </Button>
+                                </Space>
+                            </div>
+                        }
+                    />
+                </Card>
+            ) : (
+                <Spin spinning={loading || loadingDiets}>
+                    {renderDayCards(dayPlans)}
+                </Spin>
+            )}
 
             <MealEditModal
                 visible={isModalVisible}

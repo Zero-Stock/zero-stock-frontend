@@ -106,6 +106,8 @@ export const translations = {
     mealSelectDishRequired: { zh: '请选择菜品', en: 'Please select a dish' },
     mealNoDishes: { zh: '暂无菜品', en: 'No dishes' },
     mealAddDish: { zh: '添加菜品', en: 'Add Dish' },
+    mealNoDietTitle: { zh: '暂无套餐类别', en: 'No Diet Categories' },
+    mealNoDietDesc: { zh: '请先添加一个套餐类别开始制定菜单', en: 'Please add a diet category to start planning menus' },
 
     // ─── Material Module ───
     materialListTitle: { zh: '原料管理', en: 'Raw Materials' },

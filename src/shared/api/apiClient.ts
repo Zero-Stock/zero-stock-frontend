@@ -167,16 +167,24 @@ export class ApiClient {
       const data = await parseJsonSafe(res);
 
       if (!res.ok) {
+        const errorDetails = data?.error?.details || data;
         throw new ApiError({
           message:
+            data?.error?.details?.message ||
+            data?.error?.details?.detail ||
             data?.message ||
-            data?.error ||
+            errorDetails?.error ||
             `Request failed with status ${res.status}`,
           status: res.status,
           url,
-          code: data?.code,
-          details: data,
+          code: data?.error?.type || data?.code,
+          details: errorDetails,
         });
+      }
+
+      // Automatically unwrap the standard backend envelope { message, error, results }
+      if (data && typeof data === 'object' && 'message' in data && 'error' in data && 'results' in data) {
+        return data.results as T;
       }
 
       return data as T;
