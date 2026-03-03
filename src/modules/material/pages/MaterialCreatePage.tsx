@@ -1,24 +1,15 @@
 import NewMaterialForm from '@/modules/material/components/NewMaterialForm';
-import { Breadcrumb, Typography } from 'antd';
-import { Link } from 'wouter';
+import { Typography } from 'antd';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { Title } = Typography;
 
 export default function MaterialCreatePage() {
+  const { t } = useTranslation();
+
   return (
     <div className="p-6">
-      <Breadcrumb
-        items={[
-          {
-            title: <Link to="/material">Raw Materials</Link>,
-          },
-          {
-            title: 'Create',
-          },
-        ]}
-        className="mb-4"
-      />
-      <Title level={2}>Add New Raw Materials</Title>
+      <Title level={2}>{t('materialCreateTitle')}</Title>
       <div className="mt-6">
         <NewMaterialForm />
       </div>

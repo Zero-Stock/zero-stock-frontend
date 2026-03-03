@@ -1,26 +1,31 @@
 import { findRouteByPath, routes } from '@/Routes';
 import { Breadcrumb, theme } from 'antd';
+import type { ReactNode } from 'react';
 import { useLocation } from 'wouter';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { useToken } = theme;
 
 export default function BreadcrumbNav() {
   const [location] = useLocation();
   const { token } = useToken();
+  const { t } = useTranslation();
 
   const getBreadcrumbItems = (location: string) => {
-    const items: any[] = [];
+    const items: { title: ReactNode }[] = [];
 
     // 1. ALWAYS add Home
     const homeRoute = findRouteByPath(routes, '/');
     const isAtHome = location === '/';
+    const homeTitle =
+      homeRoute?.titleKey ? t(homeRoute.titleKey) : homeRoute?.title;
 
     items.push({
       // If we are at root, Home is the "last item" (no link)
       title: isAtHome ? (
-        <span style={{ color: token.colorPrimary }}>{homeRoute?.title}</span>
+        <span style={{ color: token.colorPrimary }}>{homeTitle}</span>
       ) : (
-        <a href="/">{homeRoute?.title}</a>
+        <a href="/">{homeTitle}</a>
       ),
     });
 
@@ -36,11 +41,12 @@ export default function BreadcrumbNav() {
       const route = findRouteByPath(routes, currentPath);
 
       if (route) {
+        const routeTitle = route.titleKey ? t(route.titleKey) : route.title;
         items.push({
           title: isLast ? (
-            <span style={{ color: token.colorPrimary }}>{route.title}</span>
+            <span style={{ color: token.colorPrimary }}>{routeTitle}</span>
           ) : (
-            <a href={route.path}>{route.title}</a>
+            <a href={route.path}>{routeTitle}</a>
           ),
         });
       }
