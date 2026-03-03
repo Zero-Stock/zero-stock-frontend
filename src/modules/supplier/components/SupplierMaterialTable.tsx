@@ -8,6 +8,7 @@ import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
+import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
 
 const { Title } = Typography;
 
@@ -27,23 +28,11 @@ export default function SupplierMaterialTable(
   });
   const { trigger: createTrigger } = useSupplierMaterialCreate();
   const { trigger: updateTrigger } = useSupplierMaterialUpdate();
+  const { trigger: deleteTrigger } = useSupplierMaterialDelete();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] =
     useState<SupplierMaterialDto | null>(null);
-
-  const filtered = useMemo(() => {
-    const kw = keyword.trim().toLowerCase();
-    if (!kw) return materials;
-    return materials.filter((m) => {
-      return (
-        String(m.raw_material).toLowerCase().includes(kw) ||
-        String(m.raw_material_name ?? '')
-          .toLowerCase()
-          .includes(kw)
-      );
-    });
-  }, [materials, keyword]);
 
   const existingRawMaterialIds = useMemo(
     () => new Set(materials.map((m) => m.raw_material)),
@@ -66,7 +55,6 @@ export default function SupplierMaterialTable(
     },
     { title: 'Price', dataIndex: 'price', key: 'price', width: 120 },
     { title: 'Notes', dataIndex: 'notes', key: 'notes' },
-    // ⚠️ 文档没写 PATCH/DELETE，所以这里先不放 Edit/Delete
     {
       title: 'Actions',
       key: 'actions',
@@ -86,7 +74,11 @@ export default function SupplierMaterialTable(
           <Button
             type="link"
             danger
-            onClick={() => console.log('Delete:', record)}
+            onClick={() => {
+              console.log('delete', record);
+              deleteTrigger(record.id);
+              mutate();
+            }}
             className="p-0!"
           >
             {t('delete')}
@@ -132,7 +124,7 @@ export default function SupplierMaterialTable(
       <Table<SupplierMaterialDto>
         rowKey="id"
         columns={columns as any}
-        dataSource={filtered}
+        dataSource={materials}
         loading={isLoading}
         pagination={{ pageSize: 8 }}
       />

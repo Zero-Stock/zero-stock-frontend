@@ -89,12 +89,6 @@ export default function SupplierMaterialUpsertModal({
             loading={isLoading}
             options={materialOptions}
             disabled={!!initialValues}
-            filterOption={(input, option) =>
-              (option?.label ?? '')
-                .toString()
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
           />
         </Form.Item>
 

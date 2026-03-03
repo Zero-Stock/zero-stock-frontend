@@ -19,7 +19,7 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className="flex h-full items-center justify-center">
         <Spin />
       </div>
     );
@@ -27,7 +27,7 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
 
   if (!supplier) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className="flex h-full items-center justify-center">
         <Title level={3}>Supplier not found</Title>
         <Button onClick={() => navigate('/supplier')}>Back</Button>
       </div>
