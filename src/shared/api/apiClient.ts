@@ -181,7 +181,7 @@ export class ApiClient {
         'error' in data &&
         'results' in data
       ) {
-        return data.results as T;
+        return data as T;
       }
 
       return data as T;

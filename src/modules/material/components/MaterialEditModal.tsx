@@ -1,9 +1,10 @@
 import { Form, Input, InputNumber, Modal, Select, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { MaterialUpdateDto } from '../dtos/materialUpdate.dto';
 import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 interface MaterialEditModalProps {
   visible: boolean;
@@ -26,6 +27,7 @@ export default function MaterialEditModal({
   onCancel,
   onUpdated,
 }: MaterialEditModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<MaterialEditFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,20 +35,17 @@ export default function MaterialEditModal({
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
 
-  useEffect(() => {
-    if (!visible || !record) {
-      form.resetFields();
-      return;
-    }
+  const initialValues = useMemo(() => {
+    if (!record) return undefined;
 
-    form.setFieldsValue({
+    return {
       id: record.id,
       name: record.name,
       category: record.category,
       yield_rate: Number(record.current_yield_rate ?? 0),
       specs: record.specs.map((spec) => spec.method_name).join(', '),
-    });
-  }, [form, record, visible]);
+    };
+  }, [record]);
 
   const handleOk = async () => {
     if (!record) {
@@ -71,14 +70,14 @@ export default function MaterialEditModal({
 
       setIsSubmitting(true);
       await updateMaterial(payload);
-      message.success('Raw material updated');
+      message.success(t('materialEditSuccess'));
       onUpdated?.();
       onCancel();
     } catch (error) {
       if (!(error instanceof Error)) {
         return;
       }
-      message.error(error.message || 'Failed to update raw material');
+      message.error(error.message || t('materialEditFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -86,42 +85,49 @@ export default function MaterialEditModal({
 
   return (
     <Modal
-      title="Edit Raw Material"
+      title={t('materialEditTitle')}
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
-      destroyOnHidden
+      destroyOnClose
       confirmLoading={isSubmitting}
+      okText={t('save')}
+      cancelText={t('cancel')}
     >
-      <Form form={form} layout="vertical" preserve={false}>
-        <Form.Item<MaterialEditFormValues> name="id" label="ID">
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={initialValues}
+        preserve={false}
+      >
+        <Form.Item<MaterialEditFormValues> name="id" label={t('materialColId')}>
           <Input disabled />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="name"
-          label="Name"
-          rules={[{ required: true, message: 'Please input name' }]}
+          label={t('materialNameLabel')}
+          rules={[{ required: true, message: t('materialNameRequired') }]}
         >
-          <Input placeholder="Input raw material name" />
+          <Input placeholder={t('materialNamePlaceholder')} />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="category"
-          label="Category"
-          rules={[{ required: true, message: 'Please select category' }]}
+          label={t('materialCategoryLabel')}
+          rules={[{ required: true, message: t('materialCategoryRequired') }]}
         >
           <Select
-            placeholder="Select category"
+            placeholder={t('materialCategoryPlaceholder')}
             options={categoryOptions}
             loading={isLoadingCategories}
           />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="yield_rate"
-          label="Yield Rate"
+          label={t('materialYieldRateLabel')}
           rules={[
             {
               required: true,
-              message: 'Please input yield rate',
+              message: t('materialYieldRateRequired'),
               type: 'number',
               min: 0,
               max: 1,
@@ -133,14 +139,14 @@ export default function MaterialEditModal({
             max={1}
             step={0.01}
             className="w-full"
-            placeholder="e.g. 0.8"
+            placeholder={t('materialYieldRatePlaceholder')}
           />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="specs"
-          label="Specs"
+          label={t('materialSpecsLabel')}
           rules={[
-            { required: true, message: 'Please input specs' },
+            { required: true, message: t('materialSpecsRequired') },
             {
               validator: async (_, value) => {
                 const hasSpecs =
@@ -151,13 +157,13 @@ export default function MaterialEditModal({
                     .filter(Boolean).length > 0;
 
                 if (!hasSpecs) {
-                  throw new Error('Please input at least one spec');
+                  throw new Error(t('materialSpecsAtLeastOne'));
                 }
               },
             },
           ]}
         >
-          <Input placeholder="e.g. chunk, slice, shred" />
+          <Input placeholder={t('materialSpecsPlaceholder')} />
         </Form.Item>
       </Form>
     </Modal>

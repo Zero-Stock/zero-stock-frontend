@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import { useMaterialList } from '../hooks/useMaterialList';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 import MaterialEditModal from './MaterialEditModal';
 import useMaterialCategories from '../hooks/useMaterialCategories';
@@ -11,6 +12,7 @@ import useMaterialCategories from '../hooks/useMaterialCategories';
 const { Title, Text } = Typography;
 
 export default function MaterialList() {
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -35,27 +37,28 @@ export default function MaterialList() {
 
   const columns: ColumnsType<MaterialPreviewDto> = [
     {
-      title: 'Id',
+      title: t('materialColId'),
       dataIndex: 'id',
       key: 'id',
     },
     {
-      title: 'Name',
+      title: t('materialColName'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Category',
+      title: t('materialColCategory'),
       dataIndex: 'category_name',
       key: 'category_name',
     },
     {
-      title: 'Yield Rate',
+      title: t('materialColYieldRate'),
       dataIndex: 'current_yield_rate',
       key: 'current_yield_rate',
+      render: (yieldRate: number) => Number(yieldRate) * 100 + '%',
     },
     {
-      title: 'Specs',
+      title: t('materialColSpecs'),
       dataIndex: 'specs',
       key: 'specs',
       render: (specs: MaterialPreviewDto['specs']) => (
@@ -65,12 +68,12 @@ export default function MaterialList() {
       ),
     },
     {
-      title: 'Operation',
+      title: t('materialColOperation'),
       key: 'operation',
       render: (_, record) => (
         <Space size="middle">
           <Typography.Link onClick={() => handleEdit(record)}>
-            Edit
+            {t('edit')}
           </Typography.Link>
           <Button
             type="link"
@@ -78,7 +81,7 @@ export default function MaterialList() {
             onClick={() => console.log('Delete:', record)}
             className="p-0"
           >
-            Delete
+            {t('delete')}
           </Button>
         </Space>
       ),
@@ -88,19 +91,19 @@ export default function MaterialList() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <Title level={2} className="m-0">
-          Raw Materials
+        <Title level={2} className="mb-0!">
+          {t('materialListTitle')}
         </Title>
         <Button type="primary" onClick={() => navigate('/material/create')}>
-          New Raw Material
+          {t('materialCreate')}
         </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-4">
-        <Text strong>Filter by Category:</Text>
+        <Text strong>{t('materialFilterCategory')}</Text>
         <Select
           allowClear
-          placeholder="All Categories"
+          placeholder={t('materialAllCategories')}
           className="w-50"
           onChange={(value) => setSelectedCategory(value)}
           options={categoryOptions}
