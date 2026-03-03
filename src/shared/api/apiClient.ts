@@ -173,6 +173,17 @@ export class ApiClient {
         });
       }
 
+      // Automatically unwrap the standard backend envelope { message, error, results }
+      if (
+        data &&
+        typeof data === 'object' &&
+        'message' in data &&
+        'error' in data &&
+        'results' in data
+      ) {
+        return data.results as T;
+      }
+
       return data as T;
     } catch (err: ApiError | Error | unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
