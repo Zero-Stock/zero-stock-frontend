@@ -1,142 +1,65 @@
-import {
-  Button,
-  Input,
-  Popconfirm,
-  Space,
-  Table,
-  Typography,
-  message,
-} from 'antd';
+import { Button, Input, Space, Table, Typography, message } from 'antd';
 import { useMemo, useState } from 'react';
-import { mockRawMaterials } from '@/modules/material/mockdata';
-import {
-  deleteSupplierMaterialPriceLocal,
-  getSupplierMaterialPricesBySupplierId,
-  upsertSupplierMaterialPriceLocal,
-  type SupplierMaterialPrice,
-} from '../mockdata';
-import MaterialPriceEditModal from './MaterialPriceEditModal';
+
+import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
+import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
+import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
+import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
 
 const { Title } = Typography;
-
-type Row = SupplierMaterialPrice & {
-  rawMaterialName: string;
-  defaultUnit: string;
-};
 
 export default function SupplierMaterialTable({
   supplierId,
 }: {
-  supplierId: string;
+  supplierId: number;
 }) {
-  const [rows, setRows] = useState<SupplierMaterialPrice[]>(
-    getSupplierMaterialPricesBySupplierId(supplierId),
-  );
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<SupplierMaterialPrice | null>(null);
-
   const [keyword, setKeyword] = useState('');
 
-  const rawMaterialById = useMemo(() => {
-    const m = new Map<string, { name: string; unit: string }>();
-    mockRawMaterials.forEach((rm) =>
-      m.set(rm.id, { name: rm.name, unit: rm.unit }),
-    );
-    return m;
-  }, []);
+  const { materials, isLoading, mutate } = useSupplierMaterials(supplierId);
+  const { trigger: createTrigger } = useSupplierMaterialCreate(supplierId);
 
-  const tableData: Row[] = useMemo(() => {
-    return rows.map((r) => {
-      const info = rawMaterialById.get(r.rawMaterialId);
-      return {
-        ...r,
-        rawMaterialName: info?.name ?? '(Unknown)',
-        defaultUnit: info?.unit ?? '',
-      };
-    });
-  }, [rows, rawMaterialById]);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // ✅ Search filter: by rawMaterialId or rawMaterialName
-  const filteredData: Row[] = useMemo(() => {
+  const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
-    if (!kw) return tableData;
-
-    return tableData.filter((row) => {
-      const idStr = String(row.rawMaterialId ?? '').toLowerCase();
-      const nameStr = String(row.rawMaterialName ?? '').toLowerCase();
-      return idStr.includes(kw) || nameStr.includes(kw);
+    if (!kw) return materials;
+    return materials.filter((m) => {
+      return (
+        String(m.raw_material).toLowerCase().includes(kw) ||
+        String(m.raw_material_name ?? '')
+          .toLowerCase()
+          .includes(kw)
+      );
     });
-  }, [tableData, keyword]);
+  }, [materials, keyword]);
 
-  const existingIds = useMemo(
-    () => new Set(rows.map((r) => r.rawMaterialId)),
-    [rows],
+  const existingRawMaterialIds = useMemo(
+    () => new Set(materials.map((m) => m.raw_material)),
+    [materials],
   );
 
   const columns = [
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 90 },
     {
       title: 'Raw Material ID',
-      dataIndex: 'rawMaterialId',
-      key: 'rawMaterialId',
-      width: 150,
-      sorter: (a: Row, b: Row) =>
-        Number(a.rawMaterialId) - Number(b.rawMaterialId),
+      dataIndex: 'raw_material',
+      key: 'raw_material',
+      width: 140,
+      sorter: (a: SupplierMaterialDto, b: SupplierMaterialDto) =>
+        a.raw_material - b.raw_material,
       defaultSortOrder: 'ascend' as const,
     },
-    { title: 'Name', dataIndex: 'rawMaterialName', key: 'rawMaterialName' },
+    { title: 'Name', dataIndex: 'raw_material_name', key: 'raw_material_name' },
+    { title: 'Unit', dataIndex: 'unit_name', key: 'unit_name', width: 120 },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
-      width: 140,
-      sorter: (a: Row, b: Row) => a.price - b.price,
+      title: 'kg/unit',
+      dataIndex: 'kg_per_unit',
+      key: 'kg_per_unit',
+      width: 120,
     },
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-      width: 180,
-      render: (_: any, record: Row) => record.unit || record.defaultUnit || '',
-    },
-    {
-      title: 'Operation',
-      key: 'operation',
-      width: 200,
-      render: (_: any, record: Row) => (
-        <Space size="middle">
-          <Button
-            type="link"
-            style={{ padding: 0 }}
-            onClick={() => {
-              setEditing(record);
-              setModalOpen(true);
-            }}
-          >
-            Edit
-          </Button>
-
-          <Popconfirm
-            title="Delete this material price?"
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            cancelText="Cancel"
-            onConfirm={() => {
-              deleteSupplierMaterialPriceLocal(
-                record.supplierId,
-                record.rawMaterialId,
-              );
-              setRows(getSupplierMaterialPricesBySupplierId(supplierId));
-              message.success('Deleted');
-            }}
-          >
-            <Button type="link" danger style={{ padding: 0 }}>
-              Delete
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
+    { title: 'Price', dataIndex: 'price', key: 'price', width: 120 },
+    { title: 'Notes', dataIndex: 'notes', key: 'notes' },
+    // ⚠️ 文档没写 PATCH/DELETE，所以这里先不放 Edit/Delete
   ];
 
   return (
@@ -149,7 +72,7 @@ export default function SupplierMaterialTable({
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          Material Prices
+          Supplier Materials
         </Title>
 
         <Space>
@@ -160,11 +83,9 @@ export default function SupplierMaterialTable({
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
-
           <Button
             type="primary"
             onClick={() => {
-              setEditing(null); // add mode
               setModalOpen(true);
             }}
           >
@@ -173,28 +94,23 @@ export default function SupplierMaterialTable({
         </Space>
       </Space>
 
-      <Table<Row>
-        rowKey={(r) => `${r.supplierId}-${r.rawMaterialId}`}
+      <Table<SupplierMaterialDto>
+        rowKey="id"
         columns={columns as any}
-        dataSource={filteredData}
+        dataSource={filtered}
+        loading={isLoading}
         pagination={{ pageSize: 8 }}
       />
 
-      <MaterialPriceEditModal
+      <SupplierMaterialUpsertModal
         open={modalOpen}
-        supplierId={supplierId}
-        existingRawMaterialIds={existingIds}
-        editing={editing}
-        onCancel={() => {
+        existingRawMaterialIds={existingRawMaterialIds}
+        onCancel={() => setModalOpen(false)}
+        onSave={async (payload) => {
+          await createTrigger(payload);
+          message.success('Added');
           setModalOpen(false);
-          setEditing(null);
-        }}
-        onSave={(next) => {
-          upsertSupplierMaterialPriceLocal(next);
-          setRows(getSupplierMaterialPricesBySupplierId(supplierId));
-          message.success(editing ? 'Updated' : 'Added');
-          setModalOpen(false);
-          setEditing(null);
+          mutate(); // ✅ 刷新 materials
         }}
       />
     </div>

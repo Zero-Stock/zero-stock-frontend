@@ -1,12 +1,12 @@
 import { Modal, Form, Input } from 'antd';
 import { useEffect } from 'react';
-import type { Supplier } from '../mockdata';
+import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
 
 interface SupplierEditModalProps {
   open: boolean;
-  supplier: Supplier | null;
+  supplier: SupplierUpdateDto | null; // ✅ 用 UpdateDto 统一
   onCancel: () => void;
-  onSave: (updatedSupplier: Supplier) => void;
+  onSave: (updated: SupplierUpdateDto) => void;
 }
 
 export default function SupplierEditModal({
@@ -19,29 +19,23 @@ export default function SupplierEditModal({
 
   useEffect(() => {
     if (supplier) {
-      form.setFieldsValue({
-        id: supplier.id,
-        name: supplier.name,
-        contact: supplier.contact,
-        address: supplier.address,
-      });
+      form.setFieldsValue(supplier);
+    } else {
+      form.resetFields();
     }
   }, [supplier, form]);
 
   const handleOk = async () => {
-    try {
-      const values = await form.validateFields();
-
-      const updatedSupplier: Supplier = {
-        ...supplier!,
-        ...values,
-      };
-
-      onSave(updatedSupplier);
-      form.resetFields();
-    } catch (error) {
-      console.log('Validation failed:', error);
-    }
+    const values = await form.validateFields();
+    const updated: SupplierUpdateDto = {
+      id: Number(values.id),
+      name: values.name,
+      contact_person: values.contact_person,
+      phone: values.phone,
+      address: values.address,
+    };
+    onSave(updated);
+    form.resetFields();
   };
 
   return (
@@ -55,33 +49,30 @@ export default function SupplierEditModal({
       }}
       okText="Save"
       cancelText="Cancel"
+      destroyOnClose
     >
       <Form form={form} layout="vertical">
         <Form.Item label="ID" name="id">
           <Input disabled />
         </Form.Item>
 
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: 'Please enter supplier name' }]}
-        >
+        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Contact"
-          name="contact"
-          rules={[{ required: true, message: 'Please enter contact number' }]}
+          label="Contact Person"
+          name="contact_person"
+          rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: 'Please enter address' }]}
-        >
+        <Form.Item label="Phone" name="phone" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Address" name="address" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
       </Form>

@@ -8,60 +8,58 @@ import {
   Typography,
   message,
 } from 'antd';
-import {
-  deleteSupplier,
-  listSuppliers,
-  updateSupplier,
-  type Supplier,
-} from '../mockdata';
-import SupplierEditModal from './SupplierEditModal';
 import { useLocation } from 'wouter';
+
+import SupplierEditModal from './SupplierEditModal';
+import { useSupplierList } from '../hooks/useSupplierList';
+import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
+// import { useSupplierDelete } from '../hooks/useSupplierDelete'; // 如果后端支持 DELETE 再打开
+
+import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
+import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
 
 const { Title } = Typography;
 
 export default function SupplierList() {
   const [, navigate] = useLocation();
 
-  const [suppliers, setSuppliers] = useState<Supplier[]>(listSuppliers());
   const [keyword, setKeyword] = useState('');
-
   const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<Supplier | null>(null);
+  const [editing, setEditing] = useState<SupplierUpdateDto | null>(null);
 
-  const filtered = useMemo(() => {
-    const k = keyword.trim().toLowerCase();
-    if (!k) return suppliers;
-    return suppliers.filter((s) => {
-      return (
-        s.id.toLowerCase().includes(k) ||
-        s.name.toLowerCase().includes(k) ||
-        s.contact.toLowerCase().includes(k) ||
-        s.address.toLowerCase().includes(k)
-      );
-    });
-  }, [suppliers, keyword]);
+  // ✅ 用后端 search（GET /api/suppliers/?search=xxx）
+  const { suppliers, isLoading, mutate } = useSupplierList({
+    search: keyword.trim() || undefined,
+  });
+
+  const { trigger: updateTrigger } = useSupplierUpdate();
+  // const { trigger: deleteTrigger } = useSupplierDelete();
+
+  // 如果你想“前端再筛一次”，也可以；但既然后端支持 search，这里一般不需要
+  const dataSource = useMemo(() => suppliers, [suppliers]);
 
   const columns = [
     {
       title: 'Id',
       dataIndex: 'id',
       key: 'id',
-      sorter: (a: Supplier, b: Supplier) => Number(a.id) - Number(b.id),
+      sorter: (a: SupplierPreviewDto, b: SupplierPreviewDto) => a.id - b.id,
       defaultSortOrder: 'ascend' as const,
       width: 120,
     },
+    { title: 'Name', dataIndex: 'name', key: 'name' },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Contact Person',
+      dataIndex: 'contact_person',
+      key: 'contact_person',
     },
-    { title: 'Contact', dataIndex: 'contact', key: 'contact' },
+    { title: 'Phone', dataIndex: 'phone', key: 'phone' },
     { title: 'Address', dataIndex: 'address', key: 'address' },
     {
       title: 'Operation',
       key: 'operation',
       width: 220,
-      render: (_: any, record: Supplier) => (
+      render: (_: any, record: SupplierPreviewDto) => (
         <Space size="middle">
           <Button
             type="link"
@@ -74,28 +72,36 @@ export default function SupplierList() {
             type="link"
             className="p-0"
             onClick={() => {
-              setEditing(record);
+              // ✅ list 里的字段足够编辑供应商基本信息
+              setEditing({
+                id: record.id,
+                name: record.name,
+                contact_person: record.contact_person,
+                phone: record.phone,
+                address: record.address,
+              });
               setEditOpen(true);
             }}
           >
             Edit
           </Button>
 
+          {/* 如果后端确认支持 DELETE /api/suppliers/{id}/ 再打开 */}
+          {/* 
           <Popconfirm
             title="Delete this supplier?"
             okText="Delete"
             okButtonProps={{ danger: true }}
             cancelText="Cancel"
-            onConfirm={() => {
-              deleteSupplier(record.id);
-              setSuppliers(listSuppliers());
+            onConfirm={async () => {
+              await deleteTrigger(record.id);
               message.success('Deleted');
+              mutate();
             }}
           >
-            <Button type="link" danger className="p-0">
-              Delete
-            </Button>
+            <Button type="link" danger className="p-0">Delete</Button>
           </Popconfirm>
+          */}
         </Space>
       ),
     },
@@ -114,25 +120,25 @@ export default function SupplierList() {
           Suppliers
         </Title>
 
-        <Button
-          type="primary"
-          onClick={() => {
-            navigate('/supplier/create');
-          }}
-        >
+        <Button type="primary" onClick={() => navigate('/supplier/create')}>
           Create Supplier
         </Button>
       </div>
 
       <Input
-        placeholder="Search by id / name / contact / address"
+        placeholder="Search by supplier name"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         style={{ maxWidth: 420, marginBottom: 16 }}
         allowClear
       />
 
-      <Table rowKey="id" columns={columns as any} dataSource={filtered} />
+      <Table
+        rowKey="id"
+        columns={columns as any}
+        dataSource={dataSource}
+        loading={isLoading}
+      />
 
       <SupplierEditModal
         open={editOpen}
@@ -141,10 +147,10 @@ export default function SupplierList() {
           setEditOpen(false);
           setEditing(null);
         }}
-        onSave={(next) => {
-          updateSupplier(next);
-          setSuppliers(listSuppliers());
+        onSave={async (next) => {
+          await updateTrigger(next);
           message.success('Updated');
+          mutate(); // ✅ 刷新列表
           setEditOpen(false);
           setEditing(null);
         }}
