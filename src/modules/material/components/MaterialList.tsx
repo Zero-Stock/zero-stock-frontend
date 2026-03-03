@@ -55,6 +55,7 @@ export default function MaterialList() {
       title: t('materialColYieldRate'),
       dataIndex: 'current_yield_rate',
       key: 'current_yield_rate',
+      render: (yieldRate: number) => Number(yieldRate) * 100 + '%',
     },
     {
       title: t('materialColSpecs'),
