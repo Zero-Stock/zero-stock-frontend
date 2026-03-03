@@ -61,7 +61,7 @@ function App() {
           </Layout>
 
           <Footer className="text-center" style={{ padding: '16px 0' }}>
-            Ant Design ©{new Date().getFullYear()} Created by Ant UED
+            Zero Stock ©{new Date().getFullYear()} Created by Zero Stock Team
           </Footer>
         </div>
       </Layout>

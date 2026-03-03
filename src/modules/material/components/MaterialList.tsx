@@ -38,8 +38,6 @@ export default function MaterialList() {
       title: 'Id',
       dataIndex: 'id',
       key: 'id',
-      sorter: (a, b) => Number(a.id) - Number(b.id),
-      defaultSortOrder: 'ascend',
     },
     {
       title: 'Name',
@@ -53,9 +51,8 @@ export default function MaterialList() {
     },
     {
       title: 'Yield Rate',
-      dataIndex: 'yield_rate',
-      key: 'yield_rate',
-      render: (yield_rate: number) => `${(yield_rate * 100).toFixed(0)}%`,
+      dataIndex: 'current_yield_rate',
+      key: 'current_yield_rate',
     },
     {
       title: 'Specs',
@@ -63,12 +60,7 @@ export default function MaterialList() {
       key: 'specs',
       render: (specs: MaterialPreviewDto['specs']) => (
         <Space orientation="vertical" size={0}>
-          {specs.map((spec) => (
-            <Text key={spec.id} style={{ fontSize: '12px' }}>
-              {spec.method_name}: {(Number(spec.yield_rate) * 100).toFixed(0)}%
-            </Text>
-          ))}
-          {specs.length === 0 && <Text type="secondary">-</Text>}
+          <Text>{specs.map((spec) => spec.method_name).join(', ')}</Text>
         </Space>
       ),
     },

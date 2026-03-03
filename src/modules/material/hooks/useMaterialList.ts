@@ -1,7 +1,8 @@
 import useSWR from 'swr';
+import { useMemo } from 'react';
 import type { MaterialPreviewDto } from '../dtos/materialPreview.dto';
-import { apiClient } from '@/shared/api/apiClient.client';
 import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export interface MaterialListPayload {
   name?: string;
@@ -13,21 +14,29 @@ export interface MaterialListPayload {
 }
 
 export function useMaterialList(payload?: MaterialListPayload) {
-  const { data, error, isLoading, mutate } = useSWR<MaterialPreviewDto[]>(
-    ['/api/materials/search/', payload ?? {}],
-    async ([path, payload]) => {
-      const res = await apiClient.get<ApiListResponseDto<MaterialPreviewDto[]>>(
-        path,
-        {
+  const key: SWRKey = {
+    url: '/api/materials/search/',
+    method: 'POST',
+    options: payload
+      ? {
           body: payload,
-        },
-      );
-      return res.results;
-    },
-  );
+        }
+      : {},
+  };
+
+  const { data, error, isLoading, mutate } =
+    useSWR<ApiListResponseDto<MaterialPreviewDto[]>>(key);
+
+  const materials = useMemo(() => {
+    if (!data) return [];
+    return data.results.map((material) => ({
+      ...material,
+      current_yield_rate: Number(material.current_yield_rate) * 100 + '%',
+    }));
+  }, [data]);
 
   return {
-    materials: data ?? [],
+    materials,
     isLoading,
     isError: error,
     mutate,

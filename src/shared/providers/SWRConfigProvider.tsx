@@ -6,13 +6,25 @@ interface SWRConfigProviderProps {
   children: ReactNode;
 }
 
+export type SWRKey = {
+  url: `/${string}`;
+  method?: 'GET' | 'POST';
+  options?: any;
+};
+
 export function SWRConfigProvider({ children }: SWRConfigProviderProps) {
   return (
     <SWRConfig
       value={{
-        fetcher: async ([path, options]: [any, any]) => {
-          const response = await authedApiClient.get(path, options);
-          return response;
+        fetcher: async (key: SWRKey) => {
+          const { url, method = 'GET', options } = key;
+
+          switch (method) {
+            case 'POST':
+              return authedApiClient.post(url, options);
+            default:
+              return authedApiClient.get(url, options);
+          }
         },
         revalidateOnFocus: false,
         revalidateOnReconnect: true,

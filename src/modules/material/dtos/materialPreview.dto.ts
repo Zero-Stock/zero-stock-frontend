@@ -1,7 +1,6 @@
 export interface MaterialSpec {
   id: number;
   method_name: string;
-  yield_rate: string;
 }
 
 export interface MaterialPreviewDto {
@@ -9,5 +8,6 @@ export interface MaterialPreviewDto {
   name: string;
   category: number;
   category_name: string;
+  current_yield_rate: string;
   specs: MaterialSpec[];
 }

@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 
@@ -12,6 +13,7 @@ interface RawMaterialFields {
 }
 
 export default function NewMaterialForm() {
+  const [, navigate] = useLocation();
   const { trigger: createMaterial } = useMaterialCreate();
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
@@ -63,9 +65,6 @@ export default function NewMaterialForm() {
             {
               required: true,
               message: 'Please input yield rate',
-              type: 'number',
-              min: 0,
-              max: 1,
             },
           ]}
           className="mb-0!"
@@ -79,11 +78,7 @@ export default function NewMaterialForm() {
       dataIndex: 'specs',
       key: 'specs',
       render: (_, _record, index) => (
-        <Form.Item
-          name={[index, 'specs']}
-          rules={[{ required: true, message: 'Please input specs' }]}
-          className="mb-0!"
-        >
+        <Form.Item name={[index, 'specs']} className="mb-0!">
           <Input placeholder="e.g. chunk, slice, shred" />
         </Form.Item>
       ),
@@ -100,6 +95,7 @@ export default function NewMaterialForm() {
         .map((spec) => ({ method_name: spec.trim() })),
     }));
     await createMaterial(data);
+    navigate('/material');
   };
 
   return (
@@ -118,7 +114,7 @@ export default function NewMaterialForm() {
                   onClick={() => add()}
                   block
                   icon={<PlusOutlined />}
-                  className="mt-2"
+                  className="mt-1"
                 >
                   Add New Row
                 </Button>

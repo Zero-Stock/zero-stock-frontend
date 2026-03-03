@@ -43,7 +43,7 @@ export default function MaterialEditModal({
       id: record.id,
       name: record.name,
       category: record.category,
-      yield_rate: Number(record.specs[0]?.yield_rate ?? 0),
+      yield_rate: Number(record.current_yield_rate ?? 0),
       specs: record.specs.map((spec) => spec.method_name).join(', '),
     });
   }, [form, record, visible]);
