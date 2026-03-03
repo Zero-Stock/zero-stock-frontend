@@ -22,6 +22,7 @@ import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
 import MealListPage from './modules/meal/pages/MealListPage';
 import DishListPage from './modules/dish/pages/DishListPage';
+import type { TranslationKey } from './shared/i18n/translations';
 
 export interface RouteConfig {
   path: string;
