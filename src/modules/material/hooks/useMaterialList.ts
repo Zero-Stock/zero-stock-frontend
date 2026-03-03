@@ -29,7 +29,10 @@ export function useMaterialList(payload?: MaterialListPayload) {
 
   const materials = useMemo(() => {
     if (!data) return [];
-    return data.results?.results;
+    return data.results?.results.map((material) => ({
+      ...material,
+      current_yield_rate: Number(material.current_yield_rate) * 100 + '%',
+    }));
   }, [data]);
 
   const materialOptions = useMemo(() => {

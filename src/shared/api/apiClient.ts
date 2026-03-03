@@ -188,8 +188,19 @@ export class ApiClient {
       }
 
       // Automatically unwrap the standard backend envelope { message, error, results }
+<<<<<<< HEAD
       if (data && typeof data === 'object' && 'message' in data && 'error' in data && 'results' in data) {
         return data.results as T;
+=======
+      if (
+        data &&
+        typeof data === 'object' &&
+        'message' in data &&
+        'error' in data &&
+        'results' in data
+      ) {
+        return data as T;
+>>>>>>> 907f514 (feat: add translation to materials)
       }
 
       return data as T;

@@ -1,5 +1,5 @@
 import { Form, Input, InputNumber, Modal, Select, message } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { MaterialUpdateDto } from '../dtos/materialUpdate.dto';
 import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import useMaterialCategories from '../hooks/useMaterialCategories';
@@ -35,17 +35,20 @@ export default function MaterialEditModal({
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
 
-  const initialValues = useMemo(() => {
-    if (!record) return undefined;
+  useEffect(() => {
+    if (!visible || !record) {
+      form.resetFields();
+      return;
+    }
 
-    return {
+    form.setFieldsValue({
       id: record.id,
       name: record.name,
       category: record.category,
       yield_rate: Number(record.current_yield_rate ?? 0),
       specs: record.specs.map((spec) => spec.method_name).join(', '),
-    };
-  }, [record]);
+    });
+  }, [form, record, visible]);
 
   const handleOk = async () => {
     if (!record) {
@@ -89,17 +92,12 @@ export default function MaterialEditModal({
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
-      destroyOnClose
+      destroyOnHidden
       confirmLoading={isSubmitting}
       okText={t('save')}
       cancelText={t('cancel')}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={initialValues}
-        preserve={false}
-      >
+      <Form form={form} layout="vertical" preserve={false}>
         <Form.Item<MaterialEditFormValues> name="id" label={t('materialColId')}>
           <Input disabled />
         </Form.Item>
