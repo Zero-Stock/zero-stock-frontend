@@ -13,6 +13,7 @@ import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { Title, Text } = Typography;
 
@@ -30,6 +31,7 @@ type FormValues = {
 };
 
 export default function SupplierCreateForm() {
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const [form] = Form.useForm<FormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +55,7 @@ export default function SupplierCreateForm() {
         (createdSupplier as any).results?.id || (createdSupplier as any).id;
 
       if (!supplierId) {
-        message.error('Error retrieving created supplier ID.');
+        message.error(t('supplierCreateErrorId'));
         return;
       }
 
@@ -71,16 +73,18 @@ export default function SupplierCreateForm() {
             });
           } catch (err) {
             console.error(err);
-            message.warning(`Failed to add material ${row.rawMaterialId}`);
+            message.warning(
+              `${t('supplierCreateErrorMaterial')} ${row.rawMaterialId}`,
+            );
           }
         }
       }
 
-      message.success('Supplier created');
+      message.success(t('supplierCreated'));
       navigate(`/supplier/${supplierId}`);
     } catch (err) {
       console.error(err);
-      message.error('Failed to create supplier');
+      message.error(t('supplierCreateFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -102,9 +106,8 @@ export default function SupplierCreateForm() {
         ],
       }}
     >
-      {/* ===== 基础信息 ===== */}
       <Title level={4} style={{ marginTop: 0 }}>
-        Basic Information
+        {t('supplierBasicInfo')}
       </Title>
 
       <div
@@ -116,35 +119,31 @@ export default function SupplierCreateForm() {
         }}
       >
         <Form.Item
-          label="Name"
+          label={t('supplierNameLabel')}
           name="name"
-          rules={[{ required: true, message: 'Required' }]}
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
-          <Input placeholder="Supplier name" />
+          <Input placeholder={t('supplierNamePlaceholder')} />
         </Form.Item>
 
-        <Form.Item label="Contact Person" name="contact_person">
-          <Input placeholder="Contact person name" />
+        <Form.Item label={t('supplierContactLabel')} name="contact_person">
+          <Input placeholder={t('supplierContactPlaceholder')} />
         </Form.Item>
 
-        <Form.Item label="Phone" name="phone">
-          <Input placeholder="Phone number" />
+        <Form.Item label={t('supplierPhoneLabel')} name="phone">
+          <Input placeholder={t('supplierPhonePlaceholder')} />
         </Form.Item>
 
-        <Form.Item label="Address" name="address">
-          <Input placeholder="Address" />
+        <Form.Item label={t('supplierAddressLabel')} name="address">
+          <Input placeholder={t('supplierAddressPlaceholder')} />
         </Form.Item>
       </div>
 
-      {/* ===== 明细信息 ===== */}
-      <div style={{ marginTop: 24 }}>
-        <Title level={4} style={{ marginBottom: 4 }}>
-          Raw Material Details
+      <div className="mt-6">
+        <Title level={4} className="mb-1">
+          {t('supplierMaterialDetails')}
         </Title>
-        <Text type="secondary">
-          Optional. You can add materials now, or edit later in the supplier
-          detail page.
-        </Text>
+        <Text type="secondary">{t('supplierMaterialDetailsDesc')}</Text>
 
         <div
           style={{
@@ -164,11 +163,10 @@ export default function SupplierCreateForm() {
               fontWeight: 600,
             }}
           >
-            <div>Raw Material</div>
-            <div>Price</div>
-            <div>Unit (Spec)</div>
-            <div>kg/unit</div>
-            <div></div>
+            <div>{t('supplierMaterial')}</div>
+            <div>{t('supplierPrice')}</div>
+            <div>{t('supplierUnitSpec')}</div>
+            <div>{t('supplierKgPerUnit')}</div>
           </div>
 
           <Form.List name="materials">
@@ -192,7 +190,7 @@ export default function SupplierCreateForm() {
                       style={{ marginBottom: 0 }}
                     >
                       <Select
-                        placeholder="Select raw material"
+                        placeholder={t('supplierSelectMaterial')}
                         options={materialOptions}
                         showSearch
                       />
@@ -206,7 +204,7 @@ export default function SupplierCreateForm() {
                       <InputNumber
                         min={0}
                         style={{ width: '100%' }}
-                        placeholder="e.g. 12.5"
+                        placeholder={t('supplierPricePlaceholder')}
                       />
                     </Form.Item>
 
@@ -215,7 +213,7 @@ export default function SupplierCreateForm() {
                       name={[name, 'unit']}
                       style={{ marginBottom: 0 }}
                     >
-                      <Input placeholder="e.g. 箱 / 袋" />
+                      <Input placeholder={t('supplierUnitPlaceholder')} />
                     </Form.Item>
 
                     <Form.Item
@@ -227,7 +225,7 @@ export default function SupplierCreateForm() {
                         min={0}
                         step={0.01}
                         style={{ width: '100%' }}
-                        placeholder="e.g. 10"
+                        placeholder={t('supplierKgPlaceholder')}
                       />
                     </Form.Item>
 
@@ -239,14 +237,14 @@ export default function SupplierCreateForm() {
                         type="link"
                         onClick={() => remove(name)} // <-- Use 'name' here
                       >
-                        Remove
+                        {t('delete')}
                       </Button>
                     </div>
                   </div>
                 ))}
 
                 {/* Add button remains the same */}
-                <div style={{ marginTop: 12 }}>
+                <div className="mt-3">
                   <Button
                     type="dashed"
                     onClick={() =>
@@ -257,9 +255,9 @@ export default function SupplierCreateForm() {
                         kg_per_unit: undefined,
                       })
                     }
-                    style={{ width: '100%', height: 44, borderRadius: 10 }}
+                    className="w-full rounded-xl py-1"
                   >
-                    + Add New Row
+                    {t('materialAddRow')}
                   </Button>
                 </div>
               </>
@@ -284,7 +282,7 @@ export default function SupplierCreateForm() {
           }}
           disabled={isSubmitting}
         >
-          Cancel
+          {t('cancel')}
         </Button>
 
         <Button
@@ -293,7 +291,7 @@ export default function SupplierCreateForm() {
           loading={isSubmitting}
           style={{ height: 40, borderRadius: 10 }}
         >
-          Save
+          {t('save')}
         </Button>
       </div>
     </Form>

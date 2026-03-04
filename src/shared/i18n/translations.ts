@@ -20,6 +20,8 @@ export const translations = {
   navSupplier: { zh: '供应商', en: 'Supplier' },
   navMaterials: { zh: '原料管理', en: 'Materials' },
   navCreateMaterial: { zh: '新建原料', en: 'Create Material' },
+  navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },
+  navSupplierDetail: { zh: '供应商详情', en: 'Supplier Detail' },
 
   // ─── Common ───
   save: { zh: '保存', en: 'Save' },
@@ -143,6 +145,95 @@ export const translations = {
   mealNoDietDesc: {
     zh: '请先添加一个套餐类别开始制定菜单',
     en: 'Please add a diet category to start planning menus',
+  },
+
+  // ─── Supplier Module ───
+  supplierListTitle: { zh: '供应商列表', en: 'Supplier List' },
+  supplierCreate: { zh: '新建供应商', en: 'Create Supplier' },
+  supplierSearchName: { zh: '搜索供应商名', en: 'Search supplier name' },
+  supplierColId: { zh: '编号', en: 'ID' },
+  supplierColName: { zh: '名称', en: 'Name' },
+  supplierColContact: { zh: '联系人', en: 'Contact Person' },
+  supplierColPhone: { zh: '电话', en: 'Phone' },
+  supplierColAddress: { zh: '地址', en: 'Address' },
+  supplierColOperation: { zh: '操作', en: 'Operation' },
+  supplierDetail: { zh: '详情', en: 'Detail' },
+  supplierDeleteConfirm: {
+    zh: '确定删除该供应商吗？',
+    en: 'Are you sure to delete this supplier?',
+  },
+  supplierDeleted: { zh: '供应商已删除', en: 'Supplier deleted' },
+  supplierUpdated: { zh: '供应商已更新', en: 'Supplier updated' },
+
+  supplierCreateErrorId: {
+    zh: '获取创建的供应商 ID 失败。',
+    en: 'Error retrieving created supplier ID.',
+  },
+  supplierCreateErrorMaterial: {
+    zh: '无法添加原料',
+    en: 'Failed to add material',
+  },
+  supplierCreated: { zh: '供应商已创建', en: 'Supplier created' },
+  supplierCreateFailed: {
+    zh: '创建供应商失败',
+    en: 'Failed to create supplier',
+  },
+  supplierBasicInfo: { zh: '基础信息', en: 'Basic Information' },
+  supplierNameLabel: { zh: '名称', en: 'Name' },
+  supplierRequired: { zh: '必填', en: 'Required' },
+  supplierNamePlaceholder: { zh: '供应商名称', en: 'Supplier name' },
+  supplierContactLabel: { zh: '联系人', en: 'Contact Person' },
+  supplierContactPlaceholder: { zh: '联系人名称', en: 'Contact person name' },
+  supplierPhoneLabel: { zh: '电话', en: 'Phone' },
+  supplierPhonePlaceholder: { zh: '电话号码', en: 'Phone number' },
+  supplierAddressLabel: { zh: '地址', en: 'Address' },
+  supplierAddressPlaceholder: { zh: '地址', en: 'Address' },
+  supplierMaterialDetails: { zh: '原料明细', en: 'Material Details' },
+  supplierMaterialDetailsDesc: {
+    zh: '可选。您可以在此处添加原料，或稍后在供应商详情页中进行编辑。',
+    en: 'Optional. You can add materials now, or edit later in the supplier detail page.',
+  },
+  supplierMaterial: { zh: '原料', en: 'Material' },
+  supplierPrice: { zh: '单价', en: 'Price' },
+  supplierUnitSpec: { zh: '单位（规格）', en: 'Unit (Spec)' },
+  supplierKgPerUnit: { zh: '千克/单位', en: 'kg/unit' },
+  supplierSelectMaterial: { zh: '选择原料', en: 'Select material' },
+  supplierPricePlaceholder: { zh: '例如：12.5', en: 'e.g. 12.5' },
+  supplierUnitPlaceholder: { zh: '例如：箱 / 袋', en: 'e.g. 箱 / 袋' },
+  supplierUnitPlaceholderKg: {
+    zh: '例如：箱 / 袋 / kg',
+    en: 'e.g. 箱 / 袋 / kg',
+  },
+  supplierKgPlaceholder: { zh: '例如：10', en: 'e.g. 10' },
+
+  supplierNotFound: { zh: '未找到供应商', en: 'Supplier not found' },
+  supplierBack: { zh: '返回', en: 'Back' },
+  supplierEdit: { zh: '编辑供应商', en: 'Edit Supplier' },
+
+  supplierMaterialsTitle: { zh: '供应商原料', en: 'Supplier Materials' },
+  supplierSearchMaterial: {
+    zh: '按原料 ID 或名称搜索',
+    en: 'Search by Material ID or Name',
+  },
+  supplierAddMaterial: { zh: '添加原料', en: 'Add Material' },
+  supplierMaterialName: { zh: '名称', en: 'Name' },
+  supplierMaterialUnit: { zh: '单位', en: 'Unit' },
+  supplierMaterialNotes: { zh: '备注', en: 'Notes' },
+  supplierMaterialActions: { zh: '操作', en: 'Actions' },
+  supplierMaterialUpdated: { zh: '已更新', en: 'Updated' },
+  supplierMaterialAdded: { zh: '已添加', en: 'Added' },
+
+  supplierEditMaterialTitle: {
+    zh: '编辑供应商原料',
+    en: 'Edit Supplier Material',
+  },
+  supplierAddMaterialTitle: {
+    zh: '添加供应商原料',
+    en: 'Add Supplier Material',
+  },
+  supplierMaterialDuplicateError: {
+    zh: '该供应商已存在此原料。',
+    en: 'This material already exists for this supplier.',
   },
 
   // ─── Material Module ───

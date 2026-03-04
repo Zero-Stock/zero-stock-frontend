@@ -41,22 +41,27 @@ export default function SupplierMaterialTable(
 
   const columns: ColumnsType<SupplierMaterialDto> = [
     {
-      title: 'Name',
+      title: t('supplierMaterialName'),
       dataIndex: 'raw_material_name',
       key: 'raw_material_name',
       width: 120,
     },
-    { title: 'Unit', dataIndex: 'unit_name', key: 'unit_name', width: 120 },
     {
-      title: 'kg/unit',
+      title: t('supplierMaterialUnit'),
+      dataIndex: 'unit_name',
+      key: 'unit_name',
+      width: 120,
+    },
+    {
+      title: t('supplierKgPerUnit'),
       dataIndex: 'kg_per_unit',
       key: 'kg_per_unit',
       width: 120,
     },
-    { title: 'Price', dataIndex: 'price', key: 'price', width: 120 },
-    { title: 'Notes', dataIndex: 'notes', key: 'notes' },
+    { title: t('supplierPrice'), dataIndex: 'price', key: 'price', width: 120 },
+    { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
     {
-      title: 'Actions',
+      title: t('supplierMaterialActions'),
       key: 'actions',
       width: 200,
       render: (_, record: SupplierMaterialDto) => (
@@ -69,7 +74,7 @@ export default function SupplierMaterialTable(
             }}
             className="p-0!"
           >
-            Edit
+            {t('edit')}
           </Button>
           <Button
             type="link"
@@ -98,13 +103,13 @@ export default function SupplierMaterialTable(
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          Supplier Materials
+          {t('supplierMaterialsTitle')}
         </Title>
 
         <Space>
           <Input.Search
             allowClear
-            placeholder="Search by Raw Material ID or Name"
+            placeholder={t('supplierSearchMaterial')}
             style={{ width: 320 }}
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
@@ -116,7 +121,7 @@ export default function SupplierMaterialTable(
               setModalOpen(true);
             }}
           >
-            Add Material
+            {t('supplierAddMaterial')}
           </Button>
         </Space>
       </Space>
@@ -144,10 +149,10 @@ export default function SupplierMaterialTable(
               ...payload,
               supplier: supplierId,
             });
-            message.success('Updated');
+            message.success(t('supplierMaterialUpdated'));
           } else {
             await createTrigger({ ...payload, supplier: supplierId });
-            message.success('Added');
+            message.success(t('supplierMaterialAdded'));
           }
           setModalOpen(false);
           setEditingMaterial(null);

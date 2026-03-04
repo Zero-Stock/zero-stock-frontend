@@ -1,6 +1,7 @@
 import { Modal, Form, Input } from 'antd';
 import { useEffect } from 'react';
 import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 interface SupplierEditModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ export default function SupplierEditModal({
   onCancel,
   onSave,
 }: SupplierEditModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -40,36 +42,48 @@ export default function SupplierEditModal({
 
   return (
     <Modal
-      title="Edit Supplier"
+      title={t('supplierEdit')}
       open={open}
       onOk={handleOk}
       onCancel={onCancel}
-      okText="Save"
-      cancelText="Cancel"
+      okText={t('save')}
+      cancelText={t('cancel')}
       destroyOnHidden
     >
       <Form form={form} layout="vertical">
-        <Form.Item label="ID" name="id">
+        <Form.Item label={t('supplierColId')} name="id">
           <Input disabled />
         </Form.Item>
 
-        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-
         <Form.Item
-          label="Contact Person"
-          name="contact_person"
-          rules={[{ required: true }]}
+          label={t('supplierColName')}
+          name="name"
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="Phone" name="phone" rules={[{ required: true }]}>
+        <Form.Item
+          label={t('supplierColContact')}
+          name="contact_person"
+          rules={[{ required: true, message: t('supplierRequired') }]}
+        >
           <Input />
         </Form.Item>
 
-        <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+        <Form.Item
+          label={t('supplierColPhone')}
+          name="phone"
+          rules={[{ required: true, message: t('supplierRequired') }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label={t('supplierColAddress')}
+          name="address"
+          rules={[{ required: true, message: t('supplierRequired') }]}
+        >
           <Input />
         </Form.Item>
       </Form>

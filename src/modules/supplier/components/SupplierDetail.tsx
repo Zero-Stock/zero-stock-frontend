@@ -5,10 +5,12 @@ import { useSupplierDetail } from '../hooks/useSupplierDetail';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import SupplierEditModal from './SupplierEditModal';
 import SupplierMaterialTable from './SupplierMaterialTable';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { Title, Text } = Typography;
 
 export default function SupplierDetail({ supplierId }: { supplierId: string }) {
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
 
   const idNum = Number(supplierId);
@@ -27,21 +29,18 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
 
   if (!supplier) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Title level={3}>Supplier not found</Title>
-        <Button onClick={() => navigate('/supplier')}>Back</Button>
+      <div className="flex h-full flex-col items-center justify-center">
+        <Title level={3}>{t('supplierNotFound')}</Title>
+        <Button onClick={() => navigate('/supplier')}>
+          {t('supplierBack')}
+        </Button>
       </div>
     );
   }
 
-  console.log('supplier:', supplier);
-
   return (
-    <div style={{ padding: 24 }}>
-      <Space
-        style={{ width: '100%', justifyContent: 'space-between' }}
-        align="start"
-      >
+    <div className="p-6">
+      <Space className="w-full justify-between" align="start">
         <div>
           <Title level={2} style={{ marginBottom: 4 }}>
             {supplier.name}
@@ -52,14 +51,16 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
         </div>
 
         <Space>
-          <Button onClick={() => navigate('/supplier')}>Back</Button>
+          <Button onClick={() => navigate('/supplier')}>
+            {t('supplierBack')}
+          </Button>
           <Button type="primary" onClick={() => setEditOpen(true)}>
-            Edit Supplier
+            {t('supplierEdit')}
           </Button>
         </Space>
       </Space>
 
-      <div style={{ marginTop: 24 }}>
+      <div className="mt-6">
         <SupplierMaterialTable supplierId={supplier.id} />
       </div>
 

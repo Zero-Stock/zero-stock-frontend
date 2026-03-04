@@ -2,6 +2,7 @@ import { Modal, Form, Input, InputNumber, Select } from 'antd';
 import { useEffect } from 'react';
 import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 export interface SupplierMaterialUpsertModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ export default function SupplierMaterialUpsertModal({
   onCancel,
   onSave,
 }: SupplierMaterialUpsertModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
   // optionally pass page_size: 1000 or similar to fetch all materials, depending on backend pagination
@@ -43,7 +45,7 @@ export default function SupplierMaterialUpsertModal({
       form.setFields([
         {
           name: 'raw_material',
-          errors: ['This raw material already exists for this supplier.'],
+          errors: [t('supplierMaterialDuplicateError')],
         },
       ]);
       return;
@@ -66,10 +68,14 @@ export default function SupplierMaterialUpsertModal({
 
   return (
     <Modal
-      title={initialValues ? 'Edit Supplier Material' : 'Add Supplier Material'}
+      title={
+        initialValues
+          ? t('supplierEditMaterialTitle')
+          : t('supplierAddMaterialTitle')
+      }
       open={open}
-      okText="Save"
-      cancelText="Cancel"
+      okText={t('save')}
+      cancelText={t('cancel')}
       destroyOnHidden
       onCancel={() => {
         form.resetFields();
@@ -79,13 +85,14 @@ export default function SupplierMaterialUpsertModal({
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          label="Material Name"
+          label={t('supplierMaterialName')}
           name="raw_material"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <Select
             allowClear
             showSearch
+            placeholder={t('supplierSelectMaterial')}
             loading={isLoading}
             options={materialOptions}
             disabled={!!initialValues}
@@ -93,30 +100,40 @@ export default function SupplierMaterialUpsertModal({
         </Form.Item>
 
         <Form.Item
-          label="Unit Name"
+          label={t('supplierMaterialUnit')}
           name="unit_name"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
-          <Input placeholder="e.g. 箱 / 袋 / kg" />
+          <Input placeholder={t('supplierUnitPlaceholderKg')} />
         </Form.Item>
 
         <Form.Item
-          label="kg per Unit"
+          label={t('supplierKgPerUnit')}
           name="kg_per_unit"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
-          <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0}
+            step={0.01}
+            placeholder={t('supplierKgPlaceholder')}
+          />
         </Form.Item>
 
         <Form.Item
-          label="Price per Unit"
+          label={t('supplierPrice')}
           name="price"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: t('supplierRequired') }]}
         >
-          <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0}
+            step={0.01}
+            placeholder={t('supplierPricePlaceholder')}
+          />
         </Form.Item>
 
-        <Form.Item label="Notes" name="notes">
+        <Form.Item label={t('supplierMaterialNotes')} name="notes">
           <Input />
         </Form.Item>
       </Form>
