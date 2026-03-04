@@ -1,19 +1,11 @@
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Typography,
-  message,
-} from 'antd';
+import { Button, Form, Input, Typography, message } from 'antd';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
+import SupplierCreateMaterialTable from './SupplierCreateMaterialTable';
 
 const { Title, Text } = Typography;
 
@@ -36,7 +28,6 @@ export default function SupplierCreateForm() {
   const [form] = Form.useForm<FormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { materialOptions } = useMaterialList();
   const { trigger: createSupplier } = useSupplierCreate();
   const { trigger: createMaterial } = useSupplierMaterialCreate();
 
@@ -148,121 +139,10 @@ export default function SupplierCreateForm() {
         <div
           style={{
             marginTop: 16,
-            border: '1px solid rgba(0,0,0,0.06)',
-            borderRadius: 12,
-            padding: 16,
             maxWidth: 1100,
           }}
         >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 120px',
-              gap: 16,
-              padding: '8px 8px 12px',
-              fontWeight: 600,
-            }}
-          >
-            <div>{t('supplierMaterial')}</div>
-            <div>{t('supplierPrice')}</div>
-            <div>{t('supplierUnitSpec')}</div>
-            <div>{t('supplierKgPerUnit')}</div>
-          </div>
-
-          <Form.List name="materials">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <div
-                    key={key}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 1fr 1fr 1fr 120px',
-                      gap: 16,
-                      padding: '8px',
-                      alignItems: 'center',
-                      borderTop: '1px solid rgba(0,0,0,0.06)',
-                    }}
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'rawMaterialId']}
-                      style={{ marginBottom: 0 }}
-                    >
-                      <Select
-                        placeholder={t('supplierSelectMaterial')}
-                        options={materialOptions}
-                        showSearch
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'price']}
-                      style={{ marginBottom: 0 }}
-                    >
-                      <InputNumber
-                        min={0}
-                        style={{ width: '100%' }}
-                        placeholder={t('supplierPricePlaceholder')}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'unit']}
-                      style={{ marginBottom: 0 }}
-                    >
-                      <Input placeholder={t('supplierUnitPlaceholder')} />
-                    </Form.Item>
-
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'kg_per_unit']}
-                      style={{ marginBottom: 0 }}
-                    >
-                      <InputNumber
-                        min={0}
-                        step={0.01}
-                        style={{ width: '100%' }}
-                        placeholder={t('supplierKgPlaceholder')}
-                      />
-                    </Form.Item>
-
-                    <div
-                      style={{ display: 'flex', justifyContent: 'flex-end' }}
-                    >
-                      <Button
-                        danger
-                        type="link"
-                        onClick={() => remove(name)} // <-- Use 'name' here
-                      >
-                        {t('delete')}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Add button remains the same */}
-                <div className="mt-3">
-                  <Button
-                    type="dashed"
-                    onClick={() =>
-                      add({
-                        rawMaterialId: undefined,
-                        price: undefined,
-                        unit: '',
-                        kg_per_unit: undefined,
-                      })
-                    }
-                    className="w-full rounded-xl py-1"
-                  >
-                    {t('materialAddRow')}
-                  </Button>
-                </div>
-              </>
-            )}
-          </Form.List>
+          <SupplierCreateMaterialTable />
         </div>
       </div>
 
