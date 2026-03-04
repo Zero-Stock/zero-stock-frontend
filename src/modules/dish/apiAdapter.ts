@@ -95,7 +95,17 @@ export function formValuesToWritePayload(
  */
 export function formatIngredient(ing: DishIngredient): string {
     const grams = Math.round(parseFloat(ing.net_quantity) * 1000);
-    return `${ing.raw_material_name} (${ing.processing_name}) ${grams}g`;
+    const processingName = (ing.processing_name ?? '').trim();
+
+    if (
+        !processingName ||
+        processingName.toLowerCase() === 'null' ||
+        processingName === '无'
+    ) {
+        return `${ing.raw_material_name} ${grams}g`;
+    }
+
+    return `${ing.raw_material_name} (${processingName}) ${grams}g`;
 }
 
 /**
