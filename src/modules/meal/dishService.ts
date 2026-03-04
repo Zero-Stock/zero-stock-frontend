@@ -15,7 +15,8 @@ export async function fetchDishDetail(
     dishId: number,
 ): Promise<DishDetail | null> {
     try {
-        return await apiClient.get<DishDetail>(`/api/dishes/${dishId}/`);
+        const response = await apiClient.get<{ results: DishDetail }>(`/api/dishes/${dishId}/`);
+        return response.results;
     } catch {
         console.warn(`Failed to fetch dish ${dishId}`);
         return null;

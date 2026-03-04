@@ -190,24 +190,6 @@ export const translations = {
   materialCreateTitle: { zh: '新建原料', en: 'Add New Materials' },
   materialBreadcrumbList: { zh: '原料管理', en: 'Materials' },
   materialBreadcrumbCreate: { zh: '新建', en: 'Create' },
-
-  // ─── Supplier Module ───
-  supplierListTitle: { zh: '供应商', en: 'Suppliers' },
-  supplierCreate: { zh: '新建供应商', en: 'Create Supplier' },
-  supplierSearchName: { zh: '搜索供应商名称', en: 'Search by supplier name' },
-  supplierColId: { zh: '编号', en: 'Id' },
-  supplierColName: { zh: '名称', en: 'Name' },
-  supplierColContact: { zh: '联系人', en: 'Contact Person' },
-  supplierColPhone: { zh: '电话', en: 'Phone' },
-  supplierColAddress: { zh: '地址', en: 'Address' },
-  supplierColOperation: { zh: '操作', en: 'Operation' },
-  supplierDetail: { zh: '详情', en: 'Detail' },
-  supplierDeleteConfirm: {
-    zh: '确定要删除这个供应商吗？',
-    en: 'Delete this supplier?',
-  },
-  supplierDeleted: { zh: '已删除', en: 'Deleted' },
-  supplierUpdated: { zh: '已更新', en: 'Updated' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
