@@ -3,7 +3,6 @@ import {
     Card,
     Col,
     Divider,
-    Empty,
     Input,
     Modal,
     Row,
@@ -43,14 +42,11 @@ export default function MealBoard() {
     const [menuRows, setMenuRows] = useState<WeeklyMenuRow[]>([]);
     const [allDishes, setAllDishes] = useState<Dish[]>([]);
     const [loading, setLoading] = useState(false);
-    const [loadingDiets, setLoadingDiets] = useState(true);
 
     // ─── Fetch diet categories from API ───
     const fetchDiets = useCallback(async () => {
         try {
-            setLoadingDiets(true);
-            const response = await apiClient.get<{ results: DietCategory[] }>('/api/diets/');
-            const data = response.results;
+            const data = await apiClient.get<DietCategory[]>('/api/diets/');
             setDietCategories(data);
             if (data.length > 0 && selectedCategoryId === 0) {
                 setSelectedCategoryId(data[0].id);
@@ -58,21 +54,19 @@ export default function MealBoard() {
         } catch (err) {
             console.error('Failed to fetch diets:', err);
             message.error(t('mealLoadDietsFailed'));
-        } finally {
-            setLoadingDiets(false);
         }
-    }, [selectedCategoryId, t]);
+    }, []);
 
     // ─── Fetch weekly menus from API ───
     const fetchMenus = useCallback(async () => {
         if (!selectedCategoryId) return;
         setLoading(true);
         try {
-            const response = await apiClient.get<{ results: PaginatedResponse<WeeklyMenuRow> }>(
+            const data = await apiClient.get<PaginatedResponse<WeeklyMenuRow>>(
                 '/api/weekly-menus/',
                 { query: { company: COMPANY_ID, diet_category: selectedCategoryId, page_size: 200 } },
             );
-            setMenuRows(response.results.results);
+            setMenuRows(data.results);
         } catch (err) {
             console.error('Failed to fetch weekly menus:', err);
             message.error(t('mealLoadMenuFailed'));
@@ -84,11 +78,11 @@ export default function MealBoard() {
     // ─── Fetch all dishes for the Select dropdown ───
     const fetchAllDishes = useCallback(async () => {
         try {
-            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
+            const data = await apiClient.get<PaginatedResponse<Dish>>(
                 '/api/dishes/',
                 { query: { page_size: 500 } },
             );
-            setAllDishes(response.results.results);
+            setAllDishes(data.results);
         } catch (err) {
             console.error('Failed to fetch dishes:', err);
             message.error(t('mealLoadDishesFailed'));
@@ -104,8 +98,8 @@ export default function MealBoard() {
         const filtered = menuRows.filter(
             (r) => r.diet_category === selectedCategoryId,
         );
-        return rowsToDayPlans(filtered, (d) => t(`day${d}` as any));
-    }, [menuRows, selectedCategoryId, t]);
+        return rowsToDayPlans(filtered);
+    }, [menuRows, selectedCategoryId]);
 
     // ─── Fetch dish details (ingredients) for display ───
     const [dishDetails, setDishDetails] = useState<Map<number, DishDetail>>(new Map());
@@ -139,10 +133,9 @@ export default function MealBoard() {
             !dietCategories.some((c) => c.name === newCategoryName)
         ) {
             try {
-                const response = await apiClient.post<{ results: DietCategory }>('/api/diets/', {
+                const newCategory = await apiClient.post<DietCategory>('/api/diets/', {
                     body: { name: newCategoryName },
                 });
-                const newCategory = response.results;
                 setDietCategories([...dietCategories, newCategory]);
                 setSelectedCategoryId(newCategory.id);
                 setNewCategoryName('');
@@ -189,31 +182,16 @@ export default function MealBoard() {
     const handleDeleteDiet = async (dietId: number) => {
         try {
             await apiClient.delete(`/api/diets/${dietId}/`);
-        } catch (err) {
-            // Some backends may delete successfully but still return a bad/empty response.
-            // We'll verify by reloading diets before deciding the final UI message.
-            console.warn('Delete diet request errored, verifying with fresh data...', err);
-        }
-
-        try {
-            const response = await apiClient.get<{ results: DietCategory[] }>('/api/diets/');
-            const latest = response.results;
-            const deleted = !latest.some((c) => c.id === dietId);
-
-            setDietCategories(latest);
+            message.success(t('mealDietDeleted'));
+            const remaining = dietCategories.filter((c) => c.id !== dietId);
+            setDietCategories(remaining);
             if (selectedCategoryId === dietId) {
-                setSelectedCategoryId(latest.length > 0 ? latest[0].id : 0);
+                setSelectedCategoryId(remaining.length > 0 ? remaining[0].id : 0);
             }
-
-            if (deleted) {
-                message.success(t('mealDietDeleted'));
-                return;
-            }
-        } catch (syncErr) {
-            console.error('Failed to refresh diets after delete:', syncErr);
+        } catch (err) {
+            console.error('Failed to delete diet:', err);
+            message.error(t('mealDietDeleteFailed'));
         }
-
-        message.error(t('mealDietDeleteFailed'));
     };
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -430,34 +408,9 @@ export default function MealBoard() {
                 </Title>
             </div>
 
-            {!loadingDiets && dietCategories.length === 0 ? (
-                <Card className="mt-8 text-center" styles={{ body: { padding: '40px 0' } }}>
-                    <Empty
-                        description={
-                            <div className="flex flex-col items-center">
-                                <Text strong className="text-lg">{t('mealNoDietTitle')}</Text>
-                                <Text type="secondary" className="mb-4 mt-1">{t('mealNoDietDesc')}</Text>
-                                <Space>
-                                    <Input
-                                        placeholder={t('mealNewDietPlaceholder')}
-                                        value={newCategoryName}
-                                        onChange={(e) => setNewCategoryName(e.target.value)}
-                                        style={{ width: 200 }}
-                                        onPressEnter={(e) => addDietCategory(e as any)}
-                                    />
-                                    <Button type="primary" icon={<PlusOutlined />} onClick={addDietCategory}>
-                                        {t('mealAddDiet')}
-                                    </Button>
-                                </Space>
-                            </div>
-                        }
-                    />
-                </Card>
-            ) : (
-                <Spin spinning={loading || loadingDiets}>
-                    {renderDayCards(dayPlans)}
-                </Spin>
-            )}
+            <Spin spinning={loading}>
+                {renderDayCards(dayPlans)}
+            </Spin>
 
             <MealEditModal
                 visible={isModalVisible}
@@ -486,21 +439,6 @@ export default function MealBoard() {
           .ant-layout-content {
             margin: 0 !important;
             padding: 0 !important;
-            overflow: visible !important;
-            min-height: auto !important;
-          }
-          /* Force all parent containers to allow overflow so it prints multiple pages */
-          html, body, #root, .ant-layout, .ant-pro-layout, .ant-pro-layout-content, div {
-            height: auto !important;
-            min-height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            display: block !important;
-          }
-          /* Override Tailwind utility classes and inline styles */
-          [style*="overflow: hidden"], [style*="overflow: auto"], [style*="height: 100vh"] {
-            overflow: visible !important;
-            height: auto !important;
           }
           .print-row { display: block !important; }
           .print-col {

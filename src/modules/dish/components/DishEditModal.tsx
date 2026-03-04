@@ -44,11 +44,11 @@ export default function DishEditModal({
     // ─── Fetch materials from API ───
     const fetchMaterials = useCallback(async () => {
         try {
-            const response = await apiClient.get<{ results: PaginatedResponse<RawMaterial> }>(
+            const data = await apiClient.get<PaginatedResponse<RawMaterial>>(
                 '/api/materials/',
                 { query: { page_size: 500 } },
             );
-            setMaterials(response.results.results);
+            setMaterials(data.results);
         } catch (err) {
             console.error('Failed to fetch materials:', err);
         }

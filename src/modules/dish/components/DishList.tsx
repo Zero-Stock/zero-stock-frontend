@@ -37,11 +37,11 @@ export default function DishList() {
     const fetchDishes = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
+            const data = await apiClient.get<PaginatedResponse<Dish>>(
                 '/api/dishes/',
                 { query: { page_size: 200 } }, // fetch all for now
             );
-            setDishes(response.results.results);
+            setDishes(data.results);
         } catch (err) {
             console.error('Failed to fetch dishes:', err);
             message.error(t('dishLoadFailed'));
@@ -114,31 +114,12 @@ export default function DishList() {
     const handleDelete = async (id: number) => {
         try {
             await apiClient.delete(`/api/dishes/${id}/`);
+            message.success(t('dishDeleted'));
+            fetchDishes();
         } catch (err) {
-            // Some backends may delete successfully but still return a bad/empty response.
-            // We'll verify by reloading dishes before deciding the final UI message.
-            console.warn('Delete dish request errored, verifying with fresh data...', err);
+            console.error('Failed to delete dish:', err);
+            message.error(t('dishDeleteFailed'));
         }
-
-        try {
-            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
-                '/api/dishes/',
-                { query: { page_size: 200 } },
-            );
-            const latest = response.results.results;
-            const deleted = !latest.some((d) => d.id === id);
-
-            setDishes(latest);
-
-            if (deleted) {
-                message.success(t('dishDeleted'));
-                return;
-            }
-        } catch (syncErr) {
-            console.error('Failed to refresh dishes after delete:', syncErr);
-        }
-
-        message.error(t('dishDeleteFailed'));
     };
 
     const columns: ColumnsType<Dish> = [
