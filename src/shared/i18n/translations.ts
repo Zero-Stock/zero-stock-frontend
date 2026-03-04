@@ -90,10 +90,10 @@ export const translations = {
 
   // ─── Meal Module ───
   mealBoardTitle: {
-    zh: '标准菜谱安排 (Standard Cycle Menu)',
-    en: 'Standard Cycle Menu',
+    zh: '标准菜谱安排',
+    en: 'Standard Cycle Meals',
   },
-  mealPrintTitle: { zh: '标准菜谱', en: 'Standard Menu' },
+  mealPrintTitle: { zh: '标准菜谱', en: 'Standard Meals' },
   mealConfigSheet: { zh: '配料表', en: 'Recipe Sheet' },
   day1: { zh: '周一', en: 'Mon' },
   day2: { zh: '周二', en: 'Tue' },
