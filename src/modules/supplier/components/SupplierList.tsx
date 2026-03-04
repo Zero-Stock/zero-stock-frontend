@@ -36,11 +36,6 @@ export default function SupplierList() {
   const { trigger: deleteTrigger } = useSupplierDelete();
 
   const columns = [
-    {
-      title: t('supplierColId'),
-      dataIndex: 'id',
-      key: 'id',
-    },
     { title: t('supplierColName'), dataIndex: 'name', key: 'name' },
     {
       title: t('supplierColContact'),
@@ -127,6 +122,7 @@ export default function SupplierList() {
         dataSource={suppliers}
         loading={isLoading}
         pagination={{ pageSize: 10 }}
+        tableLayout="fixed"
       />
 
       <SupplierEditModal

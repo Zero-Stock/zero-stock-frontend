@@ -1,20 +1,20 @@
 import {
-    Button,
-    Input,
-    Space,
-    Table,
-    Typography,
-    Popconfirm,
-    message,
-    Spin,
+  Button,
+  Input,
+  Space,
+  Table,
+  Typography,
+  Popconfirm,
+  message,
+  Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    type Dish,
-    type DishIngredient,
-    type DishFormValues,
-    type PaginatedResponse,
+  type Dish,
+  type DishIngredient,
+  type DishFormValues,
+  type PaginatedResponse,
 } from '../mockdata';
 import { formValuesToWritePayload, formatIngredients } from '../apiAdapter';
 import { apiClient } from '@/shared/api/apiClient.client';
@@ -25,254 +25,247 @@ const { Title } = Typography;
 const { Search } = Input;
 
 export default function DishList() {
-    const { t } = useTranslation();
-    const [searchText, setSearchText] = useState('');
-    const [searchIngredient, setSearchIngredient] = useState('');
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [editingDish, setEditingDish] = useState<Dish | null>(null);
-    const [dishes, setDishes] = useState<Dish[]>([]);
-    const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
+  const [searchText, setSearchText] = useState('');
+  const [searchIngredient, setSearchIngredient] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingDish, setEditingDish] = useState<Dish | null>(null);
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    // ─── Fetch dishes from API ───
-    const fetchDishes = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
-                '/api/dishes/',
-                { query: { page_size: 200 } }, // fetch all for now
-            );
-            setDishes(response.results.results);
-        } catch (err) {
-            console.error('Failed to fetch dishes:', err);
-            message.error(t('dishLoadFailed'));
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  // ─── Fetch dishes from API ───
+  const fetchDishes = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get<{
+        results: PaginatedResponse<Dish>;
+      }>(
+        '/api/dishes/',
+        { query: { page_size: 200 } }, // fetch all for now
+      );
+      setDishes(response.results.results);
+    } catch (err) {
+      console.error('Failed to fetch dishes:', err);
+      message.error(t('dishLoadFailed'));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    useEffect(() => {
-        fetchDishes();
-    }, [fetchDishes]);
+  useEffect(() => {
+    fetchDishes();
+  }, [fetchDishes]);
 
-    // ─── Filter locally ───
-    const filteredData = useMemo(() => {
-        let data = dishes;
-        if (searchText) {
-            data = data.filter((dish) =>
-                dish.name.toLowerCase().includes(searchText.toLowerCase()),
-            );
-        }
-        if (searchIngredient) {
-            data = data.filter((dish) =>
-                dish.ingredients.some((ing) =>
-                    ing.raw_material_name
-                        .toLowerCase()
-                        .includes(searchIngredient.toLowerCase()),
-                ),
-            );
-        }
-        return data;
-    }, [searchText, searchIngredient, dishes]);
+  // ─── Filter locally ───
+  const filteredData = useMemo(() => {
+    let data = dishes;
+    if (searchText) {
+      data = data.filter((dish) =>
+        dish.name.toLowerCase().includes(searchText.toLowerCase()),
+      );
+    }
+    if (searchIngredient) {
+      data = data.filter((dish) =>
+        dish.ingredients.some((ing) =>
+          ing.raw_material_name
+            .toLowerCase()
+            .includes(searchIngredient.toLowerCase()),
+        ),
+      );
+    }
+    return data;
+  }, [searchText, searchIngredient, dishes]);
 
-    const handlePrint = () => window.print();
+  const handlePrint = () => window.print();
 
-    const handleEdit = (record: Dish) => {
-        setEditingDish(record);
-        setIsModalVisible(true);
-    };
+  const handleEdit = (record: Dish) => {
+    setEditingDish(record);
+    setIsModalVisible(true);
+  };
 
-    const handleCreate = () => {
-        setEditingDish(null);
-        setIsModalVisible(true);
-    };
+  const handleCreate = () => {
+    setEditingDish(null);
+    setIsModalVisible(true);
+  };
 
-    // ─── Save via API ───
-    const handleSave = async (formValues: DishFormValues & { id: number }) => {
-        const payload = formValuesToWritePayload(formValues);
+  // ─── Save via API ───
+  const handleSave = async (formValues: DishFormValues & { id: number }) => {
+    const payload = formValuesToWritePayload(formValues);
 
-        try {
-            if (editingDish) {
-                // PUT /api/dishes/{id}/
-                await apiClient.put(`/api/dishes/${editingDish.id}/`, {
-                    body: payload,
-                });
-                message.success(t('dishUpdated'));
-            } else {
-                // POST /api/dishes/
-                await apiClient.post('/api/dishes/', { body: payload });
-                message.success(t('dishCreated'));
-            }
-            setIsModalVisible(false);
-            fetchDishes(); // refresh list
-        } catch (err) {
-            console.error('Failed to save dish:', err);
-            message.error(t('dishSaveFailed'));
-        }
-    };
+    try {
+      if (editingDish) {
+        // PUT /api/dishes/{id}/
+        await apiClient.put(`/api/dishes/${editingDish.id}/`, {
+          body: payload,
+        });
+        message.success(t('dishUpdated'));
+      } else {
+        // POST /api/dishes/
+        await apiClient.post('/api/dishes/', { body: payload });
+        message.success(t('dishCreated'));
+      }
+      setIsModalVisible(false);
+      fetchDishes(); // refresh list
+    } catch (err) {
+      console.error('Failed to save dish:', err);
+      message.error(t('dishSaveFailed'));
+    }
+  };
 
-    // ─── Delete via API ───
-    const handleDelete = async (id: number) => {
-        try {
-            await apiClient.delete(`/api/dishes/${id}/`);
-        } catch (err) {
-            // Some backends may delete successfully but still return a bad/empty response.
-            // We'll verify by reloading dishes before deciding the final UI message.
-            console.warn('Delete dish request errored, verifying with fresh data...', err);
-        }
+  // ─── Delete via API ───
+  const handleDelete = async (id: number) => {
+    try {
+      await apiClient.delete(`/api/dishes/${id}/`);
+    } catch (err) {
+      // Some backends may delete successfully but still return a bad/empty response.
+      // We'll verify by reloading dishes before deciding the final UI message.
+      console.warn(
+        'Delete dish request errored, verifying with fresh data...',
+        err,
+      );
+    }
 
-        try {
-            const response = await apiClient.get<{ results: PaginatedResponse<Dish> }>(
-                '/api/dishes/',
-                { query: { page_size: 200 } },
-            );
-            const latest = response.results.results;
-            const deleted = !latest.some((d) => d.id === id);
+    try {
+      const response = await apiClient.get<{
+        results: PaginatedResponse<Dish>;
+      }>('/api/dishes/', { query: { page_size: 200 } });
+      const latest = response.results.results;
+      const deleted = !latest.some((d) => d.id === id);
 
-            setDishes(latest);
+      setDishes(latest);
 
-            if (deleted) {
-                message.success(t('dishDeleted'));
-                return;
-            }
-        } catch (syncErr) {
-            console.error('Failed to refresh dishes after delete:', syncErr);
-        }
+      if (deleted) {
+        message.success(t('dishDeleted'));
+        return;
+      }
+    } catch (syncErr) {
+      console.error('Failed to refresh dishes after delete:', syncErr);
+    }
 
-        message.error(t('dishDeleteFailed'));
-    };
+    message.error(t('dishDeleteFailed'));
+  };
 
-    const columns: ColumnsType<Dish> = [
-        {
-            title: t('dishColId'),
-            dataIndex: 'id',
-            key: 'id',
-            width: '5%',
-            sorter: (a, b) => a.id - b.id,
-            defaultSortOrder: 'ascend',
-        },
-        {
-            title: t('dishColName'),
-            dataIndex: 'name',
-            key: 'name',
-            sorter: (a, b) => a.name.localeCompare(b.name, 'zh-CN'),
-            width: '12%',
-        },
-        {
-            title: t('dishColIngredients'),
-            dataIndex: 'ingredients',
-            key: 'ingredients',
-            width: '25%',
-            render: (ingredients: DishIngredient[]) => (
-                <div style={{ whiteSpace: 'pre-wrap' }}>
-                    {formatIngredients(ingredients)}
-                </div>
-            ),
-        },
-        {
-            title: t('dishColSeasonings'),
-            dataIndex: 'seasonings',
-            key: 'seasonings',
-            width: '18%',
-            render: (seasonings: string) => (
-                <div style={{ whiteSpace: 'pre-wrap' }}>{seasonings}</div>
-            ),
-        },
-        {
-            title: t('dishColCookingMethod'),
-            dataIndex: 'cooking_method',
-            key: 'cooking_method',
-            width: '25%',
-            render: (method: string) => (
-                <div style={{ whiteSpace: 'pre-wrap' }}>{method}</div>
-            ),
-        },
-        {
-            title: t('dishColAction'),
-            key: 'action',
-            className: 'no-print',
-            width: '5%',
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button
-                        type="link"
-                        onClick={() => handleEdit(record)}
-                        className="!p-0"
-                    >
-                        {t('edit')}
-                    </Button>
-                    <Popconfirm
-                        title={t('dishDeleteConfirm')}
-                        onConfirm={() => handleDelete(record.id)}
-                        okText={t('yes')}
-                        cancelText={t('no')}
-                    >
-                        <Button type="link" danger className="!p-0">
-                            {t('delete')}
-                        </Button>
-                    </Popconfirm>
-                </Space>
-            ),
-        },
-    ];
+  const columns: ColumnsType<Dish> = [
+    {
+      title: t('dishColName'),
+      dataIndex: 'name',
+      key: 'name',
+      sorter: (a, b) => a.name.localeCompare(b.name, 'zh-CN'),
+      width: '12%',
+    },
+    {
+      title: t('dishColIngredients'),
+      dataIndex: 'ingredients',
+      key: 'ingredients',
+      width: '25%',
+      render: (ingredients: DishIngredient[]) => (
+        <div style={{ whiteSpace: 'pre-wrap' }}>
+          {formatIngredients(ingredients)}
+        </div>
+      ),
+    },
+    {
+      title: t('dishColSeasonings'),
+      dataIndex: 'seasonings',
+      key: 'seasonings',
+      width: '18%',
+      render: (seasonings: string) => (
+        <div style={{ whiteSpace: 'pre-wrap' }}>{seasonings}</div>
+      ),
+    },
+    {
+      title: t('dishColCookingMethod'),
+      dataIndex: 'cooking_method',
+      key: 'cooking_method',
+      width: '25%',
+      render: (method: string) => (
+        <div style={{ whiteSpace: 'pre-wrap' }}>{method}</div>
+      ),
+    },
+    {
+      title: t('dishColAction'),
+      key: 'action',
+      className: 'no-print',
+      width: '5%',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            type="link"
+            onClick={() => handleEdit(record)}
+            className="!p-0"
+          >
+            {t('edit')}
+          </Button>
+          <Popconfirm
+            title={t('dishDeleteConfirm')}
+            onConfirm={() => handleDelete(record.id)}
+            okText={t('yes')}
+            cancelText={t('no')}
+          >
+            <Button type="link" danger className="!p-0">
+              {t('delete')}
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
-    return (
-        <div>
-            <div className="no-print mb-6 flex items-center justify-between">
-                <Title level={2} className="!m-0">
-                    {t('dishListTitle')}
-                </Title>
-                <Space>
-                    <Search
-                        placeholder={t('dishSearchIngredient')}
-                        allowClear
-                        onSearch={(value) => setSearchIngredient(value)}
-                        onChange={(e) => setSearchIngredient(e.target.value)}
-                        style={{ width: 140 }}
-                    />
-                    <Search
-                        placeholder={t('dishSearchName')}
-                        allowClear
-                        onSearch={(value) => setSearchText(value)}
-                        onChange={(e) => setSearchText(e.target.value)}
-                        style={{ width: 140 }}
-                    />
-                    <Button type="primary" onClick={handleCreate}>
-                        {t('dishCreate')}
-                    </Button>
-                    <Button onClick={handlePrint}>{t('dishExportPdf')}</Button>
-                </Space>
-            </div>
+  return (
+    <div>
+      <div className="no-print mb-6 flex items-center justify-between">
+        <Title level={2} className="!m-0">
+          {t('dishListTitle')}
+        </Title>
+        <Space>
+          <Search
+            placeholder={t('dishSearchIngredient')}
+            allowClear
+            onSearch={(value) => setSearchIngredient(value)}
+            onChange={(e) => setSearchIngredient(e.target.value)}
+            style={{ width: 140 }}
+          />
+          <Search
+            placeholder={t('dishSearchName')}
+            allowClear
+            onSearch={(value) => setSearchText(value)}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ width: 140 }}
+          />
+          <Button type="primary" onClick={handleCreate}>
+            {t('dishCreate')}
+          </Button>
+          <Button onClick={handlePrint}>{t('dishExportPdf')}</Button>
+        </Space>
+      </div>
 
-            {/* Print Header */}
-            <Title
-                level={2}
-                className="print-only !m-0 mb-5 hidden text-center"
-            >
-                {t('dishListTitle')}
-            </Title>
+      {/* Print Header */}
+      <Title level={2} className="print-only !m-0 mb-5 hidden text-center">
+        {t('dishListTitle')}
+      </Title>
 
-            <Spin spinning={loading}>
-                <Table
-                    columns={columns}
-                    dataSource={filteredData}
-                    rowKey="id"
-                    pagination={{
-                        pageSize: 10,
-                        className: 'no-print-pagination',
-                    }}
-                    bordered
-                />
-            </Spin>
+      <Spin spinning={loading}>
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          rowKey="id"
+          pagination={{
+            pageSize: 10,
+            className: 'no-print-pagination',
+          }}
+          bordered
+        />
+      </Spin>
 
-            <DishEditModal
-                visible={isModalVisible}
-                record={editingDish}
-                onCancel={() => setIsModalVisible(false)}
-                onSave={handleSave}
-            />
+      <DishEditModal
+        visible={isModalVisible}
+        record={editingDish}
+        onCancel={() => setIsModalVisible(false)}
+        onSave={handleSave}
+      />
 
-            {/* Print Styles */}
-            <style>{`
+      {/* Print Styles */}
+      <style>{`
                 @media print {
                     .no-print { display: none !important; }
                     .print-only { display: block !important; }
@@ -313,6 +306,6 @@ export default function DishList() {
                     }
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 }
