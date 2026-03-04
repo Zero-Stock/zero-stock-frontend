@@ -97,18 +97,9 @@ export default function SupplierCreateForm() {
         ],
       }}
     >
-      <Title level={4} style={{ marginTop: 0 }}>
-        {t('supplierBasicInfo')}
-      </Title>
+      <Title level={4}>{t('supplierBasicInfo')}</Title>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr 1fr',
-          gap: 16,
-          maxWidth: 1100,
-        }}
-      >
+      <div className="grid w-full grid-cols-4 gap-4">
         <Form.Item
           label={t('supplierNameLabel')}
           name="name"
@@ -136,27 +127,13 @@ export default function SupplierCreateForm() {
         </Title>
         <Text type="secondary">{t('supplierMaterialDetailsDesc')}</Text>
 
-        <div
-          style={{
-            marginTop: 16,
-            maxWidth: 1100,
-          }}
-        >
+        <div className="mt-4 max-w-[1100px]">
           <SupplierCreateMaterialTable />
         </div>
       </div>
 
-      <div
-        style={{
-          marginTop: 24,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 12,
-          maxWidth: 1100,
-        }}
-      >
+      <div className="mt-6 flex w-full justify-end gap-3">
         <Button
-          style={{ height: 40, borderRadius: 10 }}
           onClick={() => {
             navigate('/supplier');
           }}
@@ -165,12 +142,7 @@ export default function SupplierCreateForm() {
           {t('cancel')}
         </Button>
 
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={isSubmitting}
-          style={{ height: 40, borderRadius: 10 }}
-        >
+        <Button type="primary" htmlType="submit" loading={isSubmitting}>
           {t('save')}
         </Button>
       </div>
