@@ -240,7 +240,6 @@ export const translations = {
   materialListTitle: { zh: '原料管理', en: 'Materials' },
   materialCreate: { zh: '新建原料', en: 'New Material' },
   materialFilterCategory: { zh: '按类别筛选：', en: 'Filter by Category:' },
-  materialAllCategories: { zh: '所有类别', en: 'All Categories' },
   materialColId: { zh: '编号', en: 'Id' },
   materialColName: { zh: '名称', en: 'Name' },
   materialColCategory: { zh: '类别', en: 'Category' },

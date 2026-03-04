@@ -18,7 +18,7 @@ interface MaterialEditFormValues {
   name: string;
   category: number;
   yield_rate: number;
-  specs: string;
+  specs?: string;
 }
 
 export default function MaterialEditModal({
@@ -39,11 +39,10 @@ export default function MaterialEditModal({
     if (!record) return undefined;
 
     return {
-      id: record.id,
       name: record.name,
       category: record.category,
       yield_rate: Number(record.current_yield_rate ?? 0),
-      specs: record.specs.map((spec) => spec.method_name).join(', '),
+      specs: record.specs?.map((spec) => spec.method_name).join(', ') ?? '',
     };
   }, [record]);
 
@@ -55,10 +54,12 @@ export default function MaterialEditModal({
     try {
       const values = await form.validateFields();
       const specs = values.specs
-        .split(',')
-        .map((spec) => spec.trim())
-        .filter(Boolean)
-        .map((method_name) => ({ method_name }));
+        ? values.specs
+            .split(',')
+            .map((spec) => spec.trim())
+            .filter(Boolean)
+            .map((method_name) => ({ method_name }))
+        : [];
 
       const payload: MaterialUpdateDto = {
         id: record.id,
@@ -89,7 +90,7 @@ export default function MaterialEditModal({
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
-      destroyOnClose
+      destroyOnHidden
       confirmLoading={isSubmitting}
       okText={t('save')}
       cancelText={t('cancel')}
@@ -100,9 +101,6 @@ export default function MaterialEditModal({
         initialValues={initialValues}
         preserve={false}
       >
-        <Form.Item<MaterialEditFormValues> name="id" label={t('materialColId')}>
-          <Input disabled />
-        </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="name"
           label={t('materialNameLabel')}
@@ -145,23 +143,6 @@ export default function MaterialEditModal({
         <Form.Item<MaterialEditFormValues>
           name="specs"
           label={t('materialSpecsLabel')}
-          rules={[
-            { required: true, message: t('materialSpecsRequired') },
-            {
-              validator: async (_, value) => {
-                const hasSpecs =
-                  typeof value === 'string' &&
-                  value
-                    .split(',')
-                    .map((spec) => spec.trim())
-                    .filter(Boolean).length > 0;
-
-                if (!hasSpecs) {
-                  throw new Error(t('materialSpecsAtLeastOne'));
-                }
-              },
-            },
-          ]}
         >
           <Input placeholder={t('materialSpecsPlaceholder')} />
         </Form.Item>

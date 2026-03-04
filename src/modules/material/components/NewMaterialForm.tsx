@@ -10,7 +10,7 @@ interface RawMaterialFields {
   name: string;
   category: number;
   yield_rate: number;
-  specs: string;
+  specs?: string;
 }
 
 export default function NewMaterialForm() {
@@ -60,6 +60,7 @@ export default function NewMaterialForm() {
     {
       title: t('materialYieldRateLabel'),
       dataIndex: 'yield_rate',
+      width: 200,
       key: 'yield_rate',
       render: (_, _record, index) => (
         <Form.Item
@@ -72,7 +73,10 @@ export default function NewMaterialForm() {
           ]}
           className="mb-0!"
         >
-          <Input placeholder={t('materialYieldRatePlaceholder')} />
+          <Input
+            placeholder={t('materialYieldRatePlaceholder')}
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
@@ -94,8 +98,12 @@ export default function NewMaterialForm() {
       category: item.category,
       yield_rate: item.yield_rate,
       specs: item.specs
-        .split(',')
-        .map((spec) => ({ method_name: spec.trim() })),
+        ? item.specs
+            .split(',')
+            .map((spec) => spec.trim())
+            .filter(Boolean)
+            .map((method_name) => ({ method_name }))
+        : [],
     }));
     await createMaterial(data);
     navigate('/material');
@@ -111,6 +119,7 @@ export default function NewMaterialForm() {
               columns={columns}
               pagination={false}
               rowKey="key"
+              tableLayout="fixed"
               footer={() => (
                 <Button
                   type="dashed"

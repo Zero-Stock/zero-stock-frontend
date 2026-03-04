@@ -4,7 +4,7 @@ import type { MaterialUpdateDto } from '../dtos/materialUpdate.dto';
 export function useMaterialUpdate() {
   return {
     trigger: async (data: MaterialUpdateDto) => {
-      return apiClient.put<MaterialUpdateDto>(`/api/materials/batch/`, {
+      return apiClient.post<MaterialUpdateDto>(`/api/materials/batch/`, {
         body: data,
       });
     },

@@ -8,6 +8,7 @@ import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 import MaterialEditModal from './MaterialEditModal';
 import useMaterialCategories from '../hooks/useMaterialCategories';
+import { useMaterialDelete } from '../hooks/useMaterialDelete';
 
 const { Title, Text } = Typography;
 
@@ -34,13 +35,14 @@ export default function MaterialList() {
     setEditingRecord(record);
     setIsEditModalOpen(true);
   };
+  const { trigger: deleteMaterial } = useMaterialDelete();
+
+  const handleDelete = async (id: number) => {
+    await deleteMaterial(id);
+    mutate();
+  };
 
   const columns: ColumnsType<MaterialPreviewDto> = [
-    {
-      title: t('materialColId'),
-      dataIndex: 'id',
-      key: 'id',
-    },
     {
       title: t('materialColName'),
       dataIndex: 'name',
@@ -50,11 +52,13 @@ export default function MaterialList() {
       title: t('materialColCategory'),
       dataIndex: 'category_name',
       key: 'category_name',
+      width: 150,
     },
     {
       title: t('materialColYieldRate'),
       dataIndex: 'current_yield_rate',
       key: 'current_yield_rate',
+      width: 150,
       render: (yieldRate: number) => Number(yieldRate) * 100 + '%',
     },
     {
@@ -63,13 +67,14 @@ export default function MaterialList() {
       key: 'specs',
       render: (specs: MaterialPreviewDto['specs']) => (
         <Space orientation="vertical" size={0}>
-          <Text>{specs.map((spec) => spec.method_name).join(', ')}</Text>
+          <Text>{specs?.map((spec) => spec.method_name).join(', ') ?? ''}</Text>
         </Space>
       ),
     },
     {
       title: t('materialColOperation'),
       key: 'operation',
+      width: 200,
       render: (_, record) => (
         <Space size="middle">
           <Typography.Link onClick={() => handleEdit(record)}>
@@ -78,7 +83,7 @@ export default function MaterialList() {
           <Button
             type="link"
             danger
-            onClick={() => console.log('Delete:', record)}
+            onClick={() => handleDelete(record.id)}
             className="p-0"
           >
             {t('delete')}
@@ -100,11 +105,10 @@ export default function MaterialList() {
       </div>
 
       <div className="mb-4 flex items-center gap-4">
-        <Text strong>{t('materialFilterCategory')}</Text>
         <Select
           allowClear
-          placeholder={t('materialAllCategories')}
-          className="w-50"
+          placeholder={t('materialFilterCategory')}
+          className="w-60"
           onChange={(value) => setSelectedCategory(value)}
           options={categoryOptions}
           loading={isLoadingCategories}
@@ -115,6 +119,7 @@ export default function MaterialList() {
         columns={columns}
         dataSource={materials}
         rowKey="id"
+        tableLayout="fixed"
         pagination={{ pageSize: 10 }}
         loading={isLoading}
       />
