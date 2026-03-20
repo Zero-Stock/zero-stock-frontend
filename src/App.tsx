@@ -5,9 +5,9 @@ import Sidebar from './shared/components/Sidebar';
 import Providers from './shared/providers';
 import { renderRoutes, routes } from './Routes';
 import BreadcrumbNav from './shared/components/BreadcrumbNav';
-import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from './shared/i18n/LanguageContext';
+import { useDateStore } from './shared/stores/dateStore';
 
 const { Header, Content, Footer } = Layout;
 
@@ -22,7 +22,7 @@ function AppContent() {
   } = theme.useToken();
 
   const { locale, setLocale, t } = useTranslation();
-  const [currentDate, setCurrentDate] = useState(dayjs());
+  const { date: currentDate, setDate: setCurrentDate } = useDateStore();
 
   return (
     <Layout style={{ height: '100vh', overflow: 'hidden' }}>
@@ -34,10 +34,10 @@ function AppContent() {
         <div className="flex items-center gap-4">
           <span className="font-semibold">
             {t('todayIs')}
-            {currentDate.format('YYYY-MM-DD')}
+            {currentDate}
           </span>
           <DatePicker
-            value={currentDate}
+            value={dayjs(currentDate)}
             onChange={(date) => date && setCurrentDate(date)}
           />
           <Button

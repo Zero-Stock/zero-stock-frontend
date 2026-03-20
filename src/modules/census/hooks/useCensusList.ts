@@ -2,6 +2,7 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
+import { useDateStore } from '@/shared/stores/dateStore';
 import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
 
 export interface CensusListPayload {
@@ -16,17 +17,18 @@ export interface CensusListPayload {
 }
 
 export function useCensusList(payload?: CensusListPayload) {
+  const selectedDate = useDateStore((state) => state.date);
+
   const key: SWRKey = {
     url: '/api/census/search/',
     method: 'POST',
-    options: payload
-      ? {
-          body: {
-            company: 1,
-            ...payload,
-          },
-        }
-      : {},
+    date: selectedDate,
+    options: {
+      body: {
+        company: 1,
+        ...payload,
+      },
+    },
   };
 
   const { data, error, isLoading, mutate } =

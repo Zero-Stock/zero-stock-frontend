@@ -10,6 +10,7 @@ export type SWRKey = {
   url: `/${string}`;
   method?: 'GET' | 'POST';
   options?: any;
+  date?: string;
 };
 
 export function SWRConfigProvider({ children }: SWRConfigProviderProps) {

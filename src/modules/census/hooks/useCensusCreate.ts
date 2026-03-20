@@ -8,12 +8,10 @@ import type {
 export function useCensusCreate() {
   return {
     trigger: async (data: CensusCreateDto) => {
-      const { date, items } = data;
-
       return apiClient.post<ApiResponseDto<CensusBatchResultDto>>(
         '/api/census/batch/',
         {
-          body: { date, items },
+          body: data,
         },
       );
     },

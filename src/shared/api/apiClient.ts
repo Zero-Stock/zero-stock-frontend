@@ -1,5 +1,6 @@
 import qs from 'qs';
 import ApiError from './apiError';
+import { getSelectedDate } from '@/shared/stores/dateStore';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export type Query = Record<string, unknown>;
@@ -45,10 +46,27 @@ function buildUrl(path: string, query?: Query) {
       arrayFormat: 'brackets',
       skipNulls: true,
     });
-    if (q) url += `?${q}`;
+    if (q) {
+      url += url.includes('?') ? `&${q}` : `?${q}`;
+    }
   }
 
   return url;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function withSelectedDateBody(body: unknown) {
+  if (!isPlainObject(body) || body.date) {
+    return body;
+  }
+
+  return {
+    ...body,
+    date: getSelectedDate(),
+  };
 }
 
 async function parseJsonSafe(res: Response) {
@@ -143,7 +161,7 @@ export class ApiClient {
         requestBody = formData;
         finalHeaders.delete('Content-Type');
       } else if (body !== undefined) {
-        requestBody = JSON.stringify(body);
+        requestBody = JSON.stringify(withSelectedDateBody(body));
         if (!finalHeaders.has('Content-Type')) {
           finalHeaders.set('Content-Type', 'application/json');
         }
