@@ -20,6 +20,7 @@ import type { TranslationKey } from './shared/i18n/translations';
 import SupplierListPage from './modules/supplier/pages/SupplierListPage';
 import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
+import CensusListPage from './modules/census/pages/CensusListPage';
 
 export interface RouteConfig {
   path: string;
@@ -56,7 +57,7 @@ export const routes: RouteConfig[] = [
     titleKey: 'navCensus',
     icon: <TeamOutlined />,
     showInMenu: true,
-    // component: CensusListPage,
+    component: CensusListPage,
   },
 
   {

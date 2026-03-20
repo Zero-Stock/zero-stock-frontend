@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { SWRConfig } from 'swr';
-import { authedApiClient } from '../api/apiClientAuthed.client';
+import { apiClient } from '@/shared/api/apiClient.client';
 
 interface SWRConfigProviderProps {
   children: ReactNode;
@@ -21,9 +21,9 @@ export function SWRConfigProvider({ children }: SWRConfigProviderProps) {
 
           switch (method) {
             case 'POST':
-              return authedApiClient.post(url, options);
+              return apiClient.post(url, options);
             default:
-              return authedApiClient.get(url, options);
+              return apiClient.get(url, options);
           }
         },
         revalidateOnFocus: false,
