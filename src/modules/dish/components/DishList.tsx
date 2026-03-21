@@ -6,7 +6,6 @@ import {
   Typography,
   Popconfirm,
   message,
-  Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
@@ -140,7 +139,7 @@ export default function DishList() {
       title: t('dishColIngredients'),
       dataIndex: 'ingredients',
       key: 'ingredients',
-      width: '25%',
+      width: '19%',
       render: (ingredients: DishIngredient[]) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>
           {formatIngredients(ingredients)}
@@ -151,7 +150,7 @@ export default function DishList() {
       title: t('dishColSeasonings'),
       dataIndex: 'seasonings',
       key: 'seasonings',
-      width: '18%',
+      width: '15%',
       render: (seasonings: string) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>{seasonings}</div>
       ),
@@ -160,7 +159,7 @@ export default function DishList() {
       title: t('dishColCookingMethod'),
       dataIndex: 'cooking_method',
       key: 'cooking_method',
-      width: '25%',
+      width: '19%',
       render: (method: string) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>{method}</div>
       ),
@@ -169,7 +168,7 @@ export default function DishList() {
       title: t('dishColAction'),
       key: 'action',
       className: 'no-print',
-      width: '5%',
+      width: '10%',
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -206,14 +205,14 @@ export default function DishList() {
             allowClear
             onSearch={(value) => setSearchIngredient(value)}
             onChange={(e) => setSearchIngredient(e.target.value)}
-            style={{ width: 140 }}
+            style={{ width: 200 }}
           />
           <Search
             placeholder={t('dishSearchName')}
             allowClear
             onSearch={(value) => setSearchText(value)}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 140 }}
+            style={{ width: 200 }}
           />
           <Button type="primary" onClick={handleCreate}>
             {t('dishCreate')}
@@ -227,18 +226,17 @@ export default function DishList() {
         {t('dishListTitle')}
       </Title>
 
-      <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            className: 'no-print-pagination',
-          }}
-          bordered
-        />
-      </Spin>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="id"
+        tableLayout="fixed"
+        pagination={{
+          pageSize: 10,
+          className: 'no-print-pagination',
+        }}
+        loading={loading}
+      />
 
       <DishEditModal
         visible={isModalVisible}
