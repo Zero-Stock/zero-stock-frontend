@@ -6,7 +6,6 @@ import {
   Typography,
   Popconfirm,
   message,
-  Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
@@ -41,6 +40,25 @@ export default function DishList() {
   const { trigger: deleteDish } = useDishDelete();
 
   useEffect(() => {
+    const enablePrintMode = () => {
+      document.body.classList.add('dish-print-mode');
+    };
+
+    const disablePrintMode = () => {
+      document.body.classList.remove('dish-print-mode');
+    };
+
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint', disablePrintMode);
+
+    return () => {
+      window.removeEventListener('beforeprint', enablePrintMode);
+      window.removeEventListener('afterprint', disablePrintMode);
+      disablePrintMode();
+    };
+  }, []);
+
+  useEffect(() => {
     if (isError) {
       console.error('Failed to fetch dishes:', isError);
       message.error(t('dishLoadFailed'));
@@ -67,7 +85,11 @@ export default function DishList() {
     return data;
   }, [searchText, searchIngredient, dishes]);
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    window.requestAnimationFrame(() => {
+      window.print();
+    });
+  };
 
   const handleEdit = (record: Dish) => {
     setEditingDish(record);
@@ -140,7 +162,7 @@ export default function DishList() {
       title: t('dishColIngredients'),
       dataIndex: 'ingredients',
       key: 'ingredients',
-      width: '25%',
+      width: '19%',
       render: (ingredients: DishIngredient[]) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>
           {formatIngredients(ingredients)}
@@ -151,7 +173,7 @@ export default function DishList() {
       title: t('dishColSeasonings'),
       dataIndex: 'seasonings',
       key: 'seasonings',
-      width: '18%',
+      width: '15%',
       render: (seasonings: string) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>{seasonings}</div>
       ),
@@ -160,7 +182,7 @@ export default function DishList() {
       title: t('dishColCookingMethod'),
       dataIndex: 'cooking_method',
       key: 'cooking_method',
-      width: '25%',
+      width: '19%',
       render: (method: string) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>{method}</div>
       ),
@@ -169,7 +191,7 @@ export default function DishList() {
       title: t('dishColAction'),
       key: 'action',
       className: 'no-print',
-      width: '5%',
+      width: '10%',
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -206,14 +228,14 @@ export default function DishList() {
             allowClear
             onSearch={(value) => setSearchIngredient(value)}
             onChange={(e) => setSearchIngredient(e.target.value)}
-            style={{ width: 140 }}
+            style={{ width: 200 }}
           />
           <Search
             placeholder={t('dishSearchName')}
             allowClear
             onSearch={(value) => setSearchText(value)}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 140 }}
+            style={{ width: 200 }}
           />
           <Button type="primary" onClick={handleCreate}>
             {t('dishCreate')}
@@ -227,18 +249,17 @@ export default function DishList() {
         {t('dishListTitle')}
       </Title>
 
-      <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            className: 'no-print-pagination',
-          }}
-          bordered
-        />
-      </Spin>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="id"
+        tableLayout="fixed"
+        pagination={{
+          pageSize: 10,
+          className: 'no-print-pagination',
+        }}
+        loading={loading}
+      />
 
       <DishEditModal
         visible={isModalVisible}
@@ -249,46 +270,140 @@ export default function DishList() {
 
       {/* Print Styles */}
       <style>{`
-                @media print {
-                    .no-print { display: none !important; }
-                    .print-only { display: block !important; }
-                    .no-print-pagination { display: none !important; }
-                    * { color: #000 !important; }
-                    body {
-                        padding: 0 !important;
-                        margin: 0 !important;
-                        background: #fff !important;
-                    }
-                    .ant-layout-sider,
-                    .ant-layout-header,
-                    .ant-layout-footer,
-                    nav {
-                        display: none !important;
-                    }
-                    .ant-layout-content {
-                        margin: 0 !important;
-                        padding: 0 !important;
-                    }
-                    .ant-table, .ant-table-wrapper { background: transparent !important; }
-                    .ant-table-thead > tr > th {
-                        font-weight: bold !important;
-                        background: transparent !important;
-                        border-bottom: 2px solid #000 !important;
-                    }
-                    .ant-table-tbody > tr > td { background: transparent !important; }
-                    .ant-table-container,
-                    .ant-table-content,
-                    .ant-table {
-                        border: 1px solid #000 !important;
-                        border-bottom: none !important;
-                        border-radius: 0 !important;
-                    }
-                    .ant-table-cell {
-                        border-bottom: 1px solid #000 !important;
-                        border-right: 1px solid #000 !important;
-                    }
-                }
-            `}</style>
+        @media print {
+          body.dish-print-mode {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          body.dish-print-mode .no-print {
+            display: none !important;
+          }
+
+          body.dish-print-mode .print-only {
+            display: block !important;
+          }
+
+          body.dish-print-mode .no-print-pagination,
+          body.dish-print-mode .ant-pagination,
+          body.dish-print-mode .ant-table-column-sorters,
+          body.dish-print-mode .ant-table-filter-trigger,
+          body.dish-print-mode .ant-table-row-expand-icon-cell,
+          body.dish-print-mode .ant-spin-nested-loading > div > .ant-spin {
+            display: none !important;
+          }
+
+          @page {
+            size: A4 landscape;
+            margin: 12mm;
+          }
+
+          body.dish-print-mode {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+            color: #111 !important;
+            font-family: "Times New Roman", "Noto Serif SC", serif !important;
+            font-size: 11px !important;
+            line-height: 1.4 !important;
+          }
+
+          body.dish-print-mode * {
+            color: inherit !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+
+          body.dish-print-mode .ant-layout,
+          body.dish-print-mode .ant-layout-content,
+          body.dish-print-mode .ant-app {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+          }
+
+          body.dish-print-mode .ant-layout-sider,
+          body.dish-print-mode .ant-layout-header,
+          body.dish-print-mode .ant-layout-footer,
+          body.dish-print-mode nav {
+            display: none !important;
+          }
+
+          body.dish-print-mode .ant-typography.print-only {
+            margin: 0 0 10mm !important;
+            text-align: center !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.04em !important;
+          }
+
+          body.dish-print-mode .ant-table-wrapper,
+          body.dish-print-mode .ant-table,
+          body.dish-print-mode .ant-table-container,
+          body.dish-print-mode .ant-table-content {
+            background: transparent !important;
+            overflow: visible !important;
+          }
+
+          body.dish-print-mode .ant-table {
+            border: 1px solid #222 !important;
+            border-radius: 0 !important;
+          }
+
+          body.dish-print-mode .ant-table table {
+            width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+          }
+
+          body.dish-print-mode .ant-table-thead {
+            display: table-header-group !important;
+          }
+
+          body.dish-print-mode .ant-table-thead > tr > th {
+            padding: 8px 10px !important;
+            background: #f3f3f3 !important;
+            border-right: 1px solid #222 !important;
+            border-bottom: 2px solid #222 !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            text-align: left !important;
+            vertical-align: top !important;
+          }
+
+          body.dish-print-mode .ant-table-thead > tr > th:last-child,
+          body.dish-print-mode .ant-table-tbody > tr > td:last-child {
+            border-right: none !important;
+          }
+
+          body.dish-print-mode .ant-table-tbody > tr {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+
+          body.dish-print-mode .ant-table-tbody > tr > td {
+            padding: 8px 10px !important;
+            background: transparent !important;
+            border-right: 1px solid #222 !important;
+            border-bottom: 1px solid #bdbdbd !important;
+            vertical-align: top !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+          }
+
+          body.dish-print-mode .ant-table-tbody > tr:last-child > td {
+            border-bottom: none !important;
+          }
+
+          body.dish-print-mode .ant-table-cell::before,
+          body.dish-print-mode .ant-table-cell-scrollbar,
+          body.dish-print-mode .ant-table-measure-row,
+          body.dish-print-mode .ant-empty,
+          body.dish-print-mode .ant-spin-blur {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
