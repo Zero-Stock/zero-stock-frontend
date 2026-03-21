@@ -9,15 +9,20 @@ import {
   Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   type Dish,
   type DishIngredient,
   type DishFormValues,
-  type PaginatedResponse,
 } from '../mockdata';
-import { formValuesToWritePayload, formatIngredients } from '../apiAdapter';
-import { apiClient } from '@/shared/api/apiClient.client';
+import {
+  formValuesToWritePayload,
+  formatIngredients,
+} from '../hooks/dishFormAdapter';
+import { useDishCreate } from '../hooks/useDishCreate';
+import { useDishDelete } from '../hooks/useDishDelete';
+import { useDishList } from '../hooks/useDishList';
+import { useDishUpdate } from '../hooks/useDishUpdate';
 import DishEditModal from './DishEditModal';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
 
@@ -30,31 +35,17 @@ export default function DishList() {
   const [searchIngredient, setSearchIngredient] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingDish, setEditingDish] = useState<Dish | null>(null);
-  const [dishes, setDishes] = useState<Dish[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // ─── Fetch dishes from API ───
-  const fetchDishes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await apiClient.get<{
-        results: PaginatedResponse<Dish>;
-      }>(
-        '/api/dishes/',
-        { query: { page_size: 200 } }, // fetch all for now
-      );
-      setDishes(response.results.results);
-    } catch (err) {
-      console.error('Failed to fetch dishes:', err);
-      message.error(t('dishLoadFailed'));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { dishes, isLoading: loading, isError, mutate } = useDishList();
+  const { trigger: createDish } = useDishCreate();
+  const { trigger: updateDish } = useDishUpdate();
+  const { trigger: deleteDish } = useDishDelete();
 
   useEffect(() => {
-    fetchDishes();
-  }, [fetchDishes]);
+    if (isError) {
+      console.error('Failed to fetch dishes:', isError);
+      message.error(t('dishLoadFailed'));
+    }
+  }, [isError, t]);
 
   // ─── Filter locally ───
   const filteredData = useMemo(() => {
@@ -94,18 +85,14 @@ export default function DishList() {
 
     try {
       if (editingDish) {
-        // PUT /api/dishes/{id}/
-        await apiClient.put(`/api/dishes/${editingDish.id}/`, {
-          body: payload,
-        });
+        await updateDish(editingDish.id, payload);
         message.success(t('dishUpdated'));
       } else {
-        // POST /api/dishes/
-        await apiClient.post('/api/dishes/', { body: payload });
+        await createDish(payload);
         message.success(t('dishCreated'));
       }
       setIsModalVisible(false);
-      fetchDishes(); // refresh list
+      await mutate();
     } catch (err) {
       console.error('Failed to save dish:', err);
       message.error(t('dishSaveFailed'));
@@ -115,7 +102,7 @@ export default function DishList() {
   // ─── Delete via API ───
   const handleDelete = async (id: number) => {
     try {
-      await apiClient.delete(`/api/dishes/${id}/`);
+      await deleteDish(id);
     } catch (err) {
       // Some backends may delete successfully but still return a bad/empty response.
       // We'll verify by reloading dishes before deciding the final UI message.
@@ -126,13 +113,9 @@ export default function DishList() {
     }
 
     try {
-      const response = await apiClient.get<{
-        results: PaginatedResponse<Dish>;
-      }>('/api/dishes/', { query: { page_size: 200 } });
-      const latest = response.results.results;
+      const latestResponse = await mutate();
+      const latest = latestResponse?.results.results ?? dishes;
       const deleted = !latest.some((d) => d.id === id);
-
-      setDishes(latest);
 
       if (deleted) {
         message.success(t('dishDeleted'));

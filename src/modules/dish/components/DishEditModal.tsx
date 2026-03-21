@@ -1,28 +1,13 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
 import { Form, Input, Modal, Button, Row, Col, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { Dish, DishFormValues, DishFormIngredient, PaginatedResponse } from '../mockdata';
-import { dishToFormValues } from '../apiAdapter';
-import { apiClient } from '@/shared/api/apiClient.client';
+import type { Dish, DishFormValues, DishFormIngredient } from '../mockdata';
+import type { RawMaterialDto } from '../dtos/rawMaterial.dto';
+import { dishToFormValues } from '../hooks/dishFormAdapter';
+import { useDishMaterials } from '../hooks/useDishMaterials';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
 
 const { TextArea } = Input;
-
-// ─── Types for material API responses ───
-
-interface ProcessedMaterial {
-    id: number;
-    method_name: string;
-    yield_rate: string;
-}
-
-interface RawMaterial {
-    id: number;
-    name: string;
-    category: number | null;
-    category_name: string | null;
-    specs: ProcessedMaterial[];  // processing methods for this material
-}
 
 interface DishEditModalProps {
     visible: boolean;
@@ -38,40 +23,25 @@ export default function DishEditModal({
     onSave,
 }: DishEditModalProps) {
     const [form] = Form.useForm();
-    const [materials, setMaterials] = useState<RawMaterial[]>([]);
     const { t } = useTranslation();
-
-    // ─── Fetch materials from API ───
-    const fetchMaterials = useCallback(async () => {
-        try {
-            const response = await apiClient.get<{ results: PaginatedResponse<RawMaterial> }>(
-                '/api/materials/',
-                { query: { page_size: 500 } },
-            );
-            setMaterials(response.results.results);
-        } catch (err) {
-            console.error('Failed to fetch materials:', err);
-        }
-    }, []);
+    const { materials } = useDishMaterials(visible);
 
     useEffect(() => {
-        if (visible) {
-            fetchMaterials();
+        if (!visible) {
+            return;
         }
-    }, [visible, fetchMaterials]);
 
-    useEffect(() => {
-        if (visible && record) {
-            form.setFieldsValue(dishToFormValues(record));
-        } else if (visible && !record) {
+        if (record) {
+            form.setFieldsValue(dishToFormValues(record, materials));
+        } else {
             form.resetFields();
         }
-    }, [visible, record, form]);
+    }, [visible, record, materials, form]);
 
     // Get processing options for a selected material
     const getProcessingOptions = (materialId: number | undefined) => {
         if (!materialId) return [];
-        const mat = materials.find((m) => m.id === materialId);
+        const mat = materials.find((m: RawMaterialDto) => m.id === materialId);
         if (!mat) return [];
         return mat.specs.map((s) => ({
             label: s.method_name,
