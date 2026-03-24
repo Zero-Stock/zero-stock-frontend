@@ -22,6 +22,10 @@ interface RegionRow {
   values: Record<string, number>;
 }
 
+function getRowTotal(row: RegionRow) {
+  return Object.values(row.values).reduce((sum, value) => sum + value, 0);
+}
+
 function buildTableData(records: CensusPreviewDto[]) {
   const regionMap = new Map<number, string>();
   const dietMap = new Map<number, string>();
@@ -142,6 +146,25 @@ export default function CensusTable() {
   };
 
   const activeRows = isEditing ? draftRows : rows;
+  const totalRow = useMemo<RegionRow>(
+    () => ({
+      key: 'total',
+      regionId: 0,
+      regionName: 'Total',
+      values: dietColumns.reduce<Record<string, number>>((acc, diet) => {
+        acc[diet.key] = activeRows.reduce(
+          (sum, row) => sum + (row.values[diet.key] ?? 0),
+          0,
+        );
+        return acc;
+      }, {}),
+    }),
+    [activeRows, dietColumns, t],
+  );
+  const tableData = useMemo(
+    () => [...activeRows, totalRow],
+    [activeRows, totalRow],
+  );
 
   const columns = useMemo<ColumnsType<RegionRow>>(
     () => [
@@ -161,9 +184,10 @@ export default function CensusTable() {
         align: 'center' as const,
         render: (_value: number, record: RegionRow) => {
           const currentValue = record.values[diet.key] ?? 0;
+          const isTotalRow = record.key === 'total';
 
-          if (!isEditing) {
-            return <Text>{currentValue}</Text>;
+          if (!isEditing || isTotalRow) {
+            return <Text strong={isTotalRow}>{currentValue}</Text>;
           }
 
           return (
@@ -180,6 +204,15 @@ export default function CensusTable() {
           );
         },
       })),
+      {
+        title: 'Total',
+        key: 'rowTotal',
+        width: 140,
+        align: 'center',
+        render: (_value: unknown, record: RegionRow) => (
+          <Text strong>{getRowTotal(record)}</Text>
+        ),
+      },
     ],
     [dietColumns, isEditing, t],
   );
@@ -229,7 +262,7 @@ export default function CensusTable() {
         tableLayout="fixed"
         scroll={{ x: 'max-content' }}
         columns={columns}
-        dataSource={activeRows}
+        dataSource={tableData}
       />
     </div>
   );
