@@ -24,10 +24,7 @@ export function useCensusList(payload?: CensusListPayload) {
     method: 'POST',
     date: selectedDate,
     options: {
-      body: {
-        company: 1,
-        ...payload,
-      },
+      body: payload,
     },
   };
 

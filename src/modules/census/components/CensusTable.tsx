@@ -2,10 +2,10 @@ import { Button, InputNumber, Space, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
-import type { CensusCreateDto } from '../dtos/censusCreate.dto';
 import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
-import { useCensusCreate } from '../hooks/useCensusCreate';
 import { useCensusList } from '../hooks/useCensusList';
+import { useCensusUpdate } from '../hooks/useCensusUpdate';
+import type { CensusUpdateDto } from '../dtos/censusUpdate.dto';
 
 const { Title, Text } = Typography;
 
@@ -68,7 +68,7 @@ export default function CensusTable() {
   const [isSaving, setIsSaving] = useState(false);
 
   const { census, isLoading, mutate } = useCensusList();
-  const { trigger: saveCensus } = useCensusCreate();
+  const { trigger: saveCensus } = useCensusUpdate();
 
   const { rows: fetchedRows, dietColumns } = useMemo(
     () => buildTableData(census),
@@ -97,7 +97,7 @@ export default function CensusTable() {
   };
 
   const handleSave = async () => {
-    const payload: CensusCreateDto = {
+    const payload: CensusUpdateDto = {
       items: draftRows.flatMap((row) =>
         dietColumns.map((diet) => ({
           region_id: row.regionId,
