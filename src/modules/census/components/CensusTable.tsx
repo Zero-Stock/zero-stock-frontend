@@ -1,4 +1,12 @@
-import { Button, InputNumber, Space, Table, Typography, message } from 'antd';
+import {
+  Button,
+  InputNumber,
+  Space,
+  Table,
+  Typography,
+  message,
+  theme,
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
@@ -66,6 +74,7 @@ function buildTableData(records: CensusPreviewDto[]) {
 
 export default function CensusTable() {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const [rows, setRows] = useState<RegionRow[]>([]);
   const [draftRows, setDraftRows] = useState<RegionRow[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -187,7 +196,14 @@ export default function CensusTable() {
           const isTotalRow = record.key === 'total';
 
           if (!isEditing || isTotalRow) {
-            return <Text strong={isTotalRow}>{currentValue}</Text>;
+            return (
+              <Text
+                strong={isTotalRow}
+                style={isTotalRow ? { color: token.colorPrimary } : undefined}
+              >
+                {currentValue}
+              </Text>
+            );
           }
 
           return (
@@ -210,11 +226,13 @@ export default function CensusTable() {
         width: 140,
         align: 'center',
         render: (_value: unknown, record: RegionRow) => (
-          <Text strong>{getRowTotal(record)}</Text>
+          <Text strong style={{ color: token.colorPrimary }}>
+            {getRowTotal(record)}
+          </Text>
         ),
       },
     ],
-    [dietColumns, isEditing, t],
+    [dietColumns, isEditing, t, token.colorPrimary],
   );
 
   return (
