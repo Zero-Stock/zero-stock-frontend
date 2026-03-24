@@ -22,9 +22,11 @@ export function useCensusList(payload?: CensusListPayload) {
   const key: SWRKey = {
     url: '/api/census/search/',
     method: 'POST',
-    date: selectedDate,
     options: {
-      body: payload,
+      body: {
+        date: selectedDate,
+        ...payload,
+      },
     },
   };
 
