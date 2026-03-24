@@ -65,7 +65,7 @@ export default function MaterialEditModal({
         id: record.id,
         name: values.name,
         category: values.category,
-        yield_rate: values.yield_rate,
+        yield_rate: String(values.yield_rate),
         specs,
       };
 

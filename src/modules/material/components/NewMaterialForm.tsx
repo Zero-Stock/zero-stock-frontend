@@ -96,7 +96,7 @@ export default function NewMaterialForm() {
     const data = values.items.map((item) => ({
       name: item.name,
       category: item.category,
-      yield_rate: item.yield_rate,
+      yield_rate: String(item.yield_rate),
       specs: item.specs
         ? item.specs
             .split(',')
