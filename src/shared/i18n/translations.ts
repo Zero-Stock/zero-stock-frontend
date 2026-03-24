@@ -15,6 +15,8 @@ export const translations = {
   navMeals: { zh: '菜谱安排', en: 'Meals' },
   navCensus: { zh: '人数统计', en: 'Census' },
   navProcurement: { zh: '采购管理', en: 'Procurement' },
+  navProcurementOrder: { zh: '采购单', en: 'Procurement Order' },
+  navReceivingOrder: { zh: '收货单', en: 'Receiving Order' },
   navProcessing: { zh: '加工管理', en: 'Processing' },
   navDishes: { zh: '菜品管理', en: 'Dishes' },
   navSupplier: { zh: '供应商', en: 'Supplier' },
