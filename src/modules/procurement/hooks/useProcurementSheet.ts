@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
-import type { ProcurementSheetItemDto } from '@/modules/procurement/dtos/procurementSheetItem.dto';
+import type { ProcurementSheetDto } from '@/modules/procurement/dtos/procurementSheetItem.dto';
 
 export function useProcurementSheet(procurementId?: number) {
   const key: SWRKey | null = procurementId
@@ -12,13 +12,18 @@ export function useProcurementSheet(procurementId?: number) {
     : null;
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<ProcurementSheetItemDto[]>>(key);
+    useSWR<ApiResponseDto<ProcurementSheetDto>>(key);
+
+  const sheet = useMemo(() => {
+    return data?.results;
+  }, [data]);
 
   const items = useMemo(() => {
-    return data?.results ?? [];
+    return data?.results?.items ?? [];
   }, [data]);
 
   return {
+    sheet,
     items,
     error,
     isLoading,

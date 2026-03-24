@@ -2,6 +2,7 @@ import { apiClient } from '@/shared/api/apiClient.client';
 
 interface ProcurementGenerateDto {
   date: string;
+  company: number;
 }
 
 interface ProcurementGenerateResponseDto {
@@ -12,11 +13,14 @@ interface ProcurementGenerateResponseDto {
 
 export function useProcurementGenerate() {
   return {
-    trigger: async (data: ProcurementGenerateDto) => {
+    trigger: async (data: Omit<ProcurementGenerateDto, 'company'>) => {
       return apiClient.post<ProcurementGenerateResponseDto>(
         '/api/procurement/generate/',
         {
-          body: data,
+          body: {
+            company: 1,
+            ...data,
+          },
         },
       );
     },

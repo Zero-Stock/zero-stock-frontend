@@ -1,15 +1,4 @@
-export interface SupplierOptionDto {
-  supplier_material_id: number;
-  supplier_name: string;
-  price: number | null;
-  unit_name: string | null;
-  kg_per_unit: number | null;
-}
-
 export interface ProcurementSheetItemDto {
-  id?: number;
-  item_id?: number;
-
   name: string;
   category: string;
 
@@ -24,7 +13,15 @@ export interface ProcurementSheetItemDto {
 
   supplier: string | null;
   supplier_unit_name: string | null;
+  supplier_kg_per_unit: number | null;
+  supplier_price: number | null;
+}
 
-  selected_supplier_material_id?: number | null;
-  available_suppliers?: SupplierOptionDto[];
+export interface ProcurementSheetDto {
+  id: number;
+  date: string;
+  day_of_week: string;
+  company: string;
+  status: string;
+  items: ProcurementSheetItemDto[];
 }

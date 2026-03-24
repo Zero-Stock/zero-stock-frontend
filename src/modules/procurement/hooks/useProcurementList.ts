@@ -1,42 +1,48 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import { useDateStore } from '@/shared/stores/dateStore';
 import type { ProcurementPreviewDto } from '../dtos/procurementPreview.dto';
 
-interface UseProcurementListParams {
+export interface ProcurementListPayload {
   date?: string;
-  search?: string;
+  start?: string;
+  end?: string;
+  status?: string;
+  ordering?: string;
+  page?: number;
+  page_size?: number;
 }
 
-export function useProcurementList(params?: UseProcurementListParams) {
-  const queryParams = new URLSearchParams();
-
-  if (params?.date) {
-    queryParams.set('date', params.date);
-  }
-
-  if (params?.search) {
-    queryParams.set('search', params.search);
-  }
-
-  const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
+export function useProcurementList(payload?: ProcurementListPayload) {
+  const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
-    url: `/api/procurement/${query}`,
+    url: '/api/procurement/search/',
+    method: 'POST',
+    date: selectedDate,
+    options: {
+      body: {
+        company: 1,
+        ...payload,
+      },
+    },
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<ProcurementPreviewDto[]>>(key);
+    useSWR<ApiListResponseDto<ProcurementPreviewDto[]>>(key);
 
   const procurements = useMemo(() => {
-    return data?.results ?? [];
+    if (!data) return [];
+    return data.results?.results;
   }, [data]);
 
   return {
     procurements,
-    error,
+    total: data?.results.total ?? 0,
     isLoading,
+    isError: error,
     mutate,
   };
 }

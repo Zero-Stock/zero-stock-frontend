@@ -6,15 +6,21 @@ interface ProcurementAssignSupplierItemDto {
 }
 
 interface ProcurementAssignSuppliersDto {
+  date: string;
   assignments: ProcurementAssignSupplierItemDto[];
 }
 
 export function useProcurementAssignSuppliers() {
   return {
     trigger: async (data: ProcurementAssignSuppliersDto) => {
-      return apiClient.post('/api/procurement/assign-suppliers/', {
-        body: data,
-      });
+      return apiClient.post(
+        `/api/procurement/assign-suppliers/?date=${data.date}`,
+        {
+          body: {
+            assignments: data.assignments,
+          },
+        },
+      );
     },
   };
 }

@@ -21,6 +21,8 @@ import SupplierListPage from './modules/supplier/pages/SupplierListPage';
 import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
 import CensusListPage from './modules/census/pages/CensusListPage';
+import ProcurementListPage from './modules/procurement/pages/ProcurementListPage';
+import ReceivingListPage from './modules/procurement/pages/ReceivingListPage';
 
 export interface RouteConfig {
   path: string;
@@ -66,7 +68,22 @@ export const routes: RouteConfig[] = [
     titleKey: 'navProcurement',
     icon: <ShoppingCartOutlined />,
     showInMenu: true,
-    // component: ProcurementListPage,
+    children: [
+      {
+        path: '/procurement/order',
+        title: 'Procurement Order',
+        titleKey: 'navProcurementOrder',
+        showInMenu: true,
+        component: ProcurementListPage,
+      },
+      {
+        path: '/procurement/receiving',
+        title: 'Receiving Order',
+        titleKey: 'navReceivingOrder',
+        showInMenu: true,
+        component: ReceivingListPage,
+      },
+    ],
   },
 
   {

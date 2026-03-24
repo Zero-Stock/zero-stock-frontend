@@ -12,12 +12,14 @@ import { useProcurementAssignSuppliers } from '../hooks/useProcurementAssignSupp
 import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
 import type { ProcurementItemDto } from '../dtos/procurementItem.dto';
 import ProcurementSupplierEditModal from './ProcurementSupplierEditModal';
+import { handleExportPdf } from './handleExportPdf';
 
 const { Title } = Typography;
 
 export default function ProcurementList() {
   const { t } = useTranslation();
   const [date] = useState(dayjs().format('YYYY-MM-DD'));
+  // const [date] = useState('2026-03-23');
   const [procurementId, setProcurementId] = useState<number | undefined>(
     undefined,
   );
@@ -78,32 +80,15 @@ export default function ProcurementList() {
     }
   };
 
-  const handleExportPdf = () => {
-    Modal.confirm({
-      title: 'Export PDF',
-      content:
-        'Do you want to regenerate the procurement first to make sure the exported sheet is up to date?',
-      okText: 'Regenerate First',
-      cancelText: 'Export Directly',
-      onOk: async () => {
-        try {
-          const result = await generateTrigger({ date });
-          setProcurementId(result.id);
-          await mutateList();
-          await mutateSheet();
-          await mutateProcurementItems();
-          message.success('Procurement regenerated');
-          setTimeout(() => {
-            window.print();
-          }, 300);
-        } catch (error) {
-          if (!(error instanceof Error)) return;
-          message.error(error.message);
-        }
-      },
-      onCancel: () => {
-        window.print();
-      },
+  const onExportPdf = () => {
+    handleExportPdf({
+      date,
+      items: sheetItems,
+      generateTrigger,
+      setProcurementId,
+      mutateList,
+      mutateSheet,
+      mutateProcurementItems,
     });
   };
 
@@ -161,6 +146,7 @@ export default function ProcurementList() {
 
     try {
       await assignSuppliersTrigger({
+        date,
         assignments: [
           {
             item_id: editingProcurementItem.id,
@@ -267,17 +253,17 @@ export default function ProcurementList() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="print-header mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
           Procurement Order
         </Title>
 
-        <div className="flex items-center gap-3">
+        <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
             {hasProcurement ? 'Regenerate' : 'Generate'}
           </Button>
 
-          <Button onClick={handleExportPdf} disabled={!procurementId}>
+          <Button onClick={onExportPdf} disabled={!procurementId}>
             Export PDF
           </Button>
 
@@ -292,9 +278,7 @@ export default function ProcurementList() {
       </div>
 
       <Table
-        rowKey={(record, index) =>
-          String(record.item_id ?? record.name ?? index)
-        }
+        rowKey={(record, index) => String(record.name ?? index)}
         columns={columns}
         dataSource={sheetItems}
         loading={loading}

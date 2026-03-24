@@ -19,7 +19,7 @@ export function SWRConfigProvider({ children }: SWRConfigProviderProps) {
       value={{
         fetcher: async (key: SWRKey) => {
           const { url, method = 'GET', options } = key;
-
+          console.log('key', key);
           switch (method) {
             case 'POST':
               return apiClient.post(url, options);
