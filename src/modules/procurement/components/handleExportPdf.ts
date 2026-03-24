@@ -1,9 +1,11 @@
 import { Modal, message } from 'antd';
 import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
+import type { TranslationKey } from '@/shared/i18n/translations';
 
 export interface HandleExportPdfParams {
   date: string;
   items: ProcurementSheetItemDto[];
+  t: (key: TranslationKey) => string;
   generateTrigger: (params: {
     date: string;
   }) => Promise<{ id: number; [key: string]: any }>;
@@ -16,6 +18,7 @@ export interface HandleExportPdfParams {
 function buildPrintableHtml(
   date: string,
   items: ProcurementSheetItemDto[],
+  t: (key: TranslationKey) => string,
 ): string {
   const rows = items
     .map(
@@ -43,7 +46,7 @@ function buildPrintableHtml(
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>Procurement Order</title>
+        <title>${t('procurementOrderTitle')}</title>
         <style>
           @page {
             size: A4 landscape;
@@ -51,7 +54,13 @@ function buildPrintableHtml(
           }
 
           body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family:
+              "PingFang SC",
+              "Hiragino Sans GB",
+              "Microsoft YaHei",
+              Arial,
+              Helvetica,
+              sans-serif;
             color: #000;
             margin: 0;
             padding: 0;
@@ -98,25 +107,25 @@ function buildPrintableHtml(
       </head>
       <body>
         <div class="header">
-          <div class="title">Procurement Order</div>
-          <div class="meta">Date: ${date}</div>
+          <div class="title">${t('procurementOrderTitle')}</div>
+          <div class="meta">${t('todayIs')}${date}</div>
         </div>
 
         <table>
           <thead>
             <tr>
-              <th>品名</th>
-              <th>规格/类别</th>
-              <th>需求(kg)</th>
-              <th>需求(特殊单位)</th>
-              <th>库存(kg)</th>
-              <th>库存(特殊单位)</th>
-              <th>采购需求(kg)</th>
-              <th>采购需求(特殊单位)</th>
-              <th>供应商</th>
-              <th>供应商单位</th>
-              <th>kg/单位</th>
-              <th>价格</th>
+              <th>${t('procurementColName')}</th>
+              <th>${t('procurementColCategory')}</th>
+              <th>${t('procurementColDemandKg')}</th>
+              <th>${t('procurementColDemandUnit')}</th>
+              <th>${t('procurementColStockKg')}</th>
+              <th>${t('procurementColStockUnit')}</th>
+              <th>${t('procurementColPurchaseKg')}</th>
+              <th>${t('procurementColPurchaseUnit')}</th>
+              <th>${t('procurementColSupplier')}</th>
+              <th>${t('procurementColSupplierUnit')}</th>
+              <th>${t('procurementColSupplierKgPerUnit')}</th>
+              <th>${t('procurementColSupplierPrice')}</th>
             </tr>
           </thead>
           <tbody>
@@ -128,16 +137,20 @@ function buildPrintableHtml(
   `;
 }
 
-function printProcurementSheet(date: string, items: ProcurementSheetItemDto[]) {
+function printProcurementSheet(
+  date: string,
+  items: ProcurementSheetItemDto[],
+  t: (key: TranslationKey) => string,
+) {
   const printWindow = window.open('', '_blank', 'width=1400,height=900');
 
   if (!printWindow) {
-    message.error('Failed to open print window');
+    message.error(t('procurementPrintWindowFailed'));
     return;
   }
 
   printWindow.document.open();
-  printWindow.document.write(buildPrintableHtml(date, items));
+  printWindow.document.write(buildPrintableHtml(date, items, t));
   printWindow.document.close();
 
   printWindow.focus();
@@ -147,9 +160,24 @@ function printProcurementSheet(date: string, items: ProcurementSheetItemDto[]) {
   }, 300);
 }
 
+function mapRegenerateError(
+  errorMessage: string,
+  t: (key: TranslationKey) => string,
+) {
+  if (
+    errorMessage.includes('already SUBMITTED') &&
+    errorMessage.includes('Cannot regenerate')
+  ) {
+    return t('procurementRegenerateBlockedSubmitted');
+  }
+
+  return errorMessage || t('procurementRegenerateFailed');
+}
+
 export const handleExportPdf = ({
   date,
   items,
+  t,
   generateTrigger,
   setProcurementId,
   mutateList,
@@ -157,11 +185,10 @@ export const handleExportPdf = ({
   mutateProcurementItems,
 }: HandleExportPdfParams) => {
   Modal.confirm({
-    title: 'Export PDF',
-    content:
-      'Do you want to regenerate the procurement first to make sure the exported sheet is up to date?',
-    okText: 'Regenerate First',
-    cancelText: 'Export Directly',
+    title: t('procurementExportTitle'),
+    content: t('procurementExportConfirm'),
+    okText: t('procurementExportRegenerateFirst'),
+    cancelText: t('procurementExportDirectly'),
     onOk: async () => {
       try {
         const result = await generateTrigger({ date });
@@ -169,14 +196,14 @@ export const handleExportPdf = ({
         await mutateList();
         await mutateSheet();
         await mutateProcurementItems();
-        message.success('Procurement regenerated');
+        message.success(t('procurementRegenerateSuccess'));
       } catch (error) {
         if (!(error instanceof Error)) return;
-        message.error(error.message);
+        message.error(mapRegenerateError(error.message, t));
       }
     },
     onCancel: () => {
-      printProcurementSheet(date, items);
+      printProcurementSheet(date, items, t);
     },
   });
 };

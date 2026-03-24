@@ -40,3 +40,69 @@
 .read-the-docs {
   color: #888;
 }
+@media print {
+  html,
+  body,
+  #root {
+    background: #fff !important;
+  }
+
+  .ant-layout-sider,
+  .ant-layout-header,
+  .ant-breadcrumb,
+  .no-print,
+  .ant-btn,
+  button,
+  .ant-modal-root,
+  .ant-message {
+    display: none !important;
+  }
+
+  .ant-layout,
+  .ant-layout-content {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-header {
+    margin-bottom: 16px !important;
+  }
+
+  #procurement-print-area,
+  .ant-table-wrapper,
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content {
+    overflow: visible !important;
+  }
+
+  .ant-table table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    color: #000 !important;
+    background: #fff !important;
+    border: 1px solid #666 !important;
+    padding: 6px 4px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    word-break: break-word !important;
+    line-height: 1.25 !important;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #f2f2f2 !important;
+    font-weight: 700 !important;
+  }
+
+  .ant-pagination,
+  .ant-table-pagination {
+    display: none !important;
+  }
+}

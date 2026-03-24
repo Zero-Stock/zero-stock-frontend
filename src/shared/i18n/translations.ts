@@ -246,6 +246,154 @@ export const translations = {
   },
   censusRegionColumn: { zh: '区域', en: 'Region' },
   censusSaved: { zh: '人数统计已保存', en: 'Census updated' },
+  // ─── Procurement Module ───
+  procurementOrderTitle: { zh: '采购单', en: 'Procurement Order' },
+  receivingOrderTitle: { zh: '收货单', en: 'Receiving Order' },
+
+  procurementGenerate: { zh: '生成采购单', en: 'Generate' },
+  procurementRegenerate: { zh: '重新生成', en: 'Regenerate' },
+  procurementSubmit: { zh: '确认采购单', en: 'Submit' },
+  procurementExportPdf: { zh: '导出 PDF / 打印', en: 'Export PDF / Print' },
+
+  procurementGenerateSuccess: {
+    zh: '采购单已生成',
+    en: 'Procurement generated',
+  },
+  procurementRegenerateSuccess: {
+    zh: '采购单已重新生成',
+    en: 'Procurement regenerated',
+  },
+  procurementSubmitSuccess: {
+    zh: '采购单已确认',
+    en: 'Procurement submitted',
+  },
+  procurementSupplierUpdated: {
+    zh: '供应商已更新',
+    en: 'Supplier updated',
+  },
+
+  procurementNoData: {
+    zh: '暂无采购单，请先点击生成采购单',
+    en: 'No procurement order yet. Please click Generate first.',
+  },
+  procurementNoItems: {
+    zh: '暂无采购单明细',
+    en: 'No procurement items',
+  },
+  receivingNoData: {
+    zh: '暂无可收货的采购单，请先确认采购单',
+    en: 'No receivable procurement order yet. Please submit procurement first.',
+  },
+  receivingNoItems: {
+    zh: '暂无收货单明细',
+    en: 'No receiving items',
+  },
+
+  procurementColName: { zh: '品名', en: 'Name' },
+  procurementColCategory: { zh: '规格/类别', en: 'Category' },
+  procurementColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
+  procurementColDemandUnit: {
+    zh: '需求(特殊单位)',
+    en: 'Demand (Unit)',
+  },
+  procurementColStockKg: { zh: '库存(kg)', en: 'Stock (kg)' },
+  procurementColStockUnit: {
+    zh: '库存(特殊单位)',
+    en: 'Stock (Unit)',
+  },
+  procurementColPurchaseKg: {
+    zh: '采购需求(kg)',
+    en: 'Purchase (kg)',
+  },
+  procurementColPurchaseUnit: {
+    zh: '采购需求(特殊单位)',
+    en: 'Purchase (Unit)',
+  },
+  procurementColSupplier: { zh: '供应商', en: 'Supplier' },
+  procurementColSupplierUnit: {
+    zh: '供应商单位',
+    en: 'Supplier Unit',
+  },
+  procurementColSupplierKgPerUnit: {
+    zh: 'kg/单位',
+    en: 'kg/unit',
+  },
+  procurementColSupplierPrice: { zh: '价格', en: 'Price' },
+  procurementColAction: { zh: '操作', en: 'Action' },
+
+  procurementEditSupplierTitle: {
+    zh: '编辑供应商',
+    en: 'Edit Supplier',
+  },
+  procurementEditSupplierDesc: {
+    zh: '请选择该原料的供应商。',
+    en: 'Please select one supplier for this material.',
+  },
+  procurementNoAvailableSuppliers: {
+    zh: '暂无可选供应商',
+    en: 'No available suppliers',
+  },
+
+  procurementExportTitle: {
+    zh: '导出 / 打印采购单',
+    en: 'Export / Print Procurement Order',
+  },
+  procurementExportConfirm: {
+    zh: '是否先重新生成采购单，确保导出内容为最新？',
+    en: 'Do you want to regenerate the procurement first to make sure the exported content is up to date?',
+  },
+  procurementExportDirectly: {
+    zh: '直接导出 / 打印',
+    en: 'Export / Print Directly',
+  },
+  procurementExportRegenerateFirst: {
+    zh: '先重新生成',
+    en: 'Regenerate First',
+  },
+
+  procurementPrintWindowFailed: {
+    zh: '打开打印窗口失败，请检查浏览器拦截设置',
+    en: 'Failed to open print window, please check browser popup blocker',
+  },
+  procurementRegenerateBlockedSubmitted: {
+    zh: '采购单已确认，无法重新生成',
+    en: 'Procurement order already submitted, cannot regenerate',
+  },
+  procurementRegenerateFailed: {
+    zh: '重新生成采购单失败',
+    en: 'Failed to regenerate procurement order',
+  },
+
+  receivingColExpectedKg: { zh: '应收(kg)', en: 'Expected (kg)' },
+  receivingColExpectedUnit: {
+    zh: '应收(特殊单位)',
+    en: 'Expected (Unit)',
+  },
+  receivingColActualKg: { zh: '实收(kg)', en: 'Actual (kg)' },
+  receivingColActualUnit: {
+    zh: '实收(特殊单位)',
+    en: 'Actual (Unit)',
+  },
+  receivingSubmitSuccess: {
+    zh: '收货单已提交',
+    en: 'Receiving submitted',
+  },
+  procurementSubmitConfirm: {
+    zh: '确定要确认这张采购单吗？',
+    en: 'Are you sure you want to submit this procurement order?',
+  },
+  procurementItemDataNotReady: {
+    zh: '采购单明细数据尚未准备好',
+    en: 'Procurement item data is not ready yet',
+  },
+  procurementItemNotFound: {
+    zh: '未找到匹配的采购单明细',
+    en: 'Cannot find matching procurement item',
+  },
+  procurementMissingItemId: {
+    zh: '缺少采购单明细 ID',
+    en: 'Missing procurement item id',
+  },
 
   // ─── Material Module ───
   materialListTitle: { zh: '原料管理', en: 'Materials' },

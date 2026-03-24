@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, InputNumber, Table, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
-
+import { useTranslation } from '@/shared/i18n/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementSheet } from '../hooks/useProcurementSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
@@ -12,18 +12,27 @@ import type { ReceivingTemplateItemDto } from '../dtos/receivingTemplate.dto';
 
 const { Title } = Typography;
 
+type EditedReceivingRow = {
+  actual_quantity: number;
+  actual_unit_qty: number;
+};
+
 type ReceivingTableRow = ProcurementSheetItemDto & {
+  expected_quantity: number;
+  expected_unit_qty: number;
   actual_quantity: number;
   actual_unit_qty: number;
 };
 
 export default function ReceivingList() {
+  const { t } = useTranslation();
   const [date] = useState(dayjs().format('YYYY-MM-DD'));
-  // const [date] = useState('2026-03-23');
   const [procurementId, setProcurementId] = useState<number | undefined>(
     undefined,
   );
-  const [editedRows, setEditedRows] = useState<Record<string, number>>({});
+  const [editedRows, setEditedRows] = useState<
+    Record<string, EditedReceivingRow>
+  >({});
 
   const {
     procurements,
@@ -61,27 +70,56 @@ export default function ReceivingList() {
 
   const tableData = useMemo<ReceivingTableRow[]>(() => {
     return sheetItems.map((sheetItem) => {
-      const purchaseKg = Number(sheetItem.purchase_kg ?? 0);
-      const kgPerUnit = Number(sheetItem.supplier_kg_per_unit ?? 0);
-      const purchaseUnitQty = Number(sheetItem.purchase_unit_qty ?? 0);
+      const expectedQuantity = Number(sheetItem.purchase_kg ?? 0);
+      const expectedUnitQty = Number(sheetItem.purchase_unit_qty ?? 0);
 
-      const actualQuantity = editedRows[sheetItem.name] ?? purchaseKg;
-      const actualUnitQty =
-        kgPerUnit > 0
-          ? Number((actualQuantity / kgPerUnit).toFixed(2))
-          : purchaseUnitQty;
+      const edited = editedRows[sheetItem.name];
 
       return {
         ...sheetItem,
-        actual_quantity: actualQuantity,
-        actual_unit_qty: actualUnitQty,
+        expected_quantity: expectedQuantity,
+        expected_unit_qty: expectedUnitQty,
+        actual_quantity: edited?.actual_quantity ?? expectedQuantity,
+        actual_unit_qty: edited?.actual_unit_qty ?? expectedUnitQty,
       };
     });
   }, [sheetItems, editedRows]);
 
+  const handleActualKgChange = (
+    record: ReceivingTableRow,
+    value: number | null,
+  ) => {
+    const nextValue = value == null ? 0 : Number(value);
+
+    setEditedRows((prev) => ({
+      ...prev,
+      [record.name]: {
+        actual_quantity: nextValue,
+        actual_unit_qty:
+          prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty,
+      },
+    }));
+  };
+
+  const handleActualUnitChange = (
+    record: ReceivingTableRow,
+    value: number | null,
+  ) => {
+    const nextValue = value == null ? 0 : Number(value);
+
+    setEditedRows((prev) => ({
+      ...prev,
+      [record.name]: {
+        actual_quantity:
+          prev[record.name]?.actual_quantity ?? record.expected_quantity,
+        actual_unit_qty: nextValue,
+      },
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!template?.procurement_id) {
-      message.warning('No receiving template available');
+      message.warning(t('receivingNoData'));
       return;
     }
 
@@ -91,7 +129,7 @@ export default function ReceivingList() {
         items: (template.items ?? []).map((item: ReceivingTemplateItemDto) => ({
           raw_material_id: item.raw_material_id,
           actual_quantity:
-            editedRows[item.raw_material_name] ??
+            editedRows[item.raw_material_name]?.actual_quantity ??
             Number(
               sheetItems.find(
                 (sheetItem) => sheetItem.name === item.raw_material_name,
@@ -100,7 +138,7 @@ export default function ReceivingList() {
         })),
       });
 
-      message.success('Receiving submitted');
+      message.success(t('receivingSubmitSuccess'));
       setEditedRows({});
       await mutateList();
       await mutateSheet();
@@ -113,90 +151,92 @@ export default function ReceivingList() {
 
   const columns: ColumnsType<ReceivingTableRow> = [
     {
-      title: '品名',
+      title: t('procurementColName'),
       dataIndex: 'name',
       key: 'name',
       width: 160,
     },
     {
-      title: '规格/类别',
+      title: t('procurementColCategory'),
       dataIndex: 'category',
       key: 'category',
       width: 140,
     },
     {
-      title: '需求(kg)',
+      title: t('procurementColDemandKg'),
       dataIndex: 'demand_kg',
       key: 'demand_kg',
       width: 120,
     },
     {
-      title: '需求(特殊单位)',
+      title: t('procurementColDemandUnit'),
       dataIndex: 'demand_unit_qty',
       key: 'demand_unit_qty',
       width: 140,
     },
     {
-      title: '库存(kg)',
+      title: t('procurementColStockKg'),
       dataIndex: 'stock_kg',
       key: 'stock_kg',
       width: 120,
     },
     {
-      title: '库存(特殊单位)',
+      title: t('procurementColStockUnit'),
       dataIndex: 'stock_unit_qty',
       key: 'stock_unit_qty',
       width: 140,
     },
     {
-      title: '供应商',
+      title: t('procurementColSupplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 180,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: '供应商单位',
+      title: t('procurementColSupplierUnit'),
       dataIndex: 'supplier_unit_name',
       key: 'supplier_unit_name',
       width: 120,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: '应收(kg)',
-      dataIndex: 'purchase_kg',
-      key: 'purchase_kg',
+      title: t('receivingColExpectedKg'),
+      dataIndex: 'expected_quantity',
+      key: 'expected_quantity',
       width: 140,
     },
     {
-      title: '应收(特殊单位)',
-      dataIndex: 'purchase_unit_qty',
-      key: 'purchase_unit_qty',
+      title: t('receivingColExpectedUnit'),
+      dataIndex: 'expected_unit_qty',
+      key: 'expected_unit_qty',
       width: 160,
     },
     {
-      title: '实收(kg)',
+      title: t('receivingColActualKg'),
       key: 'actual_quantity',
       width: 160,
       render: (_, record) => (
         <InputNumber
-          value={record.actual_quantity ?? 0}
+          value={record.actual_quantity}
           min={0}
-          onChange={(value) => {
-            setEditedRows((prev) => ({
-              ...prev,
-              [record.name]: value == null ? 0 : Number(value),
-            }));
-          }}
+          onChange={(value) => handleActualKgChange(record, value)}
           className="w-full"
         />
       ),
     },
     {
-      title: '实收(特殊单位)',
+      title: t('receivingColActualUnit'),
       key: 'actual_unit_qty',
       width: 170,
-      render: (_, record) => record.actual_unit_qty ?? '-',
+      render: (_, record) => (
+        <InputNumber
+          value={record.actual_unit_qty}
+          min={0}
+          onChange={(value) => handleActualUnitChange(record, value)}
+          className="w-full"
+        />
+      ),
     },
   ];
 
@@ -207,11 +247,11 @@ export default function ReceivingList() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          Receiving Order
+          {t('receivingOrderTitle')}
         </Title>
 
         <Button type="primary" onClick={handleSubmit} disabled={!hasTemplate}>
-          Submit
+          {t('procurementSubmit')}
         </Button>
       </div>
 
@@ -223,11 +263,9 @@ export default function ReceivingList() {
         pagination={{ pageSize: 10 }}
         tableLayout="fixed"
         locale={{
-          emptyText: hasTemplate
-            ? '暂无收货单明细'
-            : '暂无可收货的采购单，请先提交 Procurement',
+          emptyText: hasTemplate ? t('receivingNoItems') : t('receivingNoData'),
         }}
-        scroll={{ x: 2100 }}
+        scroll={{ x: 2200 }}
       />
     </div>
   );

@@ -19,7 +19,6 @@ const { Title } = Typography;
 export default function ProcurementList() {
   const { t } = useTranslation();
   const [date] = useState(dayjs().format('YYYY-MM-DD'));
-  // const [date] = useState('2026-03-23');
   const [procurementId, setProcurementId] = useState<number | undefined>(
     undefined,
   );
@@ -70,7 +69,7 @@ export default function ProcurementList() {
     try {
       const result = await generateTrigger({ date });
       setProcurementId(result.id);
-      message.success('Procurement generated');
+      message.success(t('procurementGenerateSuccess'));
       await mutateList();
       await mutateSheet();
       await mutateProcurementItems();
@@ -82,8 +81,9 @@ export default function ProcurementList() {
 
   const onExportPdf = () => {
     handleExportPdf({
-      date,
       items: sheetItems,
+      date,
+      t,
       generateTrigger,
       setProcurementId,
       mutateList,
@@ -94,19 +94,19 @@ export default function ProcurementList() {
 
   const handleSubmit = async () => {
     if (!procurementId) {
-      message.warning('Please generate procurement first');
+      message.warning(t('procurementNoData'));
       return;
     }
 
     Modal.confirm({
-      title: 'Submit Procurement',
-      content: 'Are you sure you want to submit this procurement order?',
-      okText: 'Submit',
+      title: t('procurementSubmit'),
+      content: t('procurementSubmitConfirm'),
+      okText: t('procurementSubmit'),
       cancelText: t('cancel'),
       onOk: async () => {
         try {
           await submitTrigger(procurementId);
-          message.success('Procurement submitted');
+          message.success(t('procurementSubmitSuccess'));
           await mutateList();
           await mutateSheet();
           await mutateProcurementItems();
@@ -120,7 +120,7 @@ export default function ProcurementList() {
 
   const handleOpenSupplierModal = (record: ProcurementSheetItemDto) => {
     if (!procurementItems.length) {
-      message.warning('Procurement item data is not ready yet');
+      message.warning(t('procurementItemDataNotReady'));
       return;
     }
 
@@ -129,7 +129,7 @@ export default function ProcurementList() {
       null;
 
     if (!matchedProcurementItem) {
-      message.error('Cannot find matching procurement item');
+      message.error(t('procurementItemNotFound'));
       return;
     }
 
@@ -140,7 +140,7 @@ export default function ProcurementList() {
 
   const handleSaveSupplier = async (supplierMaterialId: number | null) => {
     if (!editingProcurementItem?.id) {
-      message.error('Missing procurement item id');
+      message.error(t('procurementMissingItemId'));
       return;
     }
 
@@ -155,7 +155,7 @@ export default function ProcurementList() {
         ],
       });
 
-      message.success('Supplier updated');
+      message.success(t('procurementSupplierUpdated'));
 
       setSupplierModalOpen(false);
       setEditingRow(null);
@@ -171,69 +171,69 @@ export default function ProcurementList() {
 
   const columns: ColumnsType<ProcurementSheetItemDto> = [
     {
-      title: '品名',
+      title: t('procurementColName'),
       dataIndex: 'name',
       key: 'name',
       width: 160,
     },
     {
-      title: '规格/类别',
+      title: t('procurementColCategory'),
       dataIndex: 'category',
       key: 'category',
       width: 140,
     },
     {
-      title: '需求(kg)',
+      title: t('procurementColDemandKg'),
       dataIndex: 'demand_kg',
       key: 'demand_kg',
       width: 120,
     },
     {
-      title: '需求(特殊单位)',
+      title: t('procurementColDemandUnit'),
       dataIndex: 'demand_unit_qty',
       key: 'demand_unit_qty',
       width: 140,
     },
     {
-      title: '库存(kg)',
+      title: t('procurementColStockKg'),
       dataIndex: 'stock_kg',
       key: 'stock_kg',
       width: 120,
     },
     {
-      title: '库存(特殊单位)',
+      title: t('procurementColStockUnit'),
       dataIndex: 'stock_unit_qty',
       key: 'stock_unit_qty',
       width: 140,
     },
     {
-      title: '采购需求(kg)',
+      title: t('procurementColPurchaseKg'),
       dataIndex: 'purchase_kg',
       key: 'purchase_kg',
       width: 140,
     },
     {
-      title: '采购需求(特殊单位)',
+      title: t('procurementColPurchaseUnit'),
       dataIndex: 'purchase_unit_qty',
       key: 'purchase_unit_qty',
       width: 160,
     },
     {
-      title: '供应商',
+      title: t('procurementColSupplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 180,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: '供应商单位',
+      title: t('procurementColSupplierUnit'),
       dataIndex: 'supplier_unit_name',
       key: 'supplier_unit_name',
       width: 120,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: '操作',
+      title: t('procurementColAction'),
       key: 'action',
       width: 100,
       render: (_, record) => (
@@ -255,16 +255,17 @@ export default function ProcurementList() {
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          Procurement Order
+          {t('procurementOrderTitle')}
         </Title>
-
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
-            {hasProcurement ? 'Regenerate' : 'Generate'}
+            {hasProcurement
+              ? t('procurementRegenerate')
+              : t('procurementGenerate')}
           </Button>
 
           <Button onClick={onExportPdf} disabled={!procurementId}>
-            Export PDF
+            {t('procurementExportPdf')}
           </Button>
 
           <Button
@@ -272,25 +273,27 @@ export default function ProcurementList() {
             onClick={handleSubmit}
             disabled={!procurementId}
           >
-            Submit
+            {t('procurementSubmit')}
           </Button>
         </div>
       </div>
 
-      <Table
-        rowKey={(record, index) => String(record.name ?? index)}
-        columns={columns}
-        dataSource={sheetItems}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        tableLayout="fixed"
-        locale={{
-          emptyText: hasProcurement
-            ? '暂无采购单明细'
-            : '暂无采购单，请先点击 Generate',
-        }}
-        scroll={{ x: 1750 }}
-      />
+      <div id="procurement-print-area">
+        <Table
+          rowKey={(record, index) => String(record.name ?? index)}
+          columns={columns}
+          dataSource={sheetItems}
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          tableLayout="fixed"
+          locale={{
+            emptyText: hasProcurement
+              ? t('procurementNoItems')
+              : t('procurementNoData'),
+          }}
+          scroll={{ x: 1750 }}
+        />
+      </div>
 
       <ProcurementSupplierEditModal
         open={supplierModalOpen}
