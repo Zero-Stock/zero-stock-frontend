@@ -1,4 +1,12 @@
-import { Button, InputNumber, Space, Table, Typography, message } from 'antd';
+import {
+  Button,
+  InputNumber,
+  Space,
+  Table,
+  Typography,
+  message,
+  theme,
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
@@ -20,6 +28,10 @@ interface RegionRow {
   regionId: number;
   regionName: string;
   values: Record<string, number>;
+}
+
+function getRowTotal(row: RegionRow) {
+  return Object.values(row.values).reduce((sum, value) => sum + value, 0);
 }
 
 function buildTableData(records: CensusPreviewDto[]) {
@@ -62,6 +74,7 @@ function buildTableData(records: CensusPreviewDto[]) {
 
 export default function CensusTable() {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const [rows, setRows] = useState<RegionRow[]>([]);
   const [draftRows, setDraftRows] = useState<RegionRow[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -142,6 +155,25 @@ export default function CensusTable() {
   };
 
   const activeRows = isEditing ? draftRows : rows;
+  const totalRow = useMemo<RegionRow>(
+    () => ({
+      key: 'total',
+      regionId: 0,
+      regionName: 'Total',
+      values: dietColumns.reduce<Record<string, number>>((acc, diet) => {
+        acc[diet.key] = activeRows.reduce(
+          (sum, row) => sum + (row.values[diet.key] ?? 0),
+          0,
+        );
+        return acc;
+      }, {}),
+    }),
+    [activeRows, dietColumns, t],
+  );
+  const tableData = useMemo(
+    () => [...activeRows, totalRow],
+    [activeRows, totalRow],
+  );
 
   const columns = useMemo<ColumnsType<RegionRow>>(
     () => [
@@ -161,9 +193,17 @@ export default function CensusTable() {
         align: 'center' as const,
         render: (_value: number, record: RegionRow) => {
           const currentValue = record.values[diet.key] ?? 0;
+          const isTotalRow = record.key === 'total';
 
-          if (!isEditing) {
-            return <Text>{currentValue}</Text>;
+          if (!isEditing || isTotalRow) {
+            return (
+              <Text
+                strong={isTotalRow}
+                style={isTotalRow ? { color: token.colorPrimary } : undefined}
+              >
+                {currentValue}
+              </Text>
+            );
           }
 
           return (
@@ -180,8 +220,19 @@ export default function CensusTable() {
           );
         },
       })),
+      {
+        title: 'Total',
+        key: 'rowTotal',
+        width: 140,
+        align: 'center',
+        render: (_value: unknown, record: RegionRow) => (
+          <Text strong style={{ color: token.colorPrimary }}>
+            {getRowTotal(record)}
+          </Text>
+        ),
+      },
     ],
-    [dietColumns, isEditing, t],
+    [dietColumns, isEditing, t, token.colorPrimary],
   );
 
   return (
@@ -229,7 +280,7 @@ export default function CensusTable() {
         tableLayout="fixed"
         scroll={{ x: 'max-content' }}
         columns={columns}
-        dataSource={activeRows}
+        dataSource={tableData}
       />
     </div>
   );
