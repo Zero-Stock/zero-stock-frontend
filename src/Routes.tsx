@@ -20,8 +20,7 @@ import type { TranslationKey } from './shared/i18n/translations';
 import SupplierListPage from './modules/supplier/pages/SupplierListPage';
 import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
 import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
-import ProcurementListPage from './modules/procurement/pages/ProcurementListPage';
-import ReceivingListPage from './modules/procurement/pages/ReceivingListPage';
+import CensusListPage from './modules/census/pages/CensusListPage';
 
 export interface RouteConfig {
   path: string;
@@ -58,7 +57,7 @@ export const routes: RouteConfig[] = [
     titleKey: 'navCensus',
     icon: <TeamOutlined />,
     showInMenu: true,
-    // component: CensusListPage,
+    component: CensusListPage,
   },
 
   {
@@ -67,22 +66,7 @@ export const routes: RouteConfig[] = [
     titleKey: 'navProcurement',
     icon: <ShoppingCartOutlined />,
     showInMenu: true,
-    children: [
-      {
-        path: '/procurement/order',
-        title: 'Procurement Order',
-        titleKey: 'navProcurementOrder',
-        showInMenu: true,
-        component: ProcurementListPage,
-      },
-      {
-        path: '/procurement/receiving',
-        title: 'Receiving Order',
-        titleKey: 'navReceivingOrder',
-        showInMenu: true,
-        component: ReceivingListPage,
-      },
-    ],
+    // component: ProcurementListPage,
   },
 
   {

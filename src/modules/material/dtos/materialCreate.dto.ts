@@ -5,6 +5,6 @@ export interface MaterialSpecCreateDto {
 export interface MaterialCreateDto {
   name: string;
   category: number;
-  yield_rate: number;
+  yield_rate: string;
   specs: MaterialSpecCreateDto[];
 }

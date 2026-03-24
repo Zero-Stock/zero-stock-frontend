@@ -238,6 +238,15 @@ export const translations = {
     en: 'This material already exists for this supplier.',
   },
 
+  // ─── Census Module ───
+  censusListTitle: { zh: '人数统计表', en: 'Census Table' },
+  censusListSubtitle: {
+    zh: '按区域查看各餐次人数，可切换为整表编辑模式。',
+    en: 'Review headcounts by region and meal, then switch into full-table edit mode.',
+  },
+  censusRegionColumn: { zh: '区域', en: 'Region' },
+  censusSaved: { zh: '人数统计已保存', en: 'Census updated' },
+
   // ─── Material Module ───
   materialListTitle: { zh: '原料管理', en: 'Materials' },
   materialCreate: { zh: '新建原料', en: 'New Material' },
