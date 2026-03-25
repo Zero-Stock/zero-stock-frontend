@@ -45,6 +45,8 @@ export default function Sidebar() {
     return getActiveKey(location);
   }, [location]);
 
+  const openKeys = ['/procurement'];
+
   return (
     <Sider
       breakpoint="lg"
@@ -57,6 +59,7 @@ export default function Sidebar() {
       <Menu
         mode="inline"
         items={menuItems}
+        defaultOpenKeys={openKeys}
         selectedKeys={[selectedKey]}
         onClick={(e) => setLocation(e.key)}
         className="border-none"
@@ -64,4 +67,3 @@ export default function Sidebar() {
     </Sider>
   );
 }
-
