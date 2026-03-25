@@ -1,4 +1,5 @@
 import { apiClient } from '@/shared/api/apiClient.client';
+import { useDateStore } from '@/shared/stores/dateStore';
 
 interface ProcurementAssignSupplierItemDto {
   item_id: number;
@@ -6,15 +7,16 @@ interface ProcurementAssignSupplierItemDto {
 }
 
 interface ProcurementAssignSuppliersDto {
-  date: string;
   assignments: ProcurementAssignSupplierItemDto[];
 }
 
 export function useProcurementAssignSuppliers() {
+  const selectedDate = useDateStore((state) => state.date);
+
   return {
     trigger: async (data: ProcurementAssignSuppliersDto) => {
       return apiClient.post(
-        `/api/procurement/assign-suppliers/?date=${data.date}`,
+        `/api/procurement/assign-suppliers/?date=${selectedDate}`,
         {
           body: {
             assignments: data.assignments,

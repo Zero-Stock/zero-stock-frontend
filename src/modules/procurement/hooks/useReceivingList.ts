@@ -2,18 +2,20 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import { useDateStore } from '@/shared/stores/dateStore';
 import type { ReceivingPreviewDto } from '../dtos/receivingPreview.dto';
 
 interface UseReceivingListParams {
-  date?: string;
   search?: string;
 }
 
 export function useReceivingList(params?: UseReceivingListParams) {
+  const selectedDate = useDateStore((state) => state.date);
+
   const queryParams = new URLSearchParams();
 
-  if (params?.date) {
-    queryParams.set('date', params.date);
+  if (selectedDate) {
+    queryParams.set('date', selectedDate);
   }
 
   if (params?.search) {

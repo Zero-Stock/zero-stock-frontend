@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, Table, Typography, message } from 'antd';
-import dayjs from 'dayjs';
+import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
@@ -18,7 +18,7 @@ const { Title } = Typography;
 
 export default function ProcurementList() {
   const { t } = useTranslation();
-  const [date] = useState(dayjs().format('YYYY-MM-DD'));
+  const date = useDateStore((state) => state.date);
   const [procurementId, setProcurementId] = useState<number | undefined>(
     undefined,
   );
@@ -33,9 +33,7 @@ export default function ProcurementList() {
     procurements,
     isLoading: isLoadingList,
     mutate: mutateList,
-  } = useProcurementList({
-    date,
-  });
+  } = useProcurementList();
 
   const {
     items: sheetItems,
@@ -146,7 +144,6 @@ export default function ProcurementList() {
 
     try {
       await assignSuppliersTrigger({
-        date,
         assignments: [
           {
             item_id: editingProcurementItem.id,
@@ -180,19 +177,19 @@ export default function ProcurementList() {
       title: t('procurementColCategory'),
       dataIndex: 'category',
       key: 'category',
-      width: 140,
+      width: 100,
     },
     {
       title: t('procurementColDemandKg'),
       dataIndex: 'demand_kg',
       key: 'demand_kg',
-      width: 120,
+      width: 100,
     },
     {
       title: t('procurementColDemandUnit'),
       dataIndex: 'demand_unit_qty',
       key: 'demand_unit_qty',
-      width: 140,
+      width: 120,
     },
     {
       title: t('procurementColStockKg'),

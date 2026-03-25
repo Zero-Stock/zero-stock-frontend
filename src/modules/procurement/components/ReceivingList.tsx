@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, InputNumber, Table, Typography, message } from 'antd';
-import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/i18n/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
@@ -26,7 +25,6 @@ type ReceivingTableRow = ProcurementSheetItemDto & {
 
 export default function ReceivingList() {
   const { t } = useTranslation();
-  const [date] = useState(dayjs().format('YYYY-MM-DD'));
   const [procurementId, setProcurementId] = useState<number | undefined>(
     undefined,
   );
@@ -38,9 +36,7 @@ export default function ReceivingList() {
     procurements,
     isLoading: isLoadingList,
     mutate: mutateList,
-  } = useProcurementList({
-    date,
-  });
+  } = useProcurementList();
 
   const {
     items: sheetItems,
