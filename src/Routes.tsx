@@ -23,6 +23,7 @@ import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
 import CensusListPage from './modules/census/pages/CensusListPage';
 import ProcurementListPage from './modules/procurement/pages/ProcurementListPage';
 import ReceivingListPage from './modules/procurement/pages/ReceivingListPage';
+import ProcessingListPage from './modules/processing/pages/ProcessingListPage';
 
 export interface RouteConfig {
   path: string;
@@ -92,7 +93,7 @@ export const routes: RouteConfig[] = [
     titleKey: 'navProcessing',
     icon: <ProfileOutlined />,
     showInMenu: true,
-    // component: ProcessingListPage,
+    component: ProcessingListPage,
   },
 
   {

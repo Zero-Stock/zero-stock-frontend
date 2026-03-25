@@ -6,7 +6,7 @@ import { useDateStore } from '@/shared/stores/dateStore';
 import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
 
 export interface CensusListPayload {
-  date?: string;
+  date: string;
   start?: string;
   end?: string;
   region_id?: number;
