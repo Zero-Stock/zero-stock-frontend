@@ -28,7 +28,7 @@ import { apiClient } from '@/shared/api/apiClient.client';
 import { fetchDishDetails } from '../dishService';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
 import MealEditModal from './MealEditModal';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title, Text } = Typography;
 
@@ -440,7 +440,7 @@ export default function MealBoard() {
               </>
             )}
           />
-          <Button onClick={handlePrint}>{t('dishExportPdf')}</Button>
+          <Button onClick={handlePrint}>{t('commonExportPdf')}</Button>
         </Space>
       </div>
 

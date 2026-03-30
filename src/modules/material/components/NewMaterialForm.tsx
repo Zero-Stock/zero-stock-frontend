@@ -4,7 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
 import useMaterialCategories from '../hooks/useMaterialCategories';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface RawMaterialFields {
   name: string;
@@ -24,7 +24,7 @@ export default function NewMaterialForm() {
 
   const columns: ColumnsType<{ key: number | string }> = [
     {
-      title: t('materialNameLabel'),
+      title: t('commonName'),
       dataIndex: 'name',
       key: 'name',
       render: (_, _record, index) => (
@@ -38,7 +38,7 @@ export default function NewMaterialForm() {
       ),
     },
     {
-      title: t('materialCategoryLabel'),
+      title: t('commonCategory'),
       dataIndex: 'category',
       key: 'category',
       width: 200,
@@ -58,7 +58,7 @@ export default function NewMaterialForm() {
       ),
     },
     {
-      title: t('materialYieldRateLabel'),
+      title: t('commonYieldRate'),
       dataIndex: 'yield_rate',
       width: 200,
       key: 'yield_rate',
@@ -81,7 +81,7 @@ export default function NewMaterialForm() {
       ),
     },
     {
-      title: t('materialSpecsLabel'),
+      title: t('commonSpecs'),
       dataIndex: 'specs',
       key: 'specs',
       render: (_, _record, index) => (

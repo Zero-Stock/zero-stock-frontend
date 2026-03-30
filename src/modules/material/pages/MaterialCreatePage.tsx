@@ -1,6 +1,6 @@
 import NewMaterialForm from '@/modules/material/components/NewMaterialForm';
 import { Typography } from 'antd';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 

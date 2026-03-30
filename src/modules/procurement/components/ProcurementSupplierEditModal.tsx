@@ -1,7 +1,7 @@
 import { Modal, Radio, Space, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useSupplierMaterials } from '@/modules/supplier/hooks/useSupplierMaterials';
 import type { SupplierMaterialDto } from '@/modules/supplier/dtos/supplierMaterial.dto';
 

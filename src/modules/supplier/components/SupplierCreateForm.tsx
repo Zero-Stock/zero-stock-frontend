@@ -4,7 +4,7 @@ import { useLocation } from 'wouter';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import SupplierCreateMaterialTable from './SupplierCreateMaterialTable';
 
 const { Title, Text } = Typography;
@@ -101,23 +101,23 @@ export default function SupplierCreateForm() {
 
       <div className="grid w-full grid-cols-4 gap-4">
         <Form.Item
-          label={t('supplierNameLabel')}
+          label={t('commonName')}
           name="name"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <Input placeholder={t('supplierNamePlaceholder')} />
         </Form.Item>
 
-        <Form.Item label={t('supplierContactLabel')} name="contact_person">
+        <Form.Item label={t('commonContactPerson')} name="contact_person">
           <Input placeholder={t('supplierContactPlaceholder')} />
         </Form.Item>
 
-        <Form.Item label={t('supplierPhoneLabel')} name="phone">
+        <Form.Item label={t('commonPhone')} name="phone">
           <Input placeholder={t('supplierPhonePlaceholder')} />
         </Form.Item>
 
-        <Form.Item label={t('supplierAddressLabel')} name="address">
-          <Input placeholder={t('supplierAddressPlaceholder')} />
+        <Form.Item label={t('commonAddress')} name="address">
+          <Input placeholder={t('commonAddress')} />
         </Form.Item>
       </div>
 

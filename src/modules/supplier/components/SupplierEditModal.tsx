@@ -1,7 +1,7 @@
 import { Modal, Form, Input } from 'antd';
 import { useEffect } from 'react';
 import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface SupplierEditModalProps {
   open: boolean;
@@ -51,12 +51,12 @@ export default function SupplierEditModal({
       destroyOnHidden
     >
       <Form form={form} layout="vertical">
-        <Form.Item label={t('supplierColId')} name="id">
+        <Form.Item label={t('commonId')} name="id">
           <Input disabled />
         </Form.Item>
 
         <Form.Item
-          label={t('supplierColName')}
+          label={t('commonName')}
           name="name"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
@@ -64,7 +64,7 @@ export default function SupplierEditModal({
         </Form.Item>
 
         <Form.Item
-          label={t('supplierColContact')}
+          label={t('commonContactPerson')}
           name="contact_person"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
@@ -72,7 +72,7 @@ export default function SupplierEditModal({
         </Form.Item>
 
         <Form.Item
-          label={t('supplierColPhone')}
+          label={t('commonPhone')}
           name="phone"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
@@ -80,7 +80,7 @@ export default function SupplierEditModal({
         </Form.Item>
 
         <Form.Item
-          label={t('supplierColAddress')}
+          label={t('commonAddress')}
           name="address"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >

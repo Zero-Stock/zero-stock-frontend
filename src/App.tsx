@@ -6,7 +6,7 @@ import Providers from './shared/providers';
 import { renderRoutes, routes } from './Routes';
 import BreadcrumbNav from './shared/components/BreadcrumbNav';
 import dayjs from 'dayjs';
-import { useTranslation } from './shared/i18n/LanguageContext';
+import { useTranslation } from './shared/translation/LanguageContext';
 import { useDateStore } from './shared/stores/dateStore';
 
 const { Header, Content, Footer } = Layout;
@@ -28,7 +28,7 @@ function AppContent() {
     <Layout style={{ height: '100vh', overflow: 'hidden' }}>
       <Header
         className="flex items-center justify-between"
-        style={{ background: colorBgContainer }}
+        style={{ background: colorBgContainer, padding: '0 36px' }}
       >
         <span className="text-lg font-semibold">{t('appName')}</span>
         <div className="flex items-center gap-4">
@@ -51,7 +51,7 @@ function AppContent() {
         </div>
       </Header>
 
-      <div className="flex flex-1 flex-col overflow-hidden px-12">
+      <div className="flex flex-1 flex-col overflow-hidden px-9">
         <BreadcrumbNav />
 
         <Layout
@@ -72,7 +72,7 @@ function AppContent() {
           </Content>
         </Layout>
 
-        <Footer className="text-center" style={{ padding: '16px 0' }}>
+        <Footer className="text-center" style={{ padding: '12px 0' }}>
           {t('footer', { year: String(new Date().getFullYear()) })}
         </Footer>
       </div>

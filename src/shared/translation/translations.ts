@@ -2,12 +2,12 @@ export type Locale = 'zh' | 'en';
 
 export const translations = {
   // ─── Global / App ───
-  appName: { zh: 'Zero Stock', en: 'Zero Stock' },
+  appName: { zh: '零库存餐饮生产管理系统', en: 'Zero Stock' },
   todayIs: { zh: '今天是：', en: 'Today is: ' },
   pageNotFound: { zh: '页面未找到', en: 'Page not found' },
   footer: {
-    zh: 'Ant Design ©{year} Created by Ant UED',
-    en: 'Ant Design ©{year} Created by Ant UED',
+    zh: '零库存餐饮生产管理系统 ©{year}',
+    en: 'Zero Stock ©{year}',
   },
 
   // ─── Navigation ───
@@ -19,7 +19,6 @@ export const translations = {
   navReceivingOrder: { zh: '收货单', en: 'Receiving Order' },
   navProcessing: { zh: '加工管理', en: 'Processing' },
   navDishes: { zh: '菜品管理', en: 'Dishes' },
-  navSupplier: { zh: '供应商', en: 'Supplier' },
   navMaterials: { zh: '原料管理', en: 'Materials' },
   navCreateMaterial: { zh: '新建原料', en: 'Create Material' },
   navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },
@@ -33,19 +32,32 @@ export const translations = {
   yes: { zh: '是', en: 'Yes' },
   no: { zh: '否', en: 'No' },
   none: { zh: '无', en: 'None' },
+  commonId: { zh: '编号', en: 'ID' },
+  commonName: { zh: '名称', en: 'Name' },
+  commonCategory: { zh: '类别', en: 'Category' },
+  commonUnit: { zh: '单位', en: 'Unit' },
+  commonContactPerson: { zh: '联系人', en: 'Contact Person' },
+  commonPhone: { zh: '电话', en: 'Phone' },
+  commonAddress: { zh: '地址', en: 'Address' },
+  commonSupplier: { zh: '供应商', en: 'Supplier' },
+  commonSelectMaterial: { zh: '选择原料', en: 'Select material' },
+  commonTotal: { zh: '合计', en: 'Total' },
+  commonRegenerate: { zh: '重新生成', en: 'Regenerate' },
+  commonYieldRate: { zh: '出成率', en: 'Yield Rate' },
+  commonSpecs: { zh: '加工规格', en: 'Specs' },
+  commonAction: { zh: '操作', en: 'Action' },
+  commonOperation: { zh: '操作', en: 'Operation' },
+  commonExportPdf: { zh: '导出 PDF / 打印', en: 'Export PDF / Print' },
 
   // ─── Dish Module ───
   dishListTitle: { zh: '菜品制作单', en: 'Dish Recipe Sheet' },
   dishSearchName: { zh: '搜索菜品名', en: 'Search dish' },
   dishSearchIngredient: { zh: '按原料筛选', en: 'Filter ingredient' },
   dishCreate: { zh: '新建菜品', en: 'New Dish' },
-  dishExportPdf: { zh: '导出 PDF / 打印', en: 'Export PDF / Print' },
-  dishColId: { zh: '编号', en: 'ID' },
   dishColName: { zh: '品名', en: 'Dish Name' },
   dishColIngredients: { zh: '食材 (g)', en: 'Ingredients (g)' },
   dishColSeasonings: { zh: '调料 (g)', en: 'Seasonings (g)' },
   dishColCookingMethod: { zh: '具体制作工艺', en: 'Cooking Method' },
-  dishColAction: { zh: '操作', en: 'Action' },
   dishDeleteConfirm: {
     zh: '确定要删除这个菜品吗？',
     en: 'Are you sure you want to delete this dish?',
@@ -57,7 +69,6 @@ export const translations = {
   dishCreated: { zh: '菜品已创建', en: 'Dish created' },
   dishDeleted: { zh: '菜品已删除', en: 'Dish deleted' },
   dishEditTitle: { zh: '编辑菜品', en: 'Edit Dish' },
-  dishCreateTitle: { zh: '新建菜品', en: 'New Dish' },
   dishNameLabel: { zh: '菜品名', en: 'Dish Name' },
   dishNameRequired: { zh: '请输入菜品名', en: 'Please enter dish name' },
   dishNamePlaceholder: {
@@ -69,18 +80,14 @@ export const translations = {
     zh: '⚠ 暂无原料数据，请先在原料管理页面添加原料',
     en: '⚠ No materials found. Please add materials first.',
   },
-  dishSelectMaterial: { zh: '选择原料', en: 'Select material' },
   dishNoMaterialData: { zh: '无原料数据', en: 'No materials' },
   dishSelectProcessing: { zh: '加工方式', en: 'Processing' },
   dishNoProcessing: { zh: '无加工规格', en: 'No processing' },
   dishWeightPlaceholder: { zh: '重量(g)', en: 'Weight(g)' },
   dishWeightRequired: { zh: '输入克重', en: 'Enter weight' },
-  dishMaterialRequired: { zh: '选择原料', en: 'Select material' },
   dishAddIngredient: { zh: '添加食材', en: 'Add Ingredient' },
-  dishSeasoningsLabel: { zh: '调料 (g)', en: 'Seasonings (g)' },
   dishSeasoningsRequired: { zh: '请填写调料', en: 'Please enter seasonings' },
   dishSeasoningsPlaceholder: { zh: '盐2g, 糖1g', en: 'Salt 2g, Sugar 1g' },
-  dishCookingMethodLabel: { zh: '具体制作工艺', en: 'Cooking Method' },
   dishCookingMethodRequired: {
     zh: '请填写制作工艺',
     en: 'Please enter cooking method',
@@ -151,14 +158,7 @@ export const translations = {
 
   // ─── Supplier Module ───
   supplierListTitle: { zh: '供应商列表', en: 'Supplier List' },
-  supplierCreate: { zh: '新建供应商', en: 'Create Supplier' },
   supplierSearchName: { zh: '搜索供应商名', en: 'Search supplier name' },
-  supplierColId: { zh: '编号', en: 'ID' },
-  supplierColName: { zh: '名称', en: 'Name' },
-  supplierColContact: { zh: '联系人', en: 'Contact Person' },
-  supplierColPhone: { zh: '电话', en: 'Phone' },
-  supplierColAddress: { zh: '地址', en: 'Address' },
-  supplierColOperation: { zh: '操作', en: 'Operation' },
   supplierDetail: { zh: '详情', en: 'Detail' },
   supplierDeleteConfirm: {
     zh: '确定删除该供应商吗？',
@@ -181,15 +181,10 @@ export const translations = {
     en: 'Failed to create supplier',
   },
   supplierBasicInfo: { zh: '基础信息', en: 'Basic Information' },
-  supplierNameLabel: { zh: '名称', en: 'Name' },
   supplierRequired: { zh: '必填', en: 'Required' },
   supplierNamePlaceholder: { zh: '供应商名称', en: 'Supplier name' },
-  supplierContactLabel: { zh: '联系人', en: 'Contact Person' },
   supplierContactPlaceholder: { zh: '联系人名称', en: 'Contact person name' },
-  supplierPhoneLabel: { zh: '电话', en: 'Phone' },
   supplierPhonePlaceholder: { zh: '电话号码', en: 'Phone number' },
-  supplierAddressLabel: { zh: '地址', en: 'Address' },
-  supplierAddressPlaceholder: { zh: '地址', en: 'Address' },
   supplierMaterialDetails: { zh: '原料明细', en: 'Material Details' },
   supplierMaterialDetailsDesc: {
     zh: '可选。您可以在此处添加原料，或稍后在供应商详情页中进行编辑。',
@@ -199,7 +194,6 @@ export const translations = {
   supplierPrice: { zh: '单价', en: 'Price' },
   supplierUnitSpec: { zh: '单位（规格）', en: 'Unit (Spec)' },
   supplierKgPerUnit: { zh: '千克/单位', en: 'kg/unit' },
-  supplierSelectMaterial: { zh: '选择原料', en: 'Select material' },
   supplierPricePlaceholder: { zh: '例如：12.5', en: 'e.g. 12.5' },
   supplierUnitPlaceholder: { zh: '例如：箱 / 袋', en: 'e.g. 箱 / 袋' },
   supplierUnitPlaceholderKg: {
@@ -218,8 +212,6 @@ export const translations = {
     en: 'Search by Material ID or Name',
   },
   supplierAddMaterial: { zh: '添加原料', en: 'Add Material' },
-  supplierMaterialName: { zh: '名称', en: 'Name' },
-  supplierMaterialUnit: { zh: '单位', en: 'Unit' },
   supplierMaterialNotes: { zh: '备注', en: 'Notes' },
   supplierMaterialActions: { zh: '操作', en: 'Actions' },
   supplierMaterialUpdated: { zh: '已更新', en: 'Updated' },
@@ -246,14 +238,27 @@ export const translations = {
   },
   censusRegionColumn: { zh: '区域', en: 'Region' },
   censusSaved: { zh: '人数统计已保存', en: 'Census updated' },
-  // ─── Procurement Module ───
-  procurementOrderTitle: { zh: '采购单', en: 'Procurement Order' },
-  receivingOrderTitle: { zh: '收货单', en: 'Receiving Order' },
+  censusSaveFailed: { zh: '保存人数统计失败', en: 'Failed to save census' },
 
+  // ─── Processing Module ───
+  processingListTitle: { zh: '加工单', en: 'Processing' },
+  processingGenerate: { zh: '生成', en: 'Generate' },
+  processingGenerated: {
+    zh: '加工单已生成',
+    en: 'Processing generated successfully.',
+  },
+  processingMaterialNameColumn: { zh: '原料名称', en: 'Material Name' },
+  processingMethodColumn: { zh: '加工方式', en: 'Processing Method' },
+  processingRequirementColumn: { zh: '加工要求', en: 'Requirement' },
+  processingTimeColumn: { zh: '加工时间', en: 'Processing Time' },
+  processingNoItems: { zh: '暂无明细', en: 'No items.' },
+  processingNoData: {
+    zh: '暂无数据，请先点击生成',
+    en: 'No data. Click Generate.',
+  },
+  // ─── Procurement Module ───
   procurementGenerate: { zh: '生成采购单', en: 'Generate' },
-  procurementRegenerate: { zh: '重新生成', en: 'Regenerate' },
   procurementSubmit: { zh: '确认采购单', en: 'Submit' },
-  procurementExportPdf: { zh: '导出 PDF / 打印', en: 'Export PDF / Print' },
 
   procurementGenerateSuccess: {
     zh: '采购单已生成',
@@ -309,7 +314,6 @@ export const translations = {
     zh: '采购需求(特殊单位)',
     en: 'Purchase (Unit)',
   },
-  procurementColSupplier: { zh: '供应商', en: 'Supplier' },
   procurementColSupplierUnit: {
     zh: '供应商单位',
     en: 'Supplier Unit',
@@ -319,7 +323,6 @@ export const translations = {
     en: 'kg/unit',
   },
   procurementColSupplierPrice: { zh: '价格', en: 'Price' },
-  procurementColAction: { zh: '操作', en: 'Action' },
 
   procurementEditSupplierTitle: {
     zh: '编辑供应商',
@@ -396,35 +399,23 @@ export const translations = {
   },
 
   // ─── Material Module ───
-  materialListTitle: { zh: '原料管理', en: 'Materials' },
   materialCreate: { zh: '新建原料', en: 'New Material' },
   materialFilterCategory: { zh: '按类别筛选：', en: 'Filter by Category:' },
-  materialColId: { zh: '编号', en: 'Id' },
-  materialColName: { zh: '名称', en: 'Name' },
-  materialColCategory: { zh: '类别', en: 'Category' },
-  materialColUnit: { zh: '单位', en: 'Unit' },
-  materialColYieldRate: { zh: '出成率', en: 'Yield Rate' },
-  materialColSpecs: { zh: '加工规格', en: 'Specs' },
-  materialColOperation: { zh: '操作', en: 'Operation' },
   materialEditTitle: { zh: '编辑原料', en: 'Edit Material' },
   materialEditSuccess: { zh: '原料已更新', en: 'Material updated' },
   materialEditFailed: { zh: '更新原料失败', en: 'Failed to update material' },
-  materialNameLabel: { zh: '名称', en: 'Name' },
   materialNameRequired: { zh: '请输入名称', en: 'Please input name' },
   materialNamePlaceholder: {
     zh: '输入原料名称',
     en: 'Input material name',
   },
-  materialCategoryLabel: { zh: '类别', en: 'Category' },
   materialCategoryRequired: { zh: '请选择类别', en: 'Please select category' },
   materialCategoryPlaceholder: { zh: '选择类别', en: 'Select category' },
-  materialYieldRateLabel: { zh: '出成率', en: 'Yield Rate' },
   materialYieldRateRequired: {
     zh: '请输入出成率',
     en: 'Please input yield rate',
   },
   materialYieldRatePlaceholder: { zh: '例如：0.8', en: 'e.g. 0.8' },
-  materialSpecsLabel: { zh: '加工规格', en: 'Specs' },
   materialSpecsRequired: { zh: '请输入加工规格', en: 'Please input specs' },
   materialSpecsPlaceholder: {
     zh: '例如：块、片、丝',
@@ -437,7 +428,6 @@ export const translations = {
   materialAddRow: { zh: '新增一行', en: 'Add New Row' },
   materialSubmit: { zh: '提交', en: 'Submit' },
   materialCreateTitle: { zh: '新建原料', en: 'Add New Materials' },
-  materialBreadcrumbList: { zh: '原料管理', en: 'Materials' },
   materialBreadcrumbCreate: { zh: '新建', en: 'Create' },
 } as const;
 

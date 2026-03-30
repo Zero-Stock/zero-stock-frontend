@@ -3,7 +3,7 @@ import { Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../mockdata';
 import type { Dish } from '@/modules/dish/mockdata';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface MealEditModalProps {
     visible: boolean;

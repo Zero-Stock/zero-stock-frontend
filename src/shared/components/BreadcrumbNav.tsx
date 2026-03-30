@@ -2,7 +2,7 @@ import { findRouteByPath, routes } from '@/Routes';
 import { Breadcrumb, theme } from 'antd';
 import type { ReactNode } from 'react';
 import { useLocation } from 'wouter';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { useToken } = theme;
 

@@ -5,10 +5,12 @@ import { useProcessingList } from '../hooks/useProcessingList';
 import { useProcessingGenerate } from '../hooks/useProcessingGenerate';
 import type { ProcessingItemDto } from '../dtos/processingItem.dto';
 import { useMemo } from 'react';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 export default function ProcessingList() {
+  const { t } = useTranslation();
   const date = useDateStore((state) => state.date);
 
   const { items, isLoading, mutate } = useProcessingList();
@@ -18,7 +20,7 @@ export default function ProcessingList() {
   const handleGenerate = async () => {
     try {
       await generateTrigger({ date });
-      message.success('Processing generated successfully.');
+      message.success(t('processingGenerated'));
       await mutate();
     } catch (error) {
       if (!(error instanceof Error)) return;
@@ -28,31 +30,31 @@ export default function ProcessingList() {
 
   const columns: ColumnsType<ProcessingItemDto> = [
     {
-      title: 'Material Name',
+      title: t('processingMaterialNameColumn'),
       dataIndex: 'material_name',
       key: 'material_name',
       width: 160,
     },
     {
-      title: 'Category',
+      title: t('commonCategory'),
       dataIndex: 'category',
       key: 'category',
       width: 100,
     },
     {
-      title: 'Processing Method',
+      title: t('processingMethodColumn'),
       dataIndex: 'processing_method',
       key: 'processing_method',
       width: 160,
     },
     {
-      title: 'Requirement',
+      title: t('processingRequirementColumn'),
       dataIndex: 'processing_requirement',
       key: 'processing_requirement',
       width: 120,
     },
     {
-      title: 'Processing Time',
+      title: t('processingTimeColumn'),
       dataIndex: 'processing_time',
       key: 'processing_time',
       width: 130,
@@ -65,11 +67,11 @@ export default function ProcessingList() {
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          Processing
+          {t('processingListTitle')}
         </Title>
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
-            {hasProcessing ? 'Regenerate' : 'Generate'}
+            {hasProcessing ? t('commonRegenerate') : t('processingGenerate')}
           </Button>
         </div>
       </div>
@@ -82,7 +84,9 @@ export default function ProcessingList() {
         pagination={{ pageSize: 10 }}
         tableLayout="fixed"
         locale={{
-          emptyText: hasProcessing ? 'No items.' : 'No data. Click Generate.',
+          emptyText: hasProcessing
+            ? t('processingNoItems')
+            : t('processingNoData'),
         }}
         scroll={{ x: 620 }}
       />

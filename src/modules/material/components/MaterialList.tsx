@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import { useMaterialList } from '../hooks/useMaterialList';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 import MaterialEditModal from './MaterialEditModal';
 import useMaterialCategories from '../hooks/useMaterialCategories';
@@ -44,25 +44,25 @@ export default function MaterialList() {
 
   const columns: ColumnsType<MaterialPreviewDto> = [
     {
-      title: t('materialColName'),
+      title: t('commonName'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: t('materialColCategory'),
+      title: t('commonCategory'),
       dataIndex: 'category_name',
       key: 'category_name',
       width: 150,
     },
     {
-      title: t('materialColYieldRate'),
+      title: t('commonYieldRate'),
       dataIndex: 'current_yield_rate',
       key: 'current_yield_rate',
       width: 150,
       render: (yieldRate: number) => Number(yieldRate) * 100 + '%',
     },
     {
-      title: t('materialColSpecs'),
+      title: t('commonSpecs'),
       dataIndex: 'specs',
       key: 'specs',
       render: (specs: MaterialPreviewDto['specs']) => (
@@ -72,7 +72,7 @@ export default function MaterialList() {
       ),
     },
     {
-      title: t('materialColOperation'),
+      title: t('commonOperation'),
       key: 'operation',
       width: 200,
       render: (_, record) => (
@@ -97,7 +97,7 @@ export default function MaterialList() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          {t('materialListTitle')}
+          {t('navMaterials')}
         </Title>
         <Button type="primary" onClick={() => navigate('/material/create')}>
           {t('materialCreate')}

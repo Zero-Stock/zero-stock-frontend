@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 
 export default function SupplierCreateMaterialTable() {
@@ -24,7 +24,7 @@ export default function SupplierCreateMaterialTable() {
                 style={{ marginBottom: 0 }}
               >
                 <Select
-                  placeholder={t('supplierSelectMaterial')}
+                  placeholder={t('commonSelectMaterial')}
                   options={materialOptions}
                   showSearch
                 />

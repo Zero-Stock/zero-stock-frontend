@@ -6,7 +6,7 @@ import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import { useSupplierMaterialUpdate } from '../hooks/useSupplierMaterialUpdate';
 import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
 
@@ -41,13 +41,13 @@ export default function SupplierMaterialTable(
 
   const columns: ColumnsType<SupplierMaterialDto> = [
     {
-      title: t('supplierMaterialName'),
+      title: t('commonName'),
       dataIndex: 'raw_material_name',
       key: 'raw_material_name',
       width: 120,
     },
     {
-      title: t('supplierMaterialUnit'),
+      title: t('commonUnit'),
       dataIndex: 'unit_name',
       key: 'unit_name',
       width: 120,

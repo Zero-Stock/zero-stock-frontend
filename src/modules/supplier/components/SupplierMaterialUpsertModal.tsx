@@ -2,7 +2,7 @@ import { Modal, Form, Input, InputNumber, Select } from 'antd';
 import { useEffect } from 'react';
 import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 export interface SupplierMaterialUpsertModalProps {
   open: boolean;
@@ -85,14 +85,14 @@ export default function SupplierMaterialUpsertModal({
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          label={t('supplierMaterialName')}
+          label={t('commonName')}
           name="raw_material"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <Select
             allowClear
             showSearch
-            placeholder={t('supplierSelectMaterial')}
+            placeholder={t('commonSelectMaterial')}
             loading={isLoading}
             options={materialOptions}
             disabled={!!initialValues}
@@ -100,7 +100,7 @@ export default function SupplierMaterialUpsertModal({
         </Form.Item>
 
         <Form.Item
-          label={t('supplierMaterialUnit')}
+          label={t('commonUnit')}
           name="unit_name"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >

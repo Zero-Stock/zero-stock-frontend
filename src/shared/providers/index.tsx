@@ -3,7 +3,7 @@ import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import type { ReactNode } from 'react';
 import { SWRConfigProvider } from './SWRConfigProvider';
-import { LanguageProvider, useTranslation } from '../i18n/LanguageContext';
+import { LanguageProvider, useTranslation } from '../translation/LanguageContext';
 
 export interface ProvidersProps {
   children: ReactNode;

@@ -21,6 +21,8 @@ body {
   * {
     color: #000 !important;
     -webkit-text-fill-color: #000 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+      'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
   }
 }

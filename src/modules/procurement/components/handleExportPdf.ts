@@ -1,6 +1,6 @@
 import { Modal, message } from 'antd';
 import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
-import type { TranslationKey } from '@/shared/i18n/translations';
+import type { TranslationKey } from '@/shared/translation/translations';
 
 export interface HandleExportPdfParams {
   date: string;
@@ -46,7 +46,7 @@ function buildPrintableHtml(
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>${t('procurementOrderTitle')}</title>
+        <title>${t('navProcurementOrder')}</title>
         <style>
           @page {
             size: A4 landscape;
@@ -107,7 +107,7 @@ function buildPrintableHtml(
       </head>
       <body>
         <div class="header">
-          <div class="title">${t('procurementOrderTitle')}</div>
+          <div class="title">${t('navProcurementOrder')}</div>
           <div class="meta">${t('todayIs')}${date}</div>
         </div>
 
@@ -122,7 +122,7 @@ function buildPrintableHtml(
               <th>${t('procurementColStockUnit')}</th>
               <th>${t('procurementColPurchaseKg')}</th>
               <th>${t('procurementColPurchaseUnit')}</th>
-              <th>${t('procurementColSupplier')}</th>
+              <th>${t('commonSupplier')}</th>
               <th>${t('procurementColSupplierUnit')}</th>
               <th>${t('procurementColSupplierKgPerUnit')}</th>
               <th>${t('procurementColSupplierPrice')}</th>

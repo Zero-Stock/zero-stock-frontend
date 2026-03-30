@@ -4,7 +4,7 @@ import type { MaterialUpdateDto } from '../dtos/materialUpdate.dto';
 import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface MaterialEditModalProps {
   visible: boolean;
@@ -103,14 +103,14 @@ export default function MaterialEditModal({
       >
         <Form.Item<MaterialEditFormValues>
           name="name"
-          label={t('materialNameLabel')}
+          label={t('commonName')}
           rules={[{ required: true, message: t('materialNameRequired') }]}
         >
           <Input placeholder={t('materialNamePlaceholder')} />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="category"
-          label={t('materialCategoryLabel')}
+          label={t('commonCategory')}
           rules={[{ required: true, message: t('materialCategoryRequired') }]}
         >
           <Select
@@ -121,7 +121,7 @@ export default function MaterialEditModal({
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="yield_rate"
-          label={t('materialYieldRateLabel')}
+          label={t('commonYieldRate')}
           rules={[
             {
               required: true,
@@ -142,7 +142,7 @@ export default function MaterialEditModal({
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="specs"
-          label={t('materialSpecsLabel')}
+          label={t('commonSpecs')}
         >
           <Input placeholder={t('materialSpecsPlaceholder')} />
         </Form.Item>

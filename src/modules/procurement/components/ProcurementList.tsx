@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, Table, Typography, message } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementGenerate } from '../hooks/useProcurementGenerate';
 import { useProcurementSheet } from '../hooks/useProcurementSheet';
@@ -216,7 +216,7 @@ export default function ProcurementList() {
       width: 160,
     },
     {
-      title: t('procurementColSupplier'),
+      title: t('commonSupplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 180,
@@ -230,7 +230,7 @@ export default function ProcurementList() {
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('procurementColAction'),
+      title: t('commonAction'),
       key: 'action',
       width: 100,
       render: (_, record) => (
@@ -252,17 +252,17 @@ export default function ProcurementList() {
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          {t('procurementOrderTitle')}
+          {t('navProcurementOrder')}
         </Title>
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
             {hasProcurement
-              ? t('procurementRegenerate')
+              ? t('commonRegenerate')
               : t('procurementGenerate')}
           </Button>
 
           <Button onClick={onExportPdf} disabled={!procurementId}>
-            {t('procurementExportPdf')}
+            {t('commonExportPdf')}
           </Button>
 
           <Button

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, InputNumber, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementSheet } from '../hooks/useProcurementSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
@@ -183,7 +183,7 @@ export default function ReceivingList() {
       width: 140,
     },
     {
-      title: t('procurementColSupplier'),
+      title: t('commonSupplier'),
       dataIndex: 'supplier',
       key: 'supplier',
       width: 180,
@@ -243,7 +243,7 @@ export default function ReceivingList() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <Title level={2} className="mb-0!">
-          {t('receivingOrderTitle')}
+          {t('navReceivingOrder')}
         </Title>
 
         <Button type="primary" onClick={handleSubmit} disabled={!hasTemplate}>

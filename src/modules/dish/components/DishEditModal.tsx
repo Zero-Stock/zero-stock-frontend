@@ -5,7 +5,7 @@ import type { Dish, DishFormValues, DishFormIngredient } from '../mockdata';
 import type { RawMaterialDto } from '../dtos/rawMaterial.dto';
 import { dishToFormValues } from '../hooks/dishFormAdapter';
 import { useDishMaterials } from '../hooks/useDishMaterials';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { TextArea } = Input;
 
@@ -77,7 +77,7 @@ export default function DishEditModal({
 
     return (
         <Modal
-            title={record ? t('dishEditTitle') : t('dishCreateTitle')}
+            title={record ? t('dishEditTitle') : t('dishCreate')}
             open={visible}
             onOk={handleOk}
             onCancel={() => {
@@ -129,14 +129,14 @@ export default function DishEditModal({
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: t('dishMaterialRequired'),
+                                                    message: t('commonSelectMaterial'),
                                                 },
                                             ]}
                                             className="!m-0"
                                         >
                                             <Select
                                                 showSearch
-                                                placeholder={t('dishSelectMaterial')}
+                                                placeholder={t('commonSelectMaterial')}
                                                 optionFilterProp="label"
                                                 options={materials.map((m) => ({
                                                     label: `${m.name}${m.category_name ? ` (${m.category_name})` : ''}`,
@@ -229,7 +229,7 @@ export default function DishEditModal({
                     )}
                 </Form.List>
 
-                <div className="mb-2 font-semibold">{t('dishSeasoningsLabel')}</div>
+                <div className="mb-2 font-semibold">{t('dishColSeasonings')}</div>
                 <Form.Item
                     name="seasonings"
                     rules={[{ required: true, message: t('dishSeasoningsRequired') }]}
@@ -240,7 +240,7 @@ export default function DishEditModal({
                     />
                 </Form.Item>
 
-                <div className="mb-2 font-semibold">{t('dishCookingMethodLabel')}</div>
+                <div className="mb-2 font-semibold">{t('dishColCookingMethod')}</div>
                 <Form.Item
                     name="cooking_method"
                     rules={[{ required: true, message: t('dishCookingMethodRequired') }]}

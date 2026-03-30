@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
 import { useCensusList } from '../hooks/useCensusList';
 import { useCensusUpdate } from '../hooks/useCensusUpdate';
@@ -127,7 +127,7 @@ export default function CensusTable() {
       message.success(t('censusSaved'));
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to save census';
+        error instanceof Error ? error.message : t('censusSaveFailed');
       message.error(errorMessage);
     } finally {
       setIsSaving(false);
@@ -159,7 +159,7 @@ export default function CensusTable() {
     () => ({
       key: 'total',
       regionId: 0,
-      regionName: 'Total',
+      regionName: t('commonTotal'),
       values: dietColumns.reduce<Record<string, number>>((acc, diet) => {
         acc[diet.key] = activeRows.reduce(
           (sum, row) => sum + (row.values[diet.key] ?? 0),
@@ -221,7 +221,7 @@ export default function CensusTable() {
         },
       })),
       {
-        title: 'Total',
+        title: t('commonTotal'),
         key: 'rowTotal',
         width: 140,
         align: 'center',

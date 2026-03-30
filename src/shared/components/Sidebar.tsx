@@ -2,7 +2,7 @@ import { useLocation } from 'wouter';
 import { Layout, Menu } from 'antd';
 import { findRouteByPath, routes, type RouteConfig } from '@/Routes';
 import { useMemo } from 'react';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Sider } = Layout;
 

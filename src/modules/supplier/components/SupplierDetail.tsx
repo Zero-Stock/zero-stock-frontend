@@ -5,7 +5,7 @@ import { useSupplierDetail } from '../hooks/useSupplierDetail';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import SupplierEditModal from './SupplierEditModal';
 import SupplierMaterialTable from './SupplierMaterialTable';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title, Text } = Typography;
 

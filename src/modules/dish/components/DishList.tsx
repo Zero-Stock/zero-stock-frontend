@@ -23,7 +23,7 @@ import { useDishDelete } from '../hooks/useDishDelete';
 import { useDishList } from '../hooks/useDishList';
 import { useDishUpdate } from '../hooks/useDishUpdate';
 import DishEditModal from './DishEditModal';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -188,7 +188,7 @@ export default function DishList() {
       ),
     },
     {
-      title: t('dishColAction'),
+      title: t('commonAction'),
       key: 'action',
       className: 'no-print',
       width: '10%',
@@ -240,7 +240,7 @@ export default function DishList() {
           <Button type="primary" onClick={handleCreate}>
             {t('dishCreate')}
           </Button>
-          <Button onClick={handlePrint}>{t('dishExportPdf')}</Button>
+          <Button onClick={handlePrint}>{t('commonExportPdf')}</Button>
         </Space>
       </div>
 

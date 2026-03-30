@@ -16,7 +16,7 @@ import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
 import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
 import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
-import { useTranslation } from '@/shared/i18n/LanguageContext';
+import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
@@ -36,16 +36,16 @@ export default function SupplierList() {
   const { trigger: deleteTrigger } = useSupplierDelete();
 
   const columns = [
-    { title: t('supplierColName'), dataIndex: 'name', key: 'name' },
+    { title: t('commonName'), dataIndex: 'name', key: 'name' },
     {
-      title: t('supplierColContact'),
+      title: t('commonContactPerson'),
       dataIndex: 'contact_person',
       key: 'contact_person',
     },
-    { title: t('supplierColPhone'), dataIndex: 'phone', key: 'phone' },
-    { title: t('supplierColAddress'), dataIndex: 'address', key: 'address' },
+    { title: t('commonPhone'), dataIndex: 'phone', key: 'phone' },
+    { title: t('commonAddress'), dataIndex: 'address', key: 'address' },
     {
-      title: t('supplierColOperation'),
+      title: t('commonOperation'),
       key: 'operation',
       width: 220,
       render: (_: any, record: SupplierPreviewDto) => (
@@ -102,7 +102,7 @@ export default function SupplierList() {
           {t('supplierListTitle')}
         </Title>
         <Button type="primary" onClick={() => navigate('/supplier/create')}>
-          {t('supplierCreate')}
+          {t('navCreateSupplier')}
         </Button>
       </div>
 
