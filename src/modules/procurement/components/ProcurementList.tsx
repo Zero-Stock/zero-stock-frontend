@@ -251,14 +251,12 @@ export default function ProcurementList() {
   return (
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
-        <Title level={2} className="mb-0!">
+        <Title level={3} className="mb-0!">
           {t('navProcurementOrder')}
         </Title>
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
-            {hasProcurement
-              ? t('commonRegenerate')
-              : t('procurementGenerate')}
+            {hasProcurement ? t('commonRegenerate') : t('procurementGenerate')}
           </Button>
 
           <Button onClick={onExportPdf} disabled={!procurementId}>

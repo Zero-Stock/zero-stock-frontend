@@ -66,7 +66,7 @@ export default function ProcessingList() {
   return (
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
-        <Title level={2} className="mb-0!">
+        <Title level={3} className="mb-0!">
           {t('processingListTitle')}
         </Title>
         <div className="no-print flex items-center gap-3">

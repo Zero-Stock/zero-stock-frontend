@@ -9,7 +9,7 @@ export default function MaterialCreatePage() {
 
   return (
     <div className="p-6">
-      <Title level={2}>{t('materialCreateTitle')}</Title>
+      <Title level={3}>{t('materialCreateTitle')}</Title>
       <div className="mt-6">
         <NewMaterialForm />
       </div>

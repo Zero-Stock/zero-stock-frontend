@@ -42,7 +42,7 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
     <div className="p-6">
       <Space className="w-full justify-between" align="start">
         <div>
-          <Title level={2} style={{ marginBottom: 4 }}>
+          <Title level={3} style={{ marginBottom: 4 }}>
             {supplier.name}
           </Title>
           <Text type="secondary">

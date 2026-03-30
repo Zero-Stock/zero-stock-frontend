@@ -364,7 +364,7 @@ export default function MealBoard() {
   return (
     <div>
       <div className="no-print mb-6 flex items-center justify-between">
-        <Title level={2} className="m-0!">
+        <Title level={3} className="m-0!">
           {t('mealBoardTitle')}
         </Title>
         <Space>
@@ -446,7 +446,7 @@ export default function MealBoard() {
 
       {/* Print Header */}
       <div className="print-only mb-5 hidden text-center">
-        <Title level={2} className="m-0!">
+        <Title level={3} className="m-0!">
           {t('mealPrintTitle')}
         </Title>
         <Title level={3} className="my-2!">

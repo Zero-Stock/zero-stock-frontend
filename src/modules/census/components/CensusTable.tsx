@@ -239,7 +239,7 @@ export default function CensusTable() {
     <div>
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <Title level={2} className="mb-0!">
+          <Title level={3} className="mb-0!">
             {t('censusListTitle')}
           </Title>
           <Text type="secondary">{t('censusListSubtitle')}</Text>

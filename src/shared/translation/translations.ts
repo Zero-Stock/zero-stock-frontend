@@ -42,7 +42,7 @@ export const translations = {
   commonSupplier: { zh: '供应商', en: 'Supplier' },
   commonSelectMaterial: { zh: '选择原料', en: 'Select material' },
   commonTotal: { zh: '合计', en: 'Total' },
-  commonRegenerate: { zh: '重新生成', en: 'Regenerate' },
+  commonRegenerate: { zh: '重新生成加工单', en: 'Regenerate' },
   commonYieldRate: { zh: '出成率', en: 'Yield Rate' },
   commonSpecs: { zh: '加工规格', en: 'Specs' },
   commonAction: { zh: '操作', en: 'Action' },
@@ -242,7 +242,7 @@ export const translations = {
 
   // ─── Processing Module ───
   processingListTitle: { zh: '加工单', en: 'Processing' },
-  processingGenerate: { zh: '生成', en: 'Generate' },
+  processingGenerate: { zh: '生成加工单', en: 'Generate' },
   processingGenerated: {
     zh: '加工单已生成',
     en: 'Processing generated successfully.',
