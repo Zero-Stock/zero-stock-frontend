@@ -9,6 +9,89 @@ export const translations = {
     zh: '零库存餐饮生产管理系统 ©{year}',
     en: 'Zero Stock ©{year}',
   },
+  homeHeroBadge: { zh: '今日生产指挥台', en: 'Daily Operations Hub' },
+  homeHeroTitle: {
+    zh: '把备餐、人数、采购和加工安排在一个起点完成。',
+    en: 'Start the day with meals, census, procurement, and processing aligned.',
+  },
+  homeHeroDescription: {
+    zh: '首页聚合了零库存餐饮生产流程中的关键入口，帮助你从人数统计快速推进到菜单、采购和加工执行。',
+    en: 'The home page brings together the key entry points in the zero-stock workflow so teams can move from headcount to menus, purchasing, and prep without friction.',
+  },
+  homePrimaryAction: { zh: '先去更新人数统计', en: 'Update Census First' },
+  homeSecondaryAction: { zh: '查看标准菜谱', en: 'Review Meal Plan' },
+  homeDateLabel: { zh: '当前生产日期：{date}', en: 'Working date: {date}' },
+  homeOverviewTitle: { zh: '今日概览', en: 'Today Overview' },
+  homeOverviewDescription: {
+    zh: '用一个统一视图把当天的主流程衔接起来。',
+    en: 'Keep the core daily workflow connected from a single view.',
+  },
+  homeStatMeals: { zh: '菜单项', en: 'Menu Items' },
+  homeStatProcurement: { zh: '待采购单', en: 'Purchase Batches' },
+  homeStatProcessing: { zh: '加工明细', en: 'Prep Items' },
+  homeStatReadiness: { zh: '执行就绪度', en: 'Readiness' },
+  homeQuickStartTitle: { zh: '快速开始', en: 'Quick Start' },
+  homeQuickStartSubtitle: {
+    zh: '从最常用的业务入口继续今天的工作',
+    en: 'Jump back into the workflows used most often',
+  },
+  homeQuickMealsDesc: {
+    zh: '维护标准菜谱并核对每个餐次的菜品安排。',
+    en: 'Maintain cycle meals and verify dishes by service period.',
+  },
+  homeQuickCensusDesc: {
+    zh: '更新各区域各餐次人数，为后续采购和加工提供基础。',
+    en: 'Update zone-by-zone headcounts to drive downstream purchasing and prep.',
+  },
+  homeQuickProcurementDesc: {
+    zh: '查看并生成采购单，跟进供应商分配情况。',
+    en: 'Review generated purchase orders and supplier assignments.',
+  },
+  homeQuickProcessingDesc: {
+    zh: '按加工规格检查今日需要执行的原料处理任务。',
+    en: 'Inspect today’s raw material prep tasks by processing spec.',
+  },
+  homeHighlightsTitle: { zh: '关键节奏', en: 'Key Cadence' },
+  homeHighlightCutoff: { zh: '人数确认建议时间', en: 'Suggested Census Cutoff' },
+  homeHighlightZones: { zh: '服务区域数量', en: 'Service Zones' },
+  homeHighlightStages: { zh: '核心生产阶段', en: 'Core Stages' },
+  homeFlowTitle: { zh: '今日流程推进', en: 'Daily Workflow' },
+  homeFlowTag: { zh: '建议顺序', en: 'Recommended Order' },
+  homeStepCensusTitle: { zh: '确认人数统计', en: 'Confirm Census' },
+  homeStepCensusDesc: {
+    zh: '先更新各区域人数，后续采购量和加工量才有可靠依据。',
+    en: 'Finalize headcounts first so purchasing and prep quantities are grounded in the latest demand.',
+  },
+  homeStepMealsTitle: { zh: '核对标准菜谱', en: 'Validate Meals' },
+  homeStepMealsDesc: {
+    zh: '检查早餐、午餐、晚餐的菜品安排是否符合当日供应计划。',
+    en: 'Check breakfast, lunch, and dinner menus against the day’s service plan.',
+  },
+  homeStepProcurementTitle: { zh: '生成采购与加工', en: 'Generate Orders and Prep' },
+  homeStepProcurementDesc: {
+    zh: '根据人数和菜单联动生成采购单、收货单与加工单。',
+    en: 'Use demand and menu data to generate purchase, receiving, and processing work.',
+  },
+  homeStatusReady: { zh: '已准备', en: 'Ready' },
+  homeStatusInProgress: { zh: '进行中', en: 'In Progress' },
+  homeStatusAttention: { zh: '待检查', en: 'Needs Review' },
+  homeChecklistTitle: { zh: '班前检查清单', en: 'Shift Checklist' },
+  homeChecklistOne: {
+    zh: '确认今日生产日期与业务单据日期一致。',
+    en: 'Confirm the working date matches the date used for operational documents.',
+  },
+  homeChecklistTwo: {
+    zh: '检查供应商资料和原料信息是否已维护完整。',
+    en: 'Make sure supplier and material records are complete before generating orders.',
+  },
+  homeChecklistThree: {
+    zh: '在生成采购单前，复核关键菜品的原料配比。',
+    en: 'Review ingredient ratios for key dishes before generating procurement.',
+  },
+  homeChecklistFour: {
+    zh: '加工执行前，核对原料的加工规格与出成率设置。',
+    en: 'Verify processing specs and yield rates before prep execution starts.',
+  },
 
   // ─── Navigation ───
   navHome: { zh: '首页', en: 'Home' },

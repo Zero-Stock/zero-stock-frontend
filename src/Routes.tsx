@@ -11,7 +11,7 @@ import {
   FireOutlined,
   ShopOutlined,
 } from '@ant-design/icons';
-import HomePage from './modules/auth/pages/HomePage';
+import HomePage from './modules/home/pages/HomePage';
 import MaterialListPage from './modules/material/pages/MaterialListPage';
 import MaterialCreatePage from './modules/material/pages/MaterialCreatePage';
 import MealListPage from './modules/meal/pages/MealListPage';
@@ -41,7 +41,7 @@ export const routes: RouteConfig[] = [
     title: 'Home',
     titleKey: 'navHome',
     icon: <HomeOutlined />,
-    showInMenu: false,
+    showInMenu: true,
     component: HomePage,
   },
 

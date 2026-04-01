@@ -89,7 +89,7 @@ export default function ProcurementSupplierEditModal({
       width={760}
       destroyOnHidden
     >
-      <Space direction="vertical" size={12} className="w-full">
+      <Space orientation="vertical" size={12} className="w-full">
         <Text type="secondary">
           Please select one supplier for this material.
         </Text>
