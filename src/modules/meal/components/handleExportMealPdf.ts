@@ -31,9 +31,20 @@ export function handleExportMealPdf({
   iframe.id = 'print-meal-iframe';
   iframe.setAttribute(
     'style',
-    'position:absolute;width:0;height:0;top:-100px;left:-100px;',
+    'position:absolute;width:0;height:0;top:-100px;left:-100px;border:0;',
   );
-  document.body.appendChild(iframe);
+
+  const cleanup = () => {
+    iframe.onload = null;
+
+    if (iframe.contentWindow) {
+      iframe.contentWindow.onafterprint = null;
+    }
+
+    if (iframe.parentNode) {
+      iframe.parentNode.removeChild(iframe);
+    }
+  };
 
   // 2. 构建渲染菜品详情的内部函数（模拟组件内的 renderMealSection）
   const getMealHtml = (sectionTitle: string, dishes: any[]) => {
@@ -130,28 +141,23 @@ export function handleExportMealPdf({
     </html>
   `;
 
-  // 5. 写入并打印
-  const doc = iframe.contentWindow?.document || iframe.contentDocument;
-  if (doc) {
-    doc.open();
-    doc.write(fullHtml);
-    doc.close();
+  iframe.srcdoc = fullHtml;
+  iframe.onload = () => {
+    const printWindow = iframe.contentWindow;
+    if (!printWindow) {
+      cleanup();
+      return;
+    }
 
-    iframe.onload = () => {
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      }, 500);
-    };
+    printWindow.onafterprint = cleanup;
 
-    // 兜底执行
     setTimeout(() => {
-      if (iframe.contentWindow) {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-      }
-    }, 1000);
-  }
+      printWindow.focus();
+      printWindow.print();
+    }, 300);
+  };
+
+  document.body.appendChild(iframe);
 }
 
 export const mealPrintStyles = ``; // 既然用了 iframe，组件里的 style 标签可以清空了
