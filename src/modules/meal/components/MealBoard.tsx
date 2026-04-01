@@ -8,6 +8,7 @@ import {
   Modal,
   Row,
   Select,
+  Skeleton,
   Space,
   Typography,
   message,
@@ -15,20 +16,19 @@ import {
 } from 'antd';
 import type { InputRef } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import {
-  type DishItem,
-  type DayPlan,
-  type DietCategory,
-  type DishDetail,
-  type WeeklyMenuRow,
-} from '../mockdata';
-import type { PaginatedResponse, Dish } from '@/modules/dish/mockdata';
-import { apiClient } from '@/shared/api/apiClient.client';
-import { fetchDishDetails } from '../dishService';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { type DishItem, type DayPlan, type DietCategory } from '../mockdata';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
 import MealEditModal from './MealEditModal';
+import { handleExportMealPdf, mealPrintStyles } from './handleExportMealPdf';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import { useMealDietList } from '../hooks/useMealDietList';
+import { useMealDishDetails } from '../hooks/useMealDishDetails';
+import { useMealMenuList } from '../hooks/useMealMenuList';
+import { useMealCreateDiet } from '../hooks/useMealCreateDiet';
+import { useMealUpdateDiet } from '../hooks/useMealUpdateDiet';
+import { useMealDeleteDiet } from '../hooks/useMealDeleteDiet';
+import { useMealSaveWeeklyMenu } from '../hooks/useMealSaveWeeklyMenu';
 
 const { Title, Text } = Typography;
 
@@ -36,80 +36,52 @@ const COMPANY_ID = 1; // TODO: get from auth context
 
 export default function MealBoard() {
   const { t } = useTranslation();
-  const [dietCategories, setDietCategories] = useState<DietCategory[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const inputRef = useRef<InputRef>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
-  const [menuRows, setMenuRows] = useState<WeeklyMenuRow[]>([]);
-  const [allDishes, setAllDishes] = useState<Dish[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingDiets, setLoadingDiets] = useState(true);
+  const [selectOpen, setSelectOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingDay, setEditingDay] = useState<DayPlan | null>(null);
 
-  // ─── Fetch diet categories from API ───
-  const fetchDiets = useCallback(async () => {
-    try {
-      setLoadingDiets(true);
-      const response = await apiClient.get<{ results: DietCategory[] }>(
-        '/api/diets/',
-      );
-      const data = response.results;
-      setDietCategories(data);
-      if (data.length > 0 && selectedCategoryId === 0) {
-        setSelectedCategoryId(data[0].id);
-      }
-    } catch (err) {
-      console.error('Failed to fetch diets:', err);
+  const {
+    diets: dietCategories,
+    isLoading: loadingDiets,
+    isError: dietError,
+    mutate: mutateDiets,
+  } = useMealDietList();
+  const {
+    menuRows,
+    isLoading: loadingMenus,
+    isError: menuError,
+    mutate: mutateMenus,
+  } = useMealMenuList({
+    companyId: COMPANY_ID,
+    dietCategoryId: selectedCategoryId || undefined,
+  });
+  const { trigger: createDiet } = useMealCreateDiet();
+  const { trigger: updateDiet } = useMealUpdateDiet();
+  const { trigger: deleteDiet } = useMealDeleteDiet();
+  const { trigger: saveWeeklyMenu } = useMealSaveWeeklyMenu();
+
+  useEffect(() => {
+    if (dietCategories.length > 0 && selectedCategoryId === 0) {
+      setSelectedCategoryId(dietCategories[0].id);
+    }
+  }, [dietCategories, selectedCategoryId]);
+
+  useEffect(() => {
+    if (dietError) {
+      console.error('Failed to fetch diets:', dietError);
       message.error(t('mealLoadDietsFailed'));
-    } finally {
-      setLoadingDiets(false);
     }
-  }, [selectedCategoryId, t]);
+  }, [dietError, t]);
 
-  // ─── Fetch weekly menus from API ───
-  const fetchMenus = useCallback(async () => {
-    if (!selectedCategoryId) return;
-    setLoading(true);
-    try {
-      const response = await apiClient.get<{
-        results: PaginatedResponse<WeeklyMenuRow>;
-      }>('/api/weekly-menus/', {
-        query: {
-          company: COMPANY_ID,
-          diet_category: selectedCategoryId,
-          page_size: 200,
-        },
-      });
-      setMenuRows(response.results.results);
-    } catch (err) {
-      console.error('Failed to fetch weekly menus:', err);
+  useEffect(() => {
+    if (menuError) {
+      console.error('Failed to fetch weekly menus:', menuError);
       message.error(t('mealLoadMenuFailed'));
-    } finally {
-      setLoading(false);
     }
-  }, [selectedCategoryId]);
-
-  // ─── Fetch all dishes for the Select dropdown ───
-  const fetchAllDishes = useCallback(async () => {
-    try {
-      const response = await apiClient.get<{
-        results: PaginatedResponse<Dish>;
-      }>('/api/dishes/', { query: { page_size: 500 } });
-      setAllDishes(response.results.results);
-    } catch (err) {
-      console.error('Failed to fetch dishes:', err);
-      message.error(t('mealLoadDishesFailed'));
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchDiets();
-  }, [fetchDiets]);
-  useEffect(() => {
-    fetchMenus();
-  }, [fetchMenus]);
-  useEffect(() => {
-    fetchAllDishes();
-  }, [fetchAllDishes]);
+  }, [menuError, t]);
 
   // Convert flat rows → grouped day plans for the selected diet category
   const dayPlans = useMemo(() => {
@@ -119,29 +91,17 @@ export default function MealBoard() {
     return rowsToDayPlans(filtered, (d) => t(`day${d}` as any));
   }, [menuRows, selectedCategoryId, t]);
 
-  // ─── Fetch dish details (ingredients) for display ───
-  const [dishDetails, setDishDetails] = useState<Map<number, DishDetail>>(
-    new Map(),
+  const dishIds = useMemo(
+    () =>
+      dayPlans.flatMap((day) => [
+        ...day.breakfast.map((d) => d.id),
+        ...day.lunch.map((d) => d.id),
+        ...day.dinner.map((d) => d.id),
+      ]),
+    [dayPlans],
   );
-
-  const loadDishDetails = useCallback(async () => {
-    const allDishIds = dayPlans.flatMap((day) => [
-      ...day.breakfast.map((d) => d.id),
-      ...day.lunch.map((d) => d.id),
-      ...day.dinner.map((d) => d.id),
-    ]);
-    if (allDishIds.length > 0) {
-      const details = await fetchDishDetails(allDishIds);
-      setDishDetails(details);
-    }
-  }, [dayPlans]);
-
-  useEffect(() => {
-    loadDishDetails();
-  }, [loadDishDetails]);
-
-  // ─── Add diet category ───
-  const [selectOpen, setSelectOpen] = useState(false);
+  const { dishDetails, isLoading: loadingDishDetails } =
+    useMealDishDetails(dishIds);
 
   const addDietCategory = async (
     e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
@@ -153,17 +113,12 @@ export default function MealBoard() {
       !dietCategories.some((c) => c.name === newCategoryName)
     ) {
       try {
-        const response = await apiClient.post<{ results: DietCategory }>(
-          '/api/diets/',
-          {
-            body: { name: newCategoryName },
-          },
-        );
+        const response = await createDiet(newCategoryName);
         const newCategory = response.results;
-        setDietCategories([...dietCategories, newCategory]);
+        await mutateDiets();
         setSelectedCategoryId(newCategory.id);
         setNewCategoryName('');
-        setSelectOpen(false); // close dropdown so it refreshes on reopen
+        setSelectOpen(false);
         message.success(t('mealDietCreated'));
       } catch (err) {
         console.error('Failed to create diet:', err);
@@ -191,11 +146,9 @@ export default function MealBoard() {
       onOk: async () => {
         if (!newName || newName === diet.name) return;
         try {
-          await apiClient.put<DietCategory>(`/api/diets/${diet.id}/`, {
-            body: { name: newName },
-          });
+          await updateDiet(diet.id, newName);
+          await mutateDiets();
           message.success(t('mealDietRenamed'));
-          fetchDiets();
         } catch (err) {
           console.error('Failed to rename diet:', err);
           message.error(t('mealDietRenameFailed'));
@@ -207,7 +160,7 @@ export default function MealBoard() {
   // ─── Delete diet category ───
   const handleDeleteDiet = async (dietId: number) => {
     try {
-      await apiClient.delete(`/api/diets/${dietId}/`);
+      await deleteDiet(dietId);
     } catch (err) {
       // Some backends may delete successfully but still return a bad/empty response.
       // We'll verify by reloading diets before deciding the final UI message.
@@ -218,13 +171,10 @@ export default function MealBoard() {
     }
 
     try {
-      const response = await apiClient.get<{ results: DietCategory[] }>(
-        '/api/diets/',
-      );
-      const latest = response.results;
+      const response = await mutateDiets();
+      const latest = response?.results ?? [];
       const deleted = !latest.some((c) => c.id === dietId);
 
-      setDietCategories(latest);
       if (selectedCategoryId === dietId) {
         setSelectedCategoryId(latest.length > 0 ? latest[0].id : 0);
       }
@@ -240,9 +190,6 @@ export default function MealBoard() {
     message.error(t('mealDietDeleteFailed'));
   };
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingDay, setEditingDay] = useState<DayPlan | null>(null);
-
   const handleEdit = (day: DayPlan) => {
     setEditingDay(day);
     setIsModalVisible(true);
@@ -257,20 +204,14 @@ export default function MealBoard() {
     );
 
     try {
-      await apiClient.post('/api/weekly-menus/batch/', {
-        body: batchItems,
-      });
+      await saveWeeklyMenu(batchItems);
       message.success(t('mealSaved'));
       setIsModalVisible(false);
-      fetchMenus(); // refresh from API
+      await mutateMenus();
     } catch (err) {
       console.error('Failed to save weekly menu:', err);
       message.error(t('mealSaveFailed'));
     }
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const renderMealSection = (sectionTitle: string, dishes: DishItem[]) => (
@@ -304,6 +245,11 @@ export default function MealBoard() {
                   )}
                 </span>
                 {/* Read-only ingredients from Dish API */}
+                {loadingDishDetails && !detail && (
+                  <div className="mt-1 pl-1">
+                    <Skeleton.Input active size="small" block />
+                  </div>
+                )}
                 {detail && detail.ingredients.length > 0 && (
                   <div className="mt-0.5 pl-1 text-xs text-gray-500">
                     {detail.ingredients
@@ -440,7 +386,7 @@ export default function MealBoard() {
               </>
             )}
           />
-          <Button onClick={handlePrint}>{t('commonExportPdf')}</Button>
+          <Button onClick={handleExportMealPdf}>{t('commonExportPdf')}</Button>
         </Space>
       </div>
 
@@ -491,7 +437,7 @@ export default function MealBoard() {
           />
         </Card>
       ) : (
-        <Spin spinning={loading || loadingDiets}>
+        <Spin spinning={loadingMenus || loadingDiets}>
           {renderDayCards(dayPlans)}
         </Spin>
       )}
@@ -499,82 +445,11 @@ export default function MealBoard() {
       <MealEditModal
         visible={isModalVisible}
         dayData={editingDay}
-        availableDishes={allDishes}
         onCancel={() => setIsModalVisible(false)}
         onSave={handleSave}
       />
 
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .print-only { display: block !important; }
-          body {
-            padding: 0 !important;
-            margin: 0 !important;
-            background: #fff !important;
-          }
-          * { color: #000 !important; }
-          .ant-layout-sider,
-          .ant-layout-header,
-          .ant-layout-footer,
-          nav {
-            display: none !important;
-          }
-          .ant-layout-content {
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: visible !important;
-            min-height: auto !important;
-          }
-          /* Force all parent containers to allow overflow so it prints multiple pages */
-          html, body, #root, .ant-layout, .ant-pro-layout, .ant-pro-layout-content, div {
-            height: auto !important;
-            min-height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            display: block !important;
-          }
-          /* Override Tailwind utility classes and inline styles */
-          [style*="overflow: hidden"], [style*="overflow: auto"], [style*="height: 100vh"] {
-            overflow: visible !important;
-            height: auto !important;
-          }
-          .print-row { display: block !important; }
-          .print-col {
-            display: block !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            margin-bottom: 10px !important;
-            page-break-inside: avoid;
-          }
-          .print-card {
-            border: 1px solid #000 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-          }
-          .ant-card-head {
-            border-bottom: 1px solid #000 !important;
-            min-height: auto !important;
-            padding: 4px 12px !important;
-            background-color: #f0f0f0 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .ant-card-head-title {
-            padding: 4px 0 !important;
-            font-weight: bold;
-          }
-          .print-divider {
-            border-block-start-color: #000 !important;
-            margin: 4px 0 !important;
-          }
-          .print-meal-title {
-            text-decoration: underline;
-            margin-bottom: 2px !important;
-          }
-          ul { margin-bottom: 0 !important; }
-        }
-      `}</style>
+      <style>{mealPrintStyles}</style>
     </div>
   );
 }
