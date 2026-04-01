@@ -72,7 +72,10 @@ function AppContent() {
           </Content>
         </Layout>
 
-        <Footer className="text-center" style={{ padding: '12px 0' }}>
+        <Footer
+          className="text-center"
+          style={{ padding: '6px 0', fontSize: 12, color: 'gray' }}
+        >
           {t('footer', { year: String(new Date().getFullYear()) })}
         </Footer>
       </div>

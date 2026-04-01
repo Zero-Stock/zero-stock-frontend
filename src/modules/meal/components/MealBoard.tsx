@@ -1,14 +1,11 @@
 import {
   Button,
   Card,
-  Col,
   Divider,
   Empty,
   Input,
   Modal,
-  Row,
   Select,
-  Skeleton,
   Space,
   Typography,
   message,
@@ -17,8 +14,9 @@ import {
 import type { InputRef } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { type DishItem, type DayPlan, type DietCategory } from '../mockdata';
+import { type DayPlan, type DietCategory } from '../mockdata';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
+import MealDayCards from './MealDayCards';
 import MealEditModal from './MealEditModal';
 import { handleExportMealPdf, mealPrintStyles } from './handleExportMealPdf';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -214,99 +212,6 @@ export default function MealBoard() {
     }
   };
 
-  const renderMealSection = (sectionTitle: string, dishes: DishItem[]) => (
-    <div className="mb-3">
-      <Text
-        strong
-        className="print-meal-title mb-1 block"
-        style={{ color: '#1890ff' }}
-      >
-        {sectionTitle}
-      </Text>
-      {dishes.length === 0 ? (
-        <Text type="secondary" italic>
-          {t('none')}
-        </Text>
-      ) : (
-        <ul className="m-0 list-disc pl-4">
-          {dishes.map((dish, idx) => {
-            const detail = dishDetails.get(dish.id);
-            return (
-              <li key={idx} className="mb-2">
-                <span>
-                  <Text strong>{dish.name}</Text>
-                  {dish.count && dish.count > 1 && (
-                    <Text
-                      className="ml-1 font-semibold"
-                      style={{ color: '#1890ff' }}
-                    >
-                      x{dish.count}
-                    </Text>
-                  )}
-                </span>
-                {/* Read-only ingredients from Dish API */}
-                {loadingDishDetails && !detail && (
-                  <div className="mt-1 pl-1">
-                    <Skeleton.Input active size="small" block />
-                  </div>
-                )}
-                {detail && detail.ingredients.length > 0 && (
-                  <div className="mt-0.5 pl-1 text-xs text-gray-500">
-                    {detail.ingredients
-                      .map((ing) => {
-                        const grams = Math.round(
-                          parseFloat(ing.net_quantity) * 1000,
-                        );
-                        return `${ing.raw_material_name}${ing.processing_name !== '无' ? `[${ing.processing_name}]` : ''} ${grams}g`;
-                      })
-                      .join('、')}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
-  );
-
-  const renderDayCards = (days: DayPlan[]) => (
-    <Row gutter={[16, 16]} className="print-row">
-      {days.map((day) => (
-        <Col
-          xs={24}
-          sm={12}
-          md={8}
-          lg={6}
-          xl={6}
-          key={day.dayOfWeek}
-          className="print-col"
-        >
-          <Card
-            title={day.dayOfWeek}
-            extra={
-              <Button
-                type="link"
-                onClick={() => handleEdit(day)}
-                className="no-print"
-              >
-                {t('edit')}
-              </Button>
-            }
-            className="print-card h-full"
-            styles={{ body: { padding: '12px' } }}
-          >
-            {renderMealSection(t('mealBreakfast'), day.breakfast)}
-            <Divider className="print-divider my-2!" />
-            {renderMealSection(t('mealLunch'), day.lunch)}
-            <Divider className="print-divider my-2!" />
-            {renderMealSection(t('mealDinner'), day.dinner)}
-          </Card>
-        </Col>
-      ))}
-    </Row>
-  );
-
   return (
     <div>
       <div className="no-print mb-6 flex items-center justify-between">
@@ -438,7 +343,12 @@ export default function MealBoard() {
         </Card>
       ) : (
         <Spin spinning={loadingMenus || loadingDiets}>
-          {renderDayCards(dayPlans)}
+          <MealDayCards
+            days={dayPlans}
+            dishDetails={dishDetails}
+            loadingDishDetails={loadingDishDetails}
+            onEdit={handleEdit}
+          />
         </Spin>
       )}
 
