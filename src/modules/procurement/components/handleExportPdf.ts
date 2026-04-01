@@ -15,14 +15,20 @@ export interface HandleExportPdfParams {
   mutateProcurementItems: () => Promise<any>;
 }
 
+/**
+ * 构建打印 HTML
+ */
 function buildPrintableHtml(
   date: string,
   items: ProcurementSheetItemDto[],
   t: (key: TranslationKey) => string,
 ): string {
-  const rows = items
-    .map(
-      (item) => `
+  // 如果 items 为空，生成一个提示行，方便排查是逻辑问题还是数据问题
+  const rows =
+    items.length > 0
+      ? items
+          .map(
+            (item) => `
         <tr>
           <td>${item.name ?? '-'}</td>
           <td>${item.category ?? '-'}</td>
@@ -38,8 +44,9 @@ function buildPrintableHtml(
           <td>${item.supplier_price ?? '-'}</td>
         </tr>
       `,
-    )
-    .join('');
+          )
+          .join('')
+      : `<tr><td colspan="12" style="text-align:center; padding: 20px;">暂无数据，请确认列表是否有内容</td></tr>`;
 
   return `
     <!doctype html>
@@ -48,73 +55,33 @@ function buildPrintableHtml(
         <meta charset="utf-8" />
         <title>${t('navProcurementOrder')}</title>
         <style>
-          @page {
-            size: A4 landscape;
-            margin: 12mm;
-          }
-
+          @page { size: A4 landscape; margin: 10mm; }
+          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           body {
-            font-family:
-              "PingFang SC",
-              "Hiragino Sans GB",
-              "Microsoft YaHei",
-              Arial,
-              Helvetica,
-              sans-serif;
-            color: #000;
-            margin: 0;
-            padding: 0;
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: #000; margin: 0; padding: 10px;
           }
-
-          .header {
-            margin-bottom: 16px;
+          .header { margin-bottom: 16px; }
+          .title { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
+          .meta { font-size: 12px; color: #444; }
+          table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+          th, td { 
+            border: 1px solid #333; padding: 5px; text-align: left; 
+            word-break: break-all; overflow: hidden; 
           }
-
-          .title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-          }
-
-          .meta {
-            font-size: 13px;
-            color: #333;
-          }
-
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 12px;
-          }
-
-          th, td {
-            border: 1px solid #999;
-            padding: 6px 8px;
-            text-align: left;
-            word-break: break-word;
-          }
-
-          th {
-            background: #f3f3f3;
-            font-weight: 700;
-          }
-
-          tr {
-            page-break-inside: avoid;
-          }
+          th { background: #eeeeee !important; font-weight: bold; }
+          tr { page-break-inside: avoid; }
         </style>
       </head>
       <body>
         <div class="header">
           <div class="title">${t('navProcurementOrder')}</div>
-          <div class="meta">${t('todayIs')}${date}</div>
+          <div class="meta">${t('todayIs')}: ${date}</div>
         </div>
-
         <table>
           <thead>
             <tr>
-              <th>${t('procurementColName')}</th>
+              <th style="width: 100px;">${t('procurementColName')}</th>
               <th>${t('procurementColCategory')}</th>
               <th>${t('procurementColDemandKg')}</th>
               <th>${t('procurementColDemandUnit')}</th>
@@ -122,7 +89,7 @@ function buildPrintableHtml(
               <th>${t('procurementColStockUnit')}</th>
               <th>${t('procurementColPurchaseKg')}</th>
               <th>${t('procurementColPurchaseUnit')}</th>
-              <th>${t('commonSupplier')}</th>
+              <th style="width: 120px;">${t('commonSupplier')}</th>
               <th>${t('procurementColSupplierUnit')}</th>
               <th>${t('procurementColSupplierKgPerUnit')}</th>
               <th>${t('procurementColSupplierPrice')}</th>
@@ -132,34 +99,63 @@ function buildPrintableHtml(
             ${rows}
           </tbody>
         </table>
+        <script>
+          window.onload = function() {
+            // 确保 DOM 树完全渲染后再唤起打印
+            setTimeout(function() {
+              window.focus();
+              window.print();
+            }, 600);
+            
+            window.onafterprint = function() {
+              window.close();
+            };
+          };
+        </script>
       </body>
     </html>
   `;
 }
 
+/**
+ * 核心打印函数
+ */
 function printProcurementSheet(
   date: string,
   items: ProcurementSheetItemDto[],
   t: (key: TranslationKey) => string,
 ) {
-  const printWindow = window.open('', '_blank', 'width=1400,height=900');
+  // 调试辅助：在浏览器控制台查看数据
+  console.log('--- Exporting PDF ---');
+  console.log('Date:', date);
+  console.log('Items Count:', items?.length);
+
+  if (!items || items.length === 0) {
+    message.warning('当前列表没有数据，无法导出');
+    return;
+  }
+
+  const html = buildPrintableHtml(date, items, t);
+
+  // 1. 先打开窗口
+  const printWindow = window.open('', '_blank');
 
   if (!printWindow) {
     message.error(t('procurementPrintWindowFailed'));
     return;
   }
 
+  // 2. 注入内容
   printWindow.document.open();
-  printWindow.document.write(buildPrintableHtml(date, items, t));
+  printWindow.document.write(html);
+
+  // 3. 必须在 write 后关闭流，否则 window.onload 不会触发
   printWindow.document.close();
-
-  printWindow.focus();
-
-  setTimeout(() => {
-    printWindow.print();
-  }, 300);
 }
 
+/**
+ * 错误处理
+ */
 function mapRegenerateError(
   errorMessage: string,
   t: (key: TranslationKey) => string,
@@ -170,10 +166,12 @@ function mapRegenerateError(
   ) {
     return t('procurementRegenerateBlockedSubmitted');
   }
-
   return errorMessage || t('procurementRegenerateFailed');
 }
 
+/**
+ * 外部调用的主入口
+ */
 export const handleExportPdf = ({
   date,
   items,
@@ -193,17 +191,24 @@ export const handleExportPdf = ({
       try {
         const result = await generateTrigger({ date });
         setProcurementId(result.id);
-        await mutateList();
-        await mutateSheet();
-        await mutateProcurementItems();
+        await Promise.all([
+          mutateList(),
+          mutateSheet(),
+          mutateProcurementItems(),
+        ]);
         message.success(t('procurementRegenerateSuccess'));
-      } catch (error) {
-        if (!(error instanceof Error)) return;
-        message.error(mapRegenerateError(error.message, t));
+      } catch (error: any) {
+        message.error(mapRegenerateError(error?.message || '', t));
       }
     },
-    onCancel: () => {
-      printProcurementSheet(date, items, t);
+    onCancel: (e) => {
+      // 排除掉点击遮罩层或 ESC 关闭 Modal 的情况
+      if (e?.triggerCancel) return;
+
+      // 延迟一小会儿执行，防止 Modal 关闭动画干扰新窗口打开
+      setTimeout(() => {
+        printProcurementSheet(date, items, t);
+      }, 100);
     },
   });
 };
