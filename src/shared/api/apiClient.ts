@@ -182,10 +182,11 @@ export class ApiClient {
       const data = await parseJsonSafe(res);
 
       if (!res.ok) {
+        console.log('DATA: ', data);
         throw new ApiError({
+          url,
           message: data?.message,
           status: res.status,
-          url,
           code: data?.error?.type,
           details: data.error ?? data,
         });

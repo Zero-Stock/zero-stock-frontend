@@ -13,6 +13,7 @@ import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
 import type { ProcurementItemDto } from '../dtos/procurementItem.dto';
 import ProcurementSupplierEditModal from './ProcurementSupplierEditModal';
 import { handleExportPdf } from './handleExportPdf';
+import type ApiError from '@/shared/api/apiError';
 
 const { Title } = Typography;
 
@@ -71,9 +72,9 @@ export default function ProcurementList() {
       await mutateList();
       await mutateSheet();
       await mutateProcurementItems();
-    } catch (error) {
-      if (!(error instanceof Error)) return;
-      message.error(error.message);
+    } catch (error: ApiError | Error | unknown) {
+      const apiError = error as ApiError;
+      message.error(apiError.details.details.date);
     }
   };
 
