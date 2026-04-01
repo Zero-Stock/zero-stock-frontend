@@ -95,7 +95,7 @@ export default function MaterialList() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
           {t('navMaterials')}
         </Title>
