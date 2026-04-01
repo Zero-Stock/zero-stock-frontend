@@ -6,182 +6,16 @@ export interface HandleExportPdfParams {
   date: string;
   items: ProcurementSheetItemDto[];
   t: (key: TranslationKey) => string;
-  generateTrigger: (params: {
-    date: string;
-  }) => Promise<{ id: number; [key: string]: any }>;
+  generateTrigger: (params: { date: string }) => Promise<any>;
   setProcurementId: (id: number) => void;
   mutateList: () => Promise<any>;
   mutateSheet: () => Promise<any>;
   mutateProcurementItems: () => Promise<any>;
 }
 
-/**
- * 构建打印 HTML
- */
-function buildPrintableHtml(
-  date: string,
-  items: ProcurementSheetItemDto[],
-  t: (key: TranslationKey) => string,
-): string {
-  // 如果 items 为空，生成一个提示行，方便排查是逻辑问题还是数据问题
-  const rows =
-    items.length > 0
-      ? items
-          .map(
-            (item) => `
-        <tr>
-          <td>${item.name ?? '-'}</td>
-          <td>${item.category ?? '-'}</td>
-          <td>${item.demand_kg ?? '-'}</td>
-          <td>${item.demand_unit_qty ?? '-'}</td>
-          <td>${item.stock_kg ?? '-'}</td>
-          <td>${item.stock_unit_qty ?? '-'}</td>
-          <td>${item.purchase_kg ?? '-'}</td>
-          <td>${item.purchase_unit_qty ?? '-'}</td>
-          <td>${item.supplier ?? '-'}</td>
-          <td>${item.supplier_unit_name ?? '-'}</td>
-          <td>${item.supplier_kg_per_unit ?? '-'}</td>
-          <td>${item.supplier_price ?? '-'}</td>
-        </tr>
-      `,
-          )
-          .join('')
-      : `<tr><td colspan="12" style="text-align:center; padding: 20px;">暂无数据，请确认列表是否有内容</td></tr>`;
+export const handleExportPdf = (params: HandleExportPdfParams) => {
+  const { t, items, date } = params;
 
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <title>${t('navProcurementOrder')}</title>
-        <style>
-          @page { size: A4 landscape; margin: 10mm; }
-          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          body {
-            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            color: #000; margin: 0; padding: 10px;
-          }
-          .header { margin-bottom: 16px; }
-          .title { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
-          .meta { font-size: 12px; color: #444; }
-          table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
-          th, td { 
-            border: 1px solid #333; padding: 5px; text-align: left; 
-            word-break: break-all; overflow: hidden; 
-          }
-          th { background: #eeeeee !important; font-weight: bold; }
-          tr { page-break-inside: avoid; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="title">${t('navProcurementOrder')}</div>
-          <div class="meta">${t('todayIs')}: ${date}</div>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 100px;">${t('procurementColName')}</th>
-              <th>${t('procurementColCategory')}</th>
-              <th>${t('procurementColDemandKg')}</th>
-              <th>${t('procurementColDemandUnit')}</th>
-              <th>${t('procurementColStockKg')}</th>
-              <th>${t('procurementColStockUnit')}</th>
-              <th>${t('procurementColPurchaseKg')}</th>
-              <th>${t('procurementColPurchaseUnit')}</th>
-              <th style="width: 120px;">${t('commonSupplier')}</th>
-              <th>${t('procurementColSupplierUnit')}</th>
-              <th>${t('procurementColSupplierKgPerUnit')}</th>
-              <th>${t('procurementColSupplierPrice')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-          </tbody>
-        </table>
-        <script>
-          window.onload = function() {
-            // 确保 DOM 树完全渲染后再唤起打印
-            setTimeout(function() {
-              window.focus();
-              window.print();
-            }, 600);
-            
-            window.onafterprint = function() {
-              window.close();
-            };
-          };
-        </script>
-      </body>
-    </html>
-  `;
-}
-
-/**
- * 核心打印函数
- */
-function printProcurementSheet(
-  date: string,
-  items: ProcurementSheetItemDto[],
-  t: (key: TranslationKey) => string,
-) {
-  // 调试辅助：在浏览器控制台查看数据
-  console.log('--- Exporting PDF ---');
-  console.log('Date:', date);
-  console.log('Items Count:', items?.length);
-
-  if (!items || items.length === 0) {
-    message.warning('当前列表没有数据，无法导出');
-    return;
-  }
-
-  const html = buildPrintableHtml(date, items, t);
-
-  // 1. 先打开窗口
-  const printWindow = window.open('', '_blank');
-
-  if (!printWindow) {
-    message.error(t('procurementPrintWindowFailed'));
-    return;
-  }
-
-  // 2. 注入内容
-  printWindow.document.open();
-  printWindow.document.write(html);
-
-  // 3. 必须在 write 后关闭流，否则 window.onload 不会触发
-  printWindow.document.close();
-}
-
-/**
- * 错误处理
- */
-function mapRegenerateError(
-  errorMessage: string,
-  t: (key: TranslationKey) => string,
-) {
-  if (
-    errorMessage.includes('already SUBMITTED') &&
-    errorMessage.includes('Cannot regenerate')
-  ) {
-    return t('procurementRegenerateBlockedSubmitted');
-  }
-  return errorMessage || t('procurementRegenerateFailed');
-}
-
-/**
- * 外部调用的主入口
- */
-export const handleExportPdf = ({
-  date,
-  items,
-  t,
-  generateTrigger,
-  setProcurementId,
-  mutateList,
-  mutateSheet,
-  mutateProcurementItems,
-}: HandleExportPdfParams) => {
   Modal.confirm({
     title: t('procurementExportTitle'),
     content: t('procurementExportConfirm'),
@@ -189,26 +23,131 @@ export const handleExportPdf = ({
     cancelText: t('procurementExportDirectly'),
     onOk: async () => {
       try {
-        const result = await generateTrigger({ date });
-        setProcurementId(result.id);
+        const result = await params.generateTrigger({ date: params.date });
+        params.setProcurementId(result.id);
         await Promise.all([
-          mutateList(),
-          mutateSheet(),
-          mutateProcurementItems(),
+          params.mutateList(),
+          params.mutateSheet(),
+          params.mutateProcurementItems(),
         ]);
         message.success(t('procurementRegenerateSuccess'));
       } catch (error: any) {
-        message.error(mapRegenerateError(error?.message || '', t));
+        message.error(error?.message || 'Failed');
       }
     },
     onCancel: (e) => {
-      // 排除掉点击遮罩层或 ESC 关闭 Modal 的情况
       if (e?.triggerCancel) return;
 
-      // 延迟一小会儿执行，防止 Modal 关闭动画干扰新窗口打开
-      setTimeout(() => {
-        printProcurementSheet(date, items, t);
-      }, 100);
+      if (!items || items.length === 0) {
+        message.warning(t('procurementNoData'));
+        return;
+      }
+
+      // 1. 获取或创建 iframe
+      let iframe = document.getElementById('print-iframe') as HTMLIFrameElement;
+      if (iframe) {
+        document.body.removeChild(iframe); // 每次打印都重置，防止缓存旧数据
+      }
+      iframe = document.createElement('iframe');
+      iframe.id = 'print-iframe';
+      iframe.setAttribute(
+        'style',
+        'position:absolute;width:0;height:0;top:-100px;left:-100px;',
+      );
+      document.body.appendChild(iframe);
+
+      // 2. 定义单元格样式 (提取出来以保持代码整洁)
+      const tdStyle =
+        'border:1px solid #000; padding:4px; text-align:left; font-size:10px; word-break:break-all; color:#000 !important; visibility:visible !important;';
+      const thStyle =
+        'border:1px solid #000; padding:4px; text-align:left; font-size:10px; background-color:#eee; font-weight:bold; color:#000 !important;';
+
+      // 3. 构建行数据
+      const rows = items
+        .map(
+          (item) => `
+        <tr>
+          <td style="${tdStyle}">${item.name ?? '-'}</td>
+          <td style="${tdStyle}">${item.category ?? '-'}</td>
+          <td style="${tdStyle}">${item.demand_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.demand_unit_qty ?? '-'}</td>
+          <td style="${tdStyle}">${item.stock_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.stock_unit_qty ?? '-'}</td>
+          <td style="${tdStyle}">${item.purchase_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.purchase_unit_qty ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_unit_name ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_kg_per_unit ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_price ?? '-'}</td>
+        </tr>
+      `,
+        )
+        .join('');
+
+      // 4. 完整的 HTML
+      const content = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              @media print {
+                @page { size: A4 landscape; margin: 10mm; }
+                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              }
+              body { font-family: sans-serif; color: #000; }
+              table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+            </style>
+          </head>
+          <body>
+            <h2 style="font-size: 16px;">${t('navProcurementOrder')} - ${date}</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th style="${thStyle} width:12%">${t('procurementColName')}</th>
+                  <th style="${thStyle}">${t('procurementColCategory')}</th>
+                  <th style="${thStyle}">${t('procurementColDemandKg')}</th>
+                  <th style="${thStyle}">${t('procurementColDemandUnit')}</th>
+                  <th style="${thStyle}">${t('procurementColStockKg')}</th>
+                  <th style="${thStyle}">${t('procurementColStockUnit')}</th>
+                  <th style="${thStyle}">${t('procurementColPurchaseKg')}</th>
+                  <th style="${thStyle}">${t('procurementColPurchaseUnit')}</th>
+                  <th style="${thStyle} width:12%">${t('commonSupplier')}</th>
+                  <th style="${thStyle}">${t('procurementColSupplierUnit')}</th>
+                  <th style="${thStyle}">${t('procurementColSupplierKgPerUnit')}</th>
+                  <th style="${thStyle}">${t('procurementColSupplierPrice')}</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      const doc = iframe.contentWindow?.document || iframe.contentDocument;
+      if (doc) {
+        doc.open();
+        doc.write(content);
+        doc.close();
+
+        // 关键：确保 iframe 加载完成
+        iframe.onload = () => {
+          setTimeout(() => {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.focus();
+              iframe.contentWindow.print();
+            }
+          }, 800); // 增加延迟到 800ms，给浏览器充分时间渲染文字
+        };
+
+        // 兜底方案：如果 onload 没触发，也执行一次打印
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+          }
+        }, 1000);
+      }
     },
   });
 };

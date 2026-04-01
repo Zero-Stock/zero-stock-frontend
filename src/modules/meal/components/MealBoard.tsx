@@ -386,7 +386,20 @@ export default function MealBoard() {
               </>
             )}
           />
-          <Button onClick={handleExportMealPdf}>{t('commonExportPdf')}</Button>
+          <Button
+            onClick={() =>
+              handleExportMealPdf({
+                t,
+                categoryName:
+                  dietCategories.find((c) => c.id === selectedCategoryId)
+                    ?.name ?? t('mealUnknownDiet'),
+                dayPlans,
+                dishDetails,
+              })
+            }
+          >
+            {t('commonExportPdf')}
+          </Button>
         </Space>
       </div>
 

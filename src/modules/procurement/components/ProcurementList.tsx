@@ -78,9 +78,10 @@ export default function ProcurementList() {
   };
 
   const onExportPdf = () => {
+    console.log('--- 打印调试数据 ---', sheetItems);
     handleExportPdf({
-      items: sheetItems,
       date,
+      items: sheetItems,
       t,
       generateTrigger,
       setProcurementId,
