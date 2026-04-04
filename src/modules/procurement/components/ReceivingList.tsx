@@ -87,14 +87,19 @@ export default function ReceivingList() {
   ) => {
     const nextValue = value == null ? 0 : Number(value);
 
-    setEditedRows((prev) => ({
-      ...prev,
-      [record.name]: {
-        actual_quantity: nextValue,
-        actual_unit_qty:
-          prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty,
-      },
-    }));
+    setEditedRows((prev) => {
+      let nextUnitQty = prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty;
+      if (record.supplier_kg_per_unit) {
+        nextUnitQty = Number((nextValue / record.supplier_kg_per_unit).toFixed(2));
+      }
+      return {
+        ...prev,
+        [record.name]: {
+          actual_quantity: nextValue,
+          actual_unit_qty: nextUnitQty,
+        },
+      };
+    });
   };
 
   const handleActualUnitChange = (
@@ -103,14 +108,19 @@ export default function ReceivingList() {
   ) => {
     const nextValue = value == null ? 0 : Number(value);
 
-    setEditedRows((prev) => ({
-      ...prev,
-      [record.name]: {
-        actual_quantity:
-          prev[record.name]?.actual_quantity ?? record.expected_quantity,
-        actual_unit_qty: nextValue,
-      },
-    }));
+    setEditedRows((prev) => {
+      let nextKgQty = prev[record.name]?.actual_quantity ?? record.expected_quantity;
+      if (record.supplier_kg_per_unit) {
+        nextKgQty = Number((nextValue * record.supplier_kg_per_unit).toFixed(2));
+      }
+      return {
+        ...prev,
+        [record.name]: {
+          actual_quantity: nextKgQty,
+          actual_unit_qty: nextValue,
+        },
+      };
+    });
   };
 
   const handleSubmit = async () => {
