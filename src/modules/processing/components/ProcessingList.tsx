@@ -52,6 +52,7 @@ export default function ProcessingList() {
       dataIndex: 'processing_requirement',
       key: 'processing_requirement',
       width: 120,
+      render: (value: number) => typeof value === 'number' ? value.toFixed(2) : value,
     },
     {
       title: t('processingTimeColumn'),
