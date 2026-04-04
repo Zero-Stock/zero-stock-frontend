@@ -52,7 +52,10 @@ export const translations = {
     en: 'Inspect today’s raw material prep tasks by processing spec.',
   },
   homeHighlightsTitle: { zh: '关键节奏', en: 'Key Cadence' },
-  homeHighlightCutoff: { zh: '人数确认建议时间', en: 'Suggested Census Cutoff' },
+  homeHighlightCutoff: {
+    zh: '人数确认建议时间',
+    en: 'Suggested Census Cutoff',
+  },
   homeHighlightZones: { zh: '服务区域数量', en: 'Service Zones' },
   homeHighlightStages: { zh: '核心生产阶段', en: 'Core Stages' },
   homeFlowTitle: { zh: '今日流程推进', en: 'Daily Workflow' },
@@ -67,7 +70,10 @@ export const translations = {
     zh: '检查早餐、午餐、晚餐的菜品安排是否符合当日供应计划。',
     en: 'Check breakfast, lunch, and dinner menus against the day’s service plan.',
   },
-  homeStepProcurementTitle: { zh: '生成采购与加工', en: 'Generate Orders and Prep' },
+  homeStepProcurementTitle: {
+    zh: '生成采购与加工',
+    en: 'Generate Orders and Prep',
+  },
   homeStepProcurementDesc: {
     zh: '根据人数和菜单联动生成采购单、收货单与加工单。',
     en: 'Use demand and menu data to generate purchase, receiving, and processing work.',
@@ -125,6 +131,8 @@ export const translations = {
   commonSupplier: { zh: '供应商', en: 'Supplier' },
   commonSelectMaterial: { zh: '选择原料', en: 'Select material' },
   commonTotal: { zh: '合计', en: 'Total' },
+  commonTotalPrice: { zh: '总价', en: 'Total Price' },
+  commonCurrencySymbol: { zh: '¥', en: '$' },
   commonRegenerate: { zh: '重新生成加工单', en: 'Regenerate' },
   commonYieldRate: { zh: '出成率', en: 'Yield Rate' },
   commonSpecs: { zh: '加工规格', en: 'Specs' },
@@ -405,7 +413,7 @@ export const translations = {
     zh: 'kg/单位',
     en: 'kg/unit',
   },
-  procurementColSupplierPrice: { zh: '价格', en: 'Price' },
+  procurementColSupplierPrice: { zh: '供应商单价', en: 'Supplier Unit Price' },
 
   procurementEditSupplierTitle: {
     zh: '编辑供应商',
@@ -487,6 +495,8 @@ export const translations = {
   materialEditTitle: { zh: '编辑原料', en: 'Edit Material' },
   materialEditSuccess: { zh: '原料已更新', en: 'Material updated' },
   materialEditFailed: { zh: '更新原料失败', en: 'Failed to update material' },
+  materialDeleted: { zh: '原料已删除', en: 'Material deleted' },
+  materialDeleteFailed: { zh: '删除原料失败', en: 'Failed to delete material' },
   materialNameRequired: { zh: '请输入名称', en: 'Please input name' },
   materialNamePlaceholder: {
     zh: '输入原料名称',

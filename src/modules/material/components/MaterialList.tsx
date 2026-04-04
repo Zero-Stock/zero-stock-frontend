@@ -1,4 +1,4 @@
-import { Button, Select, Space, Table, Typography } from 'antd';
+import { Button, Select, Space, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
@@ -38,8 +38,14 @@ export default function MaterialList() {
   const { trigger: deleteMaterial } = useMaterialDelete();
 
   const handleDelete = async (id: number) => {
-    await deleteMaterial(id);
-    mutate();
+    try {
+      await deleteMaterial(id);
+      message.success(t('materialDeleted'));
+      mutate();
+    } catch (error) {
+      if (!(error instanceof Error)) return;
+      message.error(error.message);
+    }
   };
 
   const columns: ColumnsType<MaterialPreviewDto> = [
@@ -129,6 +135,7 @@ export default function MaterialList() {
         record={editingRecord}
         onCancel={() => setIsEditModalOpen(false)}
         onUpdated={() => {
+          message.success(t('materialEditSuccess'));
           mutate();
         }}
       />

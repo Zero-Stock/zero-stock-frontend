@@ -5,6 +5,7 @@ import Sidebar from './shared/components/Sidebar';
 import Providers from './shared/providers';
 import { renderRoutes, routes } from './Routes';
 import BreadcrumbNav from './shared/components/BreadcrumbNav';
+import ScrollToTop from './shared/components/ScrollToTop';
 import dayjs from 'dayjs';
 import { useTranslation } from './shared/translation/LanguageContext';
 import { useDateStore } from './shared/stores/dateStore';
@@ -25,7 +26,9 @@ function AppContent() {
   const { date: currentDate, setDate: setCurrentDate } = useDateStore();
 
   return (
-    <Layout style={{ height: '100vh', overflow: 'hidden' }}>
+    <>
+      <ScrollToTop />
+      <Layout style={{ height: '100vh', overflow: 'hidden' }}>
       <Header
         className="flex items-center justify-between"
         style={{ background: colorBgContainer, padding: '0 36px' }}
@@ -80,6 +83,7 @@ function AppContent() {
         </Footer>
       </div>
     </Layout>
+    </>
   );
 }
 

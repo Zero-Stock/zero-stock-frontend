@@ -22,76 +22,6 @@ export default function NewMaterialForm() {
 
   const [form] = Form.useForm();
 
-  const columns: ColumnsType<{ key: number | string }> = [
-    {
-      title: t('commonName'),
-      dataIndex: 'name',
-      key: 'name',
-      render: (_, _record, index) => (
-        <Form.Item
-          name={[index, 'name']}
-          rules={[{ required: true, message: t('materialNameRequired') }]}
-          className="mb-0!"
-        >
-          <Input placeholder={t('materialNamePlaceholder')} />
-        </Form.Item>
-      ),
-    },
-    {
-      title: t('commonCategory'),
-      dataIndex: 'category',
-      key: 'category',
-      width: 200,
-      render: (_, _record, index) => (
-        <Form.Item
-          name={[index, 'category']}
-          rules={[{ required: true, message: t('materialCategoryRequired') }]}
-          className="mb-0!"
-        >
-          <Select
-            placeholder={t('materialCategoryPlaceholder')}
-            className="w-full"
-            options={categoryOptions}
-            loading={isLoadingCategories}
-          />
-        </Form.Item>
-      ),
-    },
-    {
-      title: t('commonYieldRate'),
-      dataIndex: 'yield_rate',
-      width: 200,
-      key: 'yield_rate',
-      render: (_, _record, index) => (
-        <Form.Item
-          name={[index, 'yield_rate']}
-          rules={[
-            {
-              required: true,
-              message: t('materialYieldRateRequired'),
-            },
-          ]}
-          className="mb-0!"
-        >
-          <Input
-            placeholder={t('materialYieldRatePlaceholder')}
-            className="w-full"
-          />
-        </Form.Item>
-      ),
-    },
-    {
-      title: t('commonSpecs'),
-      dataIndex: 'specs',
-      key: 'specs',
-      render: (_, _record, index) => (
-        <Form.Item name={[index, 'specs']} className="mb-0!">
-          <Input placeholder={t('materialSpecsPlaceholder')} />
-        </Form.Item>
-      ),
-    },
-  ];
-
   const onFinish = async (values: { items: RawMaterialFields[] }) => {
     const data = values.items.map((item) => ({
       name: item.name,
@@ -112,33 +42,123 @@ export default function NewMaterialForm() {
   return (
     <Form form={form} onFinish={onFinish} initialValues={{ items: [{}] }}>
       <Form.List name="items">
-        {(fields, { add }) => (
-          <>
-            <Table
-              dataSource={fields}
-              columns={columns}
-              pagination={false}
-              rowKey="key"
-              tableLayout="fixed"
-              footer={() => (
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  icon={<PlusOutlined />}
-                  className="mt-1"
+        {(fields, { add, remove }) => {
+          const columns: ColumnsType<{ key: number | string }> = [
+            {
+              title: t('commonName'),
+              dataIndex: 'name',
+              key: 'name',
+              render: (_, _record, index) => (
+                <Form.Item
+                  name={[fields[index].name, 'name']}
+                  rules={[{ required: true, message: t('materialNameRequired') }]}
+                  className="mb-0!"
                 >
-                  {t('materialAddRow')}
+                  <Input placeholder={t('materialNamePlaceholder')} />
+                </Form.Item>
+              ),
+            },
+            {
+              title: t('commonCategory'),
+              dataIndex: 'category',
+              key: 'category',
+              width: 200,
+              render: (_, _record, index) => (
+                <Form.Item
+                  name={[fields[index].name, 'category']}
+                  rules={[{ required: true, message: t('materialCategoryRequired') }]}
+                  className="mb-0!"
+                >
+                  <Select
+                    placeholder={t('materialCategoryPlaceholder')}
+                    className="w-full"
+                    options={categoryOptions}
+                    loading={isLoadingCategories}
+                  />
+                </Form.Item>
+              ),
+            },
+            {
+              title: t('commonYieldRate'),
+              dataIndex: 'yield_rate',
+              width: 200,
+              key: 'yield_rate',
+              render: (_, _record, index) => (
+                <Form.Item
+                  name={[fields[index].name, 'yield_rate']}
+                  rules={[
+                    {
+                      required: true,
+                      message: t('materialYieldRateRequired'),
+                    },
+                  ]}
+                  className="mb-0!"
+                >
+                  <Input
+                    placeholder={t('materialYieldRatePlaceholder')}
+                    className="w-full"
+                  />
+                </Form.Item>
+              ),
+            },
+            {
+              title: t('commonSpecs'),
+              dataIndex: 'specs',
+              key: 'specs',
+              render: (_, _record, index) => (
+                <Form.Item name={[fields[index].name, 'specs']} className="mb-0!">
+                  <Input placeholder={t('materialSpecsPlaceholder')} />
+                </Form.Item>
+              ),
+            },
+            {
+              title: '',
+              key: 'action',
+              width: 100,
+              align: 'right',
+              render: (_, _record, index) => (
+                <Button
+                  danger
+                  type="link"
+                  onClick={() => remove(fields[index].name)}
+                >
+                  {t('delete')}
                 </Button>
-              )}
-            />
-            <div className="mt-4 text-right">
-              <Button type="primary" htmlType="submit">
-                {t('materialSubmit')}
-              </Button>
-            </div>
-          </>
-        )}
+              ),
+            },
+          ];
+
+          return (
+            <>
+              <Table
+                dataSource={fields}
+                columns={columns as any}
+                pagination={false}
+                rowKey="key"
+                tableLayout="fixed"
+                footer={() => (
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    block
+                    icon={<PlusOutlined />}
+                    className="mt-1"
+                  >
+                    {t('materialAddRow')}
+                  </Button>
+                )}
+              />
+              <div className="mt-4 flex justify-end gap-3">
+                <Button onClick={() => navigate('/material')}>
+                  {t('cancel')}
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  {t('materialSubmit')}
+                </Button>
+              </div>
+            </>
+          );
+        }}
       </Form.List>
     </Form>
   );

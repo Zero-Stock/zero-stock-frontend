@@ -232,6 +232,29 @@ export default function ProcurementList() {
       render: (value: string | null) => value ?? '-',
     },
     {
+      title: t('procurementColSupplierPrice'),
+      dataIndex: 'supplier_price',
+      key: 'supplier_price',
+      width: 100,
+      render: (value: number | null) =>
+        value != null ? `${t('commonCurrencySymbol')}${value.toFixed(2)}` : '-',
+    },
+    {
+      title: t('commonTotalPrice'),
+      key: 'total_price',
+      width: 100,
+      render: (_, record) => {
+        if (record.supplier_price != null) {
+          const qty = record.demand_unit_qty || record.demand_kg || 0;
+          const total = record.supplier_price * Math.ceil(qty);
+          return total > 0
+            ? `${t('commonCurrencySymbol')}${total.toFixed(2)}`
+            : `${t('commonCurrencySymbol')}0.00`;
+        }
+        return '-';
+      },
+    },
+    {
       title: t('commonAction'),
       key: 'action',
       width: 100,
@@ -288,7 +311,7 @@ export default function ProcurementList() {
               ? t('procurementNoItems')
               : t('procurementNoData'),
           }}
-          scroll={{ x: 1750 }}
+          scroll={{ x: 1950 }}
         />
       </div>
 
