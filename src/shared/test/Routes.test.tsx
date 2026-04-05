@@ -1,3 +1,4 @@
+import { isValidElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { findRouteByPath, renderRoutes, routes } from '@/Routes';
 
@@ -34,10 +35,13 @@ describe('Routes', () => {
 
   it('renders route elements for top-level and child routes', () => {
     const elements = renderRoutes(routes);
+    const routeKeys = elements
+      .filter(isValidElement)
+      .map((element) => String(element.key));
 
     expect(elements).toHaveLength(12);
-    expect(elements.map((element) => element.key)).toContain('/');
-    expect(elements.map((element) => element.key)).toContain('/procurement/order');
-    expect(elements.map((element) => element.key)).toContain('/supplier/:supplierId');
+    expect(routeKeys).toContain('/');
+    expect(routeKeys).toContain('/procurement/order');
+    expect(routeKeys).toContain('/supplier/:supplierId');
   });
 });
