@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { DatePicker, Empty, Layout, theme, Button } from 'antd';
 import { TranslationOutlined } from '@ant-design/icons';
 import { Route, Switch } from 'wouter';
@@ -68,10 +69,12 @@ function AppContent() {
             <Sidebar />
 
             <Content className="h-full overflow-y-auto p-8">
-              <Switch>
-                {renderRoutes(routes)}
-                <Route component={NotFoundPage} />
-              </Switch>
+              <Suspense fallback={null}>
+                <Switch>
+                  {renderRoutes(routes)}
+                  <Route component={NotFoundPage} />
+                </Switch>
+              </Suspense>
             </Content>
           </Layout>
 

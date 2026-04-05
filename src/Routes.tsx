@@ -1,5 +1,5 @@
 import { Route } from 'wouter';
-import { type ReactNode, type ComponentType } from 'react';
+import { lazy, type LazyExoticComponent, type ReactNode, type ComponentType } from 'react';
 
 import {
   HomeOutlined,
@@ -11,19 +11,44 @@ import {
   FireOutlined,
   ShopOutlined,
 } from '@ant-design/icons';
-import HomePage from './modules/home/pages/HomePage';
-import MaterialListPage from './modules/material/pages/MaterialListPage';
-import MaterialCreatePage from './modules/material/pages/MaterialCreatePage';
-import MealListPage from './modules/meal/pages/MealListPage';
-import DishListPage from './modules/dish/pages/DishListPage';
 import type { TranslationKey } from './shared/translation/translations';
-import SupplierListPage from './modules/supplier/pages/SupplierListPage';
-import SupplierCreatePage from './modules/supplier/pages/SupplierCreatePage';
-import SupplierDetailPage from './modules/supplier/pages/SupplierDetailPage';
-import CensusListPage from './modules/census/pages/CensusListPage';
-import ProcurementListPage from './modules/procurement/pages/ProcurementListPage';
-import ReceivingListPage from './modules/procurement/pages/ReceivingListPage';
-import ProcessingListPage from './modules/processing/pages/ProcessingListPage';
+
+type RouteComponent = ComponentType<any> | LazyExoticComponent<ComponentType<any>>;
+
+const lazyPage = <T extends ComponentType<any>>(
+  load: () => Promise<{ default: T }>,
+): LazyExoticComponent<T> => lazy(load);
+
+const HomePage = lazyPage(() => import('./modules/home/pages/HomePage'));
+const MaterialListPage = lazyPage(
+  () => import('./modules/material/pages/MaterialListPage'),
+);
+const MaterialCreatePage = lazyPage(
+  () => import('./modules/material/pages/MaterialCreatePage'),
+);
+const MealListPage = lazyPage(() => import('./modules/meal/pages/MealListPage'));
+const DishListPage = lazyPage(() => import('./modules/dish/pages/DishListPage'));
+const SupplierListPage = lazyPage(
+  () => import('./modules/supplier/pages/SupplierListPage'),
+);
+const SupplierCreatePage = lazyPage(
+  () => import('./modules/supplier/pages/SupplierCreatePage'),
+);
+const SupplierDetailPage = lazyPage(
+  () => import('./modules/supplier/pages/SupplierDetailPage'),
+);
+const CensusListPage = lazyPage(
+  () => import('./modules/census/pages/CensusListPage'),
+);
+const ProcurementListPage = lazyPage(
+  () => import('./modules/procurement/pages/ProcurementListPage'),
+);
+const ReceivingListPage = lazyPage(
+  () => import('./modules/procurement/pages/ReceivingListPage'),
+);
+const ProcessingListPage = lazyPage(
+  () => import('./modules/processing/pages/ProcessingListPage'),
+);
 
 export interface RouteConfig {
   path: string;
@@ -31,7 +56,7 @@ export interface RouteConfig {
   titleKey?: TranslationKey;
   icon?: ReactNode;
   showInMenu?: boolean;
-  component?: ComponentType<any>;
+  component?: RouteComponent;
   children?: RouteConfig[];
 }
 
