@@ -55,6 +55,12 @@ describe('Home module', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText('Working date: 2026-04-04')).toBeInTheDocument();
+    expect(screen.getByText('Daily Operations Hub')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The home page brings together the key entry points in the zero-stock workflow so teams can move from headcount to menus, purchasing, and prep without friction.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByTestId('today-overview')).toBeInTheDocument();
     expect(screen.getByTestId('quick-start')).toBeInTheDocument();
     expect(screen.getByTestId('key-cadence')).toBeInTheDocument();
@@ -68,5 +74,15 @@ describe('Home module', () => {
 
     expect(mockNavigate).toHaveBeenNthCalledWith(1, '/census');
     expect(mockNavigate).toHaveBeenNthCalledWith(2, '/meal');
+  });
+
+  it('renders all supporting dashboard sections', () => {
+    renderWithProviders(<HomePage />);
+
+    expect(screen.getByText('Today Overview Stub')).toBeInTheDocument();
+    expect(screen.getByText('Quick Start Stub')).toBeInTheDocument();
+    expect(screen.getByText('Key Cadence Stub')).toBeInTheDocument();
+    expect(screen.getByText('Daily Workflow Stub')).toBeInTheDocument();
+    expect(screen.getByText('Shift Checklist Stub')).toBeInTheDocument();
   });
 });

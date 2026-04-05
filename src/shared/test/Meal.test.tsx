@@ -12,6 +12,9 @@ const mockSaveWeeklyMenu = vi.fn();
 const mockMealDayCards = vi.fn();
 const mockMealEditModal = vi.fn();
 const mockExportMealPdf = vi.fn();
+let mealDietState = [{ id: 1, name: 'Regular' }];
+let mealDietError: unknown = null;
+let mealMenuError: unknown = null;
 
 const dayPlan = {
   day: 1,
@@ -28,9 +31,9 @@ vi.mock('@/modules/meal/apiAdapter', () => ({
 
 vi.mock('@/modules/meal/hooks/useMealDietList', () => ({
   useMealDietList: () => ({
-    diets: [{ id: 1, name: 'Regular' }],
+    diets: mealDietState,
     isLoading: false,
-    isError: null,
+    isError: mealDietError,
     mutate: mockMutateDiets,
   }),
 }));
@@ -39,7 +42,7 @@ vi.mock('@/modules/meal/hooks/useMealMenuList', () => ({
   useMealMenuList: () => ({
     menuRows: [{ id: 1, diet_category: 1 }],
     isLoading: false,
-    isError: null,
+    isError: mealMenuError,
     mutate: mockMutateMenus,
   }),
 }));
@@ -115,6 +118,9 @@ describe('Meal module', () => {
     mockMealDayCards.mockReset();
     mockMealEditModal.mockReset();
     mockExportMealPdf.mockReset();
+    mealDietState = [{ id: 1, name: 'Regular' }];
+    mealDietError = null;
+    mealMenuError = null;
     vi.spyOn(Select, 'Option').mockRestore?.();
     vi.mocked(message.success).mockReset?.();
     vi.mocked(message.error).mockReset?.();
@@ -181,5 +187,16 @@ describe('Meal module', () => {
       expect(mockCreateDiet).toHaveBeenCalledWith('Low Sodium');
       expect(mockMutateDiets).toHaveBeenCalled();
     });
+  });
+
+  it('shows the empty-state guidance when there are no diet categories', () => {
+    mealDietState = [];
+
+    renderWithProviders(<MealBoard />);
+
+    expect(screen.getByText('No Diet Categories')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please add a diet category to start planning menus'),
+    ).toBeInTheDocument();
   });
 });

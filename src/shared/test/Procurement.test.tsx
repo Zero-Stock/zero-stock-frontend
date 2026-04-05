@@ -16,6 +16,13 @@ const mockMutateProcurementItems = vi.fn();
 const mockMutateTemplate = vi.fn();
 const mockSupplierModal = vi.fn();
 const mockExportPdf = vi.fn();
+let procurementItemsState = [
+  {
+    id: 91,
+    raw_material: 41,
+    raw_material_name: 'Chicken Breast',
+  },
+];
 
 vi.mock('@/shared/stores/dateStore', () => ({
   useDateStore: (selector: (state: { date: string }) => unknown) =>
@@ -55,13 +62,7 @@ vi.mock('@/modules/procurement/hooks/useProcurementSheet', () => ({
 
 vi.mock('@/modules/procurement/hooks/useProcurementItems', () => ({
   useProcurementItems: () => ({
-    items: [
-      {
-        id: 91,
-        raw_material: 41,
-        raw_material_name: 'Chicken Breast',
-      },
-    ],
+    items: procurementItemsState,
     isLoading: false,
     mutate: mockMutateProcurementItems,
   }),
@@ -154,6 +155,13 @@ describe('Procurement module', () => {
     mockMutateTemplate.mockReset();
     mockSupplierModal.mockReset();
     mockExportPdf.mockReset();
+    procurementItemsState = [
+      {
+        id: 91,
+        raw_material: 41,
+        raw_material_name: 'Chicken Breast',
+      },
+    ];
     vi.mocked(message.success).mockReset();
     vi.mocked(message.error).mockReset();
     vi.mocked(message.warning).mockReset();
@@ -210,6 +218,38 @@ describe('Procurement module', () => {
     });
   }, 10000);
 
+  it('exports the procurement sheet', async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<ProcurementList />);
+
+    await user.click(screen.getByRole('button', { name: 'Export PDF / Print' }));
+
+    expect(mockExportPdf).toHaveBeenCalledWith(
+      expect.objectContaining({
+        date: '2026-04-04',
+        items: expect.arrayContaining([
+          expect.objectContaining({ name: 'Chicken Breast' }),
+        ]),
+      }),
+    );
+  });
+
+  it('shows an error when supplier data cannot be matched', async () => {
+    const user = userEvent.setup();
+    procurementItemsState = [];
+
+    renderWithProviders(<ProcurementList />);
+
+    const row = screen.getByRole('row', { name: /Chicken Breast/i });
+    await user.click(within(row).getByText('Edit'));
+
+    expect(message.warning).toHaveBeenCalled();
+    expect(mockSupplierModal).not.toHaveBeenCalledWith(
+      expect.objectContaining({ open: true }),
+    );
+  });
+
   it('submits receiving quantities', async () => {
     const user = userEvent.setup();
     mockCreateReceiving.mockResolvedValue(undefined);
@@ -233,6 +273,22 @@ describe('Procurement module', () => {
       expect(mockMutateList).toHaveBeenCalled();
       expect(mockMutateSheet).toHaveBeenCalled();
       expect(mockMutateTemplate).toHaveBeenCalled();
+    });
+  });
+
+  it('submits a procurement order after confirmation', async () => {
+    const user = userEvent.setup();
+    mockSubmit.mockResolvedValue(undefined);
+
+    renderWithProviders(<ProcurementList />);
+
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(mockSubmit).toHaveBeenCalledWith(7);
+      expect(mockMutateList).toHaveBeenCalled();
+      expect(mockMutateSheet).toHaveBeenCalled();
+      expect(mockMutateProcurementItems).toHaveBeenCalled();
     });
   });
 });

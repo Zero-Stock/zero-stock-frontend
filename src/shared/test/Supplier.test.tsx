@@ -11,6 +11,7 @@ const mockUpdateSupplier = vi.fn();
 const mockDeleteSupplier = vi.fn();
 const mockDetailMutate = vi.fn();
 const mockEditModal = vi.fn();
+const mockUseSupplierDetail = vi.fn();
 
 vi.mock('wouter', () => ({
   useLocation: () => ['/supplier', mockNavigate] as const,
@@ -33,17 +34,7 @@ vi.mock('@/modules/supplier/hooks/useSupplierDelete', () => ({
 }));
 
 vi.mock('@/modules/supplier/hooks/useSupplierDetail', () => ({
-  useSupplierDetail: () => ({
-    supplier: {
-      id: 7,
-      name: 'Fresh Farm',
-      contact_person: 'Alice',
-      phone: '555-1234',
-      address: '1 Market St',
-    },
-    isLoading: false,
-    mutate: mockDetailMutate,
-  }),
+  useSupplierDetail: (id: number) => mockUseSupplierDetail(id),
 }));
 
 vi.mock('@/modules/supplier/components/SupplierEditModal', () => ({
@@ -87,6 +78,7 @@ describe('Supplier module', () => {
     mockDeleteSupplier.mockReset();
     mockDetailMutate.mockReset();
     mockEditModal.mockReset();
+    mockUseSupplierDetail.mockReset();
 
     mockUseSupplierList.mockReturnValue({
       suppliers: [
@@ -98,6 +90,18 @@ describe('Supplier module', () => {
           address: '1 Market St',
         },
       ],
+      isLoading: false,
+      mutate: mockDetailMutate,
+    });
+
+    mockUseSupplierDetail.mockReturnValue({
+      supplier: {
+        id: 7,
+        name: 'Fresh Farm',
+        contact_person: 'Alice',
+        phone: '555-1234',
+        address: '1 Market St',
+      },
       isLoading: false,
       mutate: mockDetailMutate,
     });
@@ -142,6 +146,18 @@ describe('Supplier module', () => {
     });
   }, 10000);
 
+  it('passes the search keyword into the supplier list hook', async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<SupplierList />);
+
+    const input = screen.getByPlaceholderText('Search supplier name');
+    await user.clear(input);
+    await user.type(input, 'Fresh');
+
+    expect(mockUseSupplierList).toHaveBeenLastCalledWith({ search: 'Fresh' });
+  });
+
   it('renders supplier detail and updates the supplier', async () => {
     const user = userEvent.setup();
     mockUpdateSupplier.mockResolvedValue(undefined);
@@ -171,5 +187,36 @@ describe('Supplier module', () => {
       expect(mockUpdateSupplier).toHaveBeenCalled();
       expect(mockDetailMutate).toHaveBeenCalled();
     });
+  });
+
+  it('shows a loading state while supplier detail is loading', () => {
+    mockUseSupplierDetail.mockReturnValue({
+      supplier: undefined,
+      isLoading: true,
+      mutate: mockDetailMutate,
+    });
+
+    renderWithProviders(<SupplierDetail supplierId="7" />);
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+  });
+
+  it('renders the not found state and navigates back to the supplier list', async () => {
+    const user = userEvent.setup();
+    mockUseSupplierDetail.mockReturnValue({
+      supplier: undefined,
+      isLoading: false,
+      mutate: mockDetailMutate,
+    });
+
+    renderWithProviders(<SupplierDetail supplierId="999" />);
+
+    expect(
+      screen.getByRole('heading', { name: 'Supplier not found' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/supplier');
   });
 });

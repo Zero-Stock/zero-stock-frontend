@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import DishList from '@/modules/dish/components/DishList';
 import { renderWithProviders } from '@/shared/test/renderWithProviders';
@@ -45,15 +51,15 @@ const dishes = [
 ];
 
 vi.mock('antd', () => {
-  const React = require('react') as typeof import('react');
-
   const Search = ({
     placeholder,
     onChange,
   }: {
     placeholder?: string;
     onChange?: (event: { target: { value: string } }) => void;
-  }) => <input type="search" placeholder={placeholder} onChange={onChange as any} />;
+  }) => (
+    <input type="search" placeholder={placeholder} onChange={onChange as any} />
+  );
 
   return {
     Button: ({
@@ -64,7 +70,9 @@ vi.mock('antd', () => {
       onClick?: () => void;
     }) => <button onClick={onClick}>{children}</button>,
     Input: { Search },
-    Space: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    Space: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
     Table: ({
       columns,
       dataSource,
@@ -96,7 +104,9 @@ vi.mock('antd', () => {
       </table>
     ),
     Typography: {
-      Title: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
+      Title: ({ children }: { children: React.ReactNode }) => (
+        <h3>{children}</h3>
+      ),
     },
     Popconfirm: ({
       children,
@@ -157,7 +167,9 @@ vi.mock('@/modules/dish/components/DishEditModal', () => ({
     mockEditModal(props);
     return (
       <div data-testid="dish-edit-modal">
-        <button onClick={() => props.onSave({ id: 9, name: 'New Dish' } as any)}>
+        <button
+          onClick={() => props.onSave({ id: 9, name: 'New Dish' } as any)}
+        >
           Trigger Save
         </button>
       </div>
@@ -185,7 +197,9 @@ describe('Dish module', () => {
 
     renderWithProviders(<DishList />);
 
-    expect(screen.getAllByRole('heading', { name: 'Dish Recipe Sheet' })).toHaveLength(2);
+    expect(
+      screen.getAllByRole('heading', { name: 'Dish Recipe Sheet' }),
+    ).toHaveLength(2);
     expect(screen.getByText('Tomato Egg')).toBeInTheDocument();
     expect(screen.getByText('Chicken Soup')).toBeInTheDocument();
 
@@ -217,6 +231,38 @@ describe('Dish module', () => {
 
     await waitFor(() => {
       expect(mockDeleteDish).toHaveBeenCalledWith(1);
+    });
+  });
+
+  it('opens edit state for an existing dish and saves via update', async () => {
+    mockUpdateDish.mockResolvedValue(undefined);
+
+    renderWithProviders(<DishList />);
+
+    fireEvent.click(
+      within(screen.getByRole('row', { name: /Tomato Egg/i })).getByRole(
+        'button',
+        { name: 'Edit' },
+      ),
+    );
+
+    expect(mockEditModal).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        visible: true,
+        record: dishes[0],
+      }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger Save' }));
+
+    await waitFor(() => {
+      expect(mockUpdateDish).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
+          name: 'New Dish',
+        }),
+      );
+      expect(mockMutate).toHaveBeenCalled();
     });
   });
 });

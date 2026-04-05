@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { message } from 'antd';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProcessingList from '@/modules/processing/components/ProcessingList';
 import { renderWithProviders } from '@/shared/test/renderWithProviders';
@@ -7,8 +8,6 @@ const mockGenerate = vi.fn();
 const mockMutate = vi.fn();
 
 vi.mock('antd', () => {
-  const React = require('react') as typeof import('react');
-
   return {
     Button: ({
       children,
@@ -48,7 +47,9 @@ vi.mock('antd', () => {
       </table>
     ),
     Typography: {
-      Title: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
+      Title: ({ children }: { children: React.ReactNode }) => (
+        <h3>{children}</h3>
+      ),
     },
     message: {
       success: vi.fn(),
@@ -93,6 +94,8 @@ describe('Processing module', () => {
   beforeEach(() => {
     mockGenerate.mockReset();
     mockMutate.mockReset();
+    vi.mocked(message.success).mockReset();
+    vi.mocked(message.error).mockReset();
   });
 
   it('renders processing rows and generates the list for the selected date', async () => {
@@ -111,6 +114,19 @@ describe('Processing module', () => {
     await waitFor(() => {
       expect(mockGenerate).toHaveBeenCalledWith({ date: '2026-04-04' });
       expect(mockMutate).toHaveBeenCalled();
+    });
+  });
+
+  it('shows an error and skips mutate when generation fails', async () => {
+    mockGenerate.mockRejectedValue(new Error('Generation failed'));
+
+    renderWithProviders(<ProcessingList />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Regenerate' }));
+
+    await waitFor(() => {
+      expect(message.error).toHaveBeenCalledWith('Generation failed');
+      expect(mockMutate).not.toHaveBeenCalled();
     });
   });
 });
