@@ -12,7 +12,7 @@ export interface ReceivingPreviewDto {
   supplier_name: string | null;
 
   required_kg: number;
-  required_special_unit: number;
+  required_special_unit: number | null;
 
   actual_received_kg: number | null;
   actual_received_special_unit: number | null;

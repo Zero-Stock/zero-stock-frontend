@@ -9,13 +9,13 @@ export interface ProcurementPreviewDto {
   material_category?: string;
 
   demand_kg: number;
-  demand_special_unit: number;
+  demand_special_unit: number | null;
 
   stock_kg: number;
-  stock_special_unit: number;
+  stock_special_unit: number | null;
 
   required_kg: number;
-  required_special_unit: number;
+  required_special_unit: number | null;
 
   supplier_id: number | null;
   supplier_name: string | null;

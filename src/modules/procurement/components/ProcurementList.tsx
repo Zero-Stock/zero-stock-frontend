@@ -125,6 +125,9 @@ export default function ProcurementList() {
     }
 
     const matchedProcurementItem =
+      procurementItems.find(
+        (item) => item.raw_material === record.material_id,
+      ) ??
       procurementItems.find((item) => item.raw_material_name === record.name) ??
       null;
 
@@ -300,7 +303,9 @@ export default function ProcurementList() {
 
       <div id="procurement-print-area">
         <Table
-          rowKey={(record, index) => String(record.name ?? index)}
+          rowKey={(record, index) =>
+            String(record.material_id ?? record.name ?? index)
+          }
           columns={columns}
           dataSource={sheetItems}
           loading={loading}
