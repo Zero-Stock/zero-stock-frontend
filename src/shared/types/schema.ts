@@ -628,11 +628,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -721,11 +716,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
             /**
              * @description Column to sort by
              * @example name
@@ -878,11 +868,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -974,11 +959,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
             /**
              * @description Column to sort by
              * @example name
@@ -1140,11 +1120,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -1215,11 +1190,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -1269,11 +1239,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
             /**
              * @description Column to sort by
              * @example name
@@ -1333,11 +1298,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
             /**
              * @description Column to sort by
              * @example name
@@ -1643,11 +1603,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -1749,11 +1704,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -1820,11 +1770,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
             /**
              * @description Column to sort by
              * @example name
@@ -1898,11 +1843,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Company id legacy alias
-             * @example 1
-             */
-            company?: number;
-            /**
              * @description Column to sort by
              * @example name
              */
@@ -1956,6 +1896,10 @@ export interface components {
             status: string;
         };
         ApiErrorDto: {
+            /** @example 400 */
+            status: number;
+            /** @example /api/materials */
+            url: string;
             /** @example BadRequestException */
             type: string;
             /** @example Validation failed */

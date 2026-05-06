@@ -1,6 +1,12 @@
 import qs from 'qs';
-import ApiError from './apiError';
 import { getSelectedDate } from '@/shared/stores/dateStore';
+import {
+  createApiError,
+  getApiErrorDto,
+  isApiErrorDto,
+  isPlainObject,
+  parseJsonSafe,
+} from '@/shared/utils/api';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export type Query = Record<string, unknown>;
@@ -26,12 +32,12 @@ export interface ApiClientConfig {
 function resolveBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
   if (envUrl) {
-    return envUrl;
+    return envUrl.replace(/\/+$/, '');
   }
 
   if (import.meta.env.DEV) {
     const hostname = window.location.hostname;
-    return `http://${hostname}:8000`;
+    return `http://${hostname}:3000`;
   }
 
   throw new Error('Unable to resolve base URL');
@@ -43,7 +49,7 @@ function buildUrl(path: string, query?: Query) {
 
   if (query && Object.keys(query).length > 0) {
     const q = qs.stringify(query, {
-      arrayFormat: 'brackets',
+      arrayFormat: 'repeat',
       skipNulls: true,
     });
     if (q) {
@@ -52,10 +58,6 @@ function buildUrl(path: string, query?: Query) {
   }
 
   return url;
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function withSelectedDateBody(body: unknown) {
@@ -67,25 +69,6 @@ function withSelectedDateBody(body: unknown) {
     ...body,
     date: getSelectedDate(),
   };
-}
-
-async function parseJsonSafe(res: Response) {
-  const ct = res.headers.get('content-type') || '';
-
-  if (ct.includes('application/json')) {
-    try {
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
-  const text = await res.text().catch(() => '');
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text || null;
-  }
 }
 
 export class ApiClient {
@@ -182,46 +165,38 @@ export class ApiClient {
       const data = await parseJsonSafe(res);
 
       if (!res.ok) {
-        console.log('DATA: ', data);
-        throw new ApiError({
-          url,
-          message: data?.message,
-          status: res.status,
-          code: data?.error?.type,
-          details: data.error ?? data,
+        throw createApiError({
+          error: getApiErrorDto(data, {
+            status: res.status,
+            url,
+            statusText: res.statusText || undefined,
+          }),
         });
-      }
-
-      // Automatically unwrap the standard backend envelope { message, error, results }
-      if (
-        data &&
-        typeof data === 'object' &&
-        'message' in data &&
-        'error' in data &&
-        'results' in data
-      ) {
-        return data as T;
       }
 
       return data as T;
-    } catch (err: ApiError | Error | unknown) {
+    } catch (err: Error | unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
-        throw new ApiError({
-          message: `Request timeout after ${ms}ms`,
-          status: 0,
-          url,
-          code: 'TIMEOUT',
+        throw createApiError({
+          error: {
+            status: 0,
+            url,
+            type: 'TIMEOUT',
+            details: `Request timeout after ${ms}ms`,
+          },
         });
       }
 
-      if (err instanceof ApiError) throw err;
+      if (isApiErrorDto(err)) throw err;
 
-      throw new ApiError({
-        message: err instanceof Error ? err.message : 'Network error',
-        status: 0,
-        url,
-        code: 'NETWORK_ERROR',
-        details: err,
+      throw createApiError({
+        cause: err,
+        error: {
+          status: 0,
+          url,
+          type: 'NETWORK_ERROR',
+          details: err instanceof Error ? err.message : 'Network error',
+        },
       });
     } finally {
       clearTimeout(timer);

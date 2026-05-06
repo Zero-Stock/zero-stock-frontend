@@ -355,6 +355,10 @@ export const translations = {
     zh: '采购单已生成',
     en: 'Procurement generated',
   },
+  procurementGenerateFailed: {
+    zh: '采购单生成失败',
+    en: 'Failed to generate procurement',
+  },
   procurementRegenerateSuccess: {
     zh: '采购单已重新生成',
     en: 'Procurement regenerated',

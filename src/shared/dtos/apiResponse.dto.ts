@@ -1,7 +1,6 @@
-export interface ApiErrorDto {
-  type: string;
-  details: string;
-}
+import type { ApiErrorDto } from '@/shared/types/schema';
+
+export type { ApiErrorDto } from '@/shared/types/schema';
 
 export interface ApiResponseDto<T> {
   results: T;

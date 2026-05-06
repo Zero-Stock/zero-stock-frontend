@@ -1,7 +1,7 @@
-import ApiError from './apiError';
 import type { RequestOptions } from './apiClient';
 import { tokenStore } from './tokenStore';
 import { apiClient } from './apiClient.client';
+import { isApiErrorDto } from '@/shared/utils/api';
 
 export type RefreshResult = { accessToken: string; expiresAt?: number };
 type ReadOptions = Omit<RequestOptions, 'body' | 'formData'>;
@@ -35,7 +35,7 @@ export async function refreshAccessToken(): Promise<RefreshResult> {
 }
 
 function is401(e: unknown) {
-  return e instanceof ApiError && e.status === 401;
+  return isApiErrorDto(e) && e.status === 401;
 }
 
 async function withAuthRetry<T>(
