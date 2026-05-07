@@ -1,14 +1,16 @@
 import { Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useMemo, useState } from 'react';
-import type { MaterialUpdateDto } from '../dtos/materialUpdate.dto';
-import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import type {
+  MaterialResponseSchema,
+  MaterialUpsertSchema,
+} from '@/shared/types/schema';
 
 interface MaterialEditModalProps {
   visible: boolean;
-  record: MaterialPreviewDto | null;
+  record: MaterialResponseSchema | null;
   onCancel: () => void;
   onUpdated?: () => void;
 }
@@ -41,7 +43,7 @@ export default function MaterialEditModal({
     return {
       name: record.name,
       category: record.category,
-      yield_rate: Number(record.current_yield_rate ?? 0),
+      yield_rate: Number(record.yield_rate ?? 0),
       specs: record.specs?.map((spec) => spec.method_name).join(', ') ?? '',
     };
   }, [record]);
@@ -61,7 +63,7 @@ export default function MaterialEditModal({
             .map((method_name) => ({ method_name }))
         : [];
 
-      const payload: MaterialUpdateDto = {
+      const payload: Omit<MaterialUpsertSchema, 'id'> & { id: number } = {
         id: record.id,
         name: values.name,
         category: values.category,

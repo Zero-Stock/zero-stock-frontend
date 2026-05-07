@@ -181,7 +181,7 @@ export class ApiClient {
           error: {
             status: 0,
             url,
-            type: 'TIMEOUT',
+            type: 'INTERNAL_SERVER_ERROR',
             details: `Request timeout after ${ms}ms`,
           },
         });
@@ -194,7 +194,7 @@ export class ApiClient {
         error: {
           status: 0,
           url,
-          type: 'NETWORK_ERROR',
+          type: 'INTERNAL_SERVER_ERROR',
           details: err instanceof Error ? err.message : 'Network error',
         },
       });

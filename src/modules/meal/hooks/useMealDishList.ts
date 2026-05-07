@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import type { Dish } from '@/modules/dish/mockdata';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export function useMealDishList() {
@@ -17,7 +17,7 @@ export function useMealDishList() {
   const { data, error, isLoading, mutate } =
     useSWR<ApiListResponseDto<Dish[]>>(key);
 
-  const dishes = useMemo(() => data?.results.results ?? [], [data]);
+  const dishes = useMemo(() => data?.result.list ?? [], [data]);
 
   return {
     dishes,

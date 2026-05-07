@@ -1,12 +1,19 @@
 import { apiClient } from '@/shared/api/apiClient.client';
-import type { MaterialCreateDto } from '../dtos/materialCreate.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type {
+  MaterialResponseSchema,
+  MaterialUpsertSchema,
+} from '@/shared/types/schema';
 
 export function useMaterialCreate() {
   return {
-    trigger: async (payload: MaterialCreateDto[]) => {
-      return apiClient.post<MaterialCreateDto[]>('/api/materials/batch/', {
-        body: payload,
-      });
+    trigger: async (payload: MaterialUpsertSchema[]) => {
+      return apiClient.post<ApiResponseDto<MaterialResponseSchema[]>>(
+        '/api/materials',
+        {
+          body: payload,
+        },
+      );
     },
   };
 }

@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { apiClient } from '@/shared/api/apiClient.client';
 import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 
 export interface SupplierMaterialListPayload {
   supplier?: number;
@@ -32,7 +32,7 @@ export function useSupplierMaterials(payload?: SupplierMaterialListPayload) {
   );
 
   return {
-    materials: data?.results.results ?? [],
+    materials: data?.result.list ?? [],
     isLoading,
     isError: error,
     mutate,

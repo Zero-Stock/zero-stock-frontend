@@ -172,7 +172,7 @@ describe('Meal module', () => {
 
   it('adds a new diet category from the select popup', async () => {
     const user = userEvent.setup();
-    mockCreateDiet.mockResolvedValue({ results: { id: 9, name: 'Low Sodium' } });
+    mockCreateDiet.mockResolvedValue({ result: { id: 9, name: 'Low Sodium' } });
 
     renderWithProviders(<MealBoard />);
 

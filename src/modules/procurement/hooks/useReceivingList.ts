@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ReceivingPreviewDto } from '../dtos/receivingPreview.dto';
 
@@ -32,7 +32,7 @@ export function useReceivingList(params?: UseReceivingListParams) {
     useSWR<ApiResponseDto<ReceivingPreviewDto[]>>(key);
 
   const receivings = useMemo(() => {
-    return data?.results ?? [];
+    return data?.result ?? [];
   }, [data]);
 
   return {

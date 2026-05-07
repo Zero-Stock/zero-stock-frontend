@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ProcessingItemDto } from '../dtos/processingItem.dto';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 
 export interface ProcessingListPayload {
   date: string;
@@ -30,7 +30,7 @@ export function useProcessingList(
     useSWR<ApiResponseDto<ProcessingItemDto[]>>(key);
 
   return {
-    items: data?.results ?? [],
+    items: data?.result ?? [],
     isLoading,
     isError: error,
     mutate,

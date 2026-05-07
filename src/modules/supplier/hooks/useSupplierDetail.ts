@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import type { SupplierDetailDto } from '../dtos/supplierDetail.dto';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export function useSupplierDetail(supplierId?: number) {
@@ -12,7 +12,7 @@ export function useSupplierDetail(supplierId?: number) {
     useSWR<ApiResponseDto<SupplierDetailDto>>(key);
 
   return {
-    supplier: data?.results,
+    supplier: data?.result,
     isLoading,
     isError: error,
     mutate,

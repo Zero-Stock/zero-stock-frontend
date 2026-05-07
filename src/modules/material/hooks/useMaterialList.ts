@@ -1,21 +1,17 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
-import type { MaterialPreviewDto } from '../dtos/materialPreview.dto';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type {
+  MaterialListResponseSchema,
+  MaterialListSchema,
+} from '@/shared/types/schema';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
-export interface MaterialListPayload {
-  name?: string;
-  category?: number;
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
-  page?: number;
-  page_size?: number;
-}
+export type MaterialListPayload = MaterialListSchema;
 
 export function useMaterialList(payload?: MaterialListPayload) {
   const key: SWRKey = {
-    url: '/api/materials/search/',
+    url: '/api/materials/list',
     method: 'POST',
     options: payload
       ? {
@@ -25,16 +21,16 @@ export function useMaterialList(payload?: MaterialListPayload) {
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<MaterialPreviewDto[]>>(key);
+    useSWR<ApiResponseDto<MaterialListResponseSchema>>(key);
 
   const materials = useMemo(() => {
     if (!data) return [];
-    return data.results?.results;
+    return data.result?.list ?? [];
   }, [data]);
 
   const materialOptions = useMemo(() => {
     if (!data) return [];
-    return data.results.results.map((material) => ({
+    return data.result.list.map((material) => ({
       value: material.id,
       label: material.name,
     }));

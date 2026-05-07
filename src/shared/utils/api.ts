@@ -1,9 +1,22 @@
 import type { ApiErrorDto } from '@/shared/types/schema';
 
 const API_ERROR_FALLBACK = {
-  type: 'RequestFailed',
+  type: 'INTERNAL_SERVER_ERROR',
   details: 'Request failed',
-} as const;
+} satisfies Pick<ApiErrorDto, 'type' | 'details'>;
+
+const API_ERROR_TYPES = new Set<ApiErrorDto['type']>([
+  'BAD_REQUEST',
+  'UNAUTHORIZED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'CONFLICT',
+  'INTERNAL_SERVER_ERROR',
+]);
+
+function isApiErrorType(value: unknown): value is ApiErrorDto['type'] {
+  return typeof value === 'string' && API_ERROR_TYPES.has(value as ApiErrorDto['type']);
+}
 
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -16,6 +29,10 @@ function getStringField(value: unknown, key: string): string | undefined {
 
   const field = value[key];
   return typeof field === 'string' ? field : undefined;
+}
+
+function getApiErrorType(value: unknown): ApiErrorDto['type'] | undefined {
+  return isApiErrorType(value) ? value : undefined;
 }
 
 export async function parseJsonSafe(res: Response) {
@@ -54,9 +71,7 @@ export function getApiErrorDto(
     status,
     url: getStringField(data, 'url') ?? context.url,
     type:
-      getStringField(data, 'type') ??
-      context.statusText ??
-      API_ERROR_FALLBACK.type,
+      getApiErrorType(getStringField(data, 'type')) ?? API_ERROR_FALLBACK.type,
     details:
       getStringField(data, 'details') ??
       getStringField(data, 'message') ??
@@ -85,7 +100,7 @@ export function isApiErrorDto(error: unknown): error is Error & ApiErrorDto {
   return (
     error instanceof Error &&
     isPlainObject(error) &&
-    typeof error.type === 'string' &&
+    getApiErrorType(error.type) !== undefined &&
     typeof error.details === 'string' &&
     typeof error.status === 'number' &&
     typeof error.url === 'string'

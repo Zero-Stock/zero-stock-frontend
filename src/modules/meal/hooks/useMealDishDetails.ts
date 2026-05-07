@@ -5,10 +5,10 @@ import type { DishDetail } from '../mockdata';
 
 async function fetchDishDetail(dishId: number): Promise<DishDetail | null> {
   try {
-    const response = await apiClient.get<{ results: DishDetail }>(
+    const response = await apiClient.get<{ result: DishDetail }>(
       `/api/dishes/${dishId}/`,
     );
-    return response.results;
+    return response.result;
   } catch {
     console.warn(`Failed to fetch dish ${dishId}`);
     return null;

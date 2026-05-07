@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { ProcurementItemDto } from '../dtos/procurementItem.dto';
 
 export function useProcurementItems(procurementId?: number) {
@@ -15,7 +15,7 @@ export function useProcurementItems(procurementId?: number) {
     useSWR<ApiResponseDto<ProcurementItemDto[]>>(key);
 
   const items = useMemo(() => {
-    return data?.results ?? [];
+    return data?.result ?? [];
   }, [data]);
 
   return {

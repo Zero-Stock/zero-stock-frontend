@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
@@ -35,12 +35,12 @@ export function useCensusList(payload?: CensusListPayload) {
 
   const census = useMemo(() => {
     if (!data) return [];
-    return data.results?.results;
+    return data.result?.list ?? [];
   }, [data]);
 
   return {
     census,
-    total: data?.results.total ?? 0,
+    total: data?.result.total ?? 0,
     isLoading,
     isError: error,
     mutate,

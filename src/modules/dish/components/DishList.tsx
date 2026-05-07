@@ -136,7 +136,7 @@ export default function DishList() {
 
     try {
       const latestResponse = await mutate();
-      const latest = latestResponse?.results.results ?? dishes;
+      const latest = latestResponse?.result.list ?? dishes;
       const deleted = !latest.some((d) => d.id === id);
 
       if (deleted) {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import type { Dish, PaginatedResponse } from '../mockdata';
+import type { Dish } from '../mockdata';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export function useDishList() {
@@ -14,10 +15,10 @@ export function useDishList() {
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<{ results: PaginatedResponse<Dish> }>(key);
+    useSWR<ApiListResponseDto<Dish[]>>(key);
 
   const dishes = useMemo(() => {
-    return data?.results.results ?? [];
+    return data?.result.list ?? [];
   }, [data]);
 
   return {

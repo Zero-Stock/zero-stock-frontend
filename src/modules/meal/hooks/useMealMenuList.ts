@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { WeeklyMenuRow } from '../dtos/menu.dto';
 
@@ -29,7 +29,7 @@ export function useMealMenuList({
   const { data, error, isLoading, mutate } =
     useSWR<ApiListResponseDto<WeeklyMenuRow[]>>(key);
 
-  const menuRows = useMemo(() => data?.results.results ?? [], [data]);
+  const menuRows = useMemo(() => data?.result.list ?? [], [data]);
 
   return {
     menuRows,

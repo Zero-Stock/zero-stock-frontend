@@ -12,7 +12,7 @@ import { LanguageProvider } from '@/shared/translation/LanguageContext';
 import MaterialList from '@/modules/material/components/MaterialList';
 import MaterialCreatePage from '@/modules/material/pages/MaterialCreatePage';
 import type { MaterialListPayload } from '@/modules/material/hooks/useMaterialList';
-import type { MaterialPreviewDto } from '@/modules/material/dtos/materialPreview.dto';
+import type { MaterialResponseSchema } from '@/shared/types/schema';
 
 const mockNavigate = vi.fn();
 const mockUseMaterialList = vi.fn();
@@ -55,13 +55,13 @@ vi.mock('@/modules/material/components/NewMaterialForm', () => ({
   default: () => <div data-testid="new-material-form" />,
 }));
 
-const materials: MaterialPreviewDto[] = [
+const materials: MaterialResponseSchema[] = [
   {
     id: 1,
     name: 'Chicken Breast',
     category: 2,
     category_name: 'Protein',
-    current_yield_rate: '0.85',
+    yield_rate: '0.85',
     specs: [{ id: 1, method_name: 'Trimmed' }],
   },
   {
@@ -69,7 +69,7 @@ const materials: MaterialPreviewDto[] = [
     name: 'Broccoli',
     category: 1,
     category_name: 'Vegetables',
-    current_yield_rate: '0.92',
+    yield_rate: '0.92',
     specs: [{ id: 2, method_name: 'Washed' }],
   },
 ];

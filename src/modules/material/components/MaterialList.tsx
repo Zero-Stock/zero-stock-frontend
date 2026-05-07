@@ -2,9 +2,9 @@ import { Button, Select, Space, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { type MaterialPreviewDto } from '../dtos/materialPreview.dto';
 import { useMaterialList } from '../hooks/useMaterialList';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import type { MaterialResponseSchema } from '@/shared/types/schema';
 
 import MaterialEditModal from './MaterialEditModal';
 import useMaterialCategories from '../hooks/useMaterialCategories';
@@ -17,9 +17,8 @@ export default function MaterialList() {
   const [, navigate] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<MaterialPreviewDto | null>(
-    null,
-  );
+  const [editingRecord, setEditingRecord] =
+    useState<MaterialResponseSchema | null>(null);
 
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
@@ -31,7 +30,7 @@ export default function MaterialList() {
   }, [selectedCategory]);
   const { materials, isLoading, mutate } = useMaterialList(payload);
 
-  const handleEdit = (record: MaterialPreviewDto) => {
+  const handleEdit = (record: MaterialResponseSchema) => {
     setEditingRecord(record);
     setIsEditModalOpen(true);
   };
@@ -48,7 +47,7 @@ export default function MaterialList() {
     }
   };
 
-  const columns: ColumnsType<MaterialPreviewDto> = [
+  const columns: ColumnsType<MaterialResponseSchema> = [
     {
       title: t('commonName'),
       dataIndex: 'name',
@@ -62,16 +61,16 @@ export default function MaterialList() {
     },
     {
       title: t('commonYieldRate'),
-      dataIndex: 'current_yield_rate',
-      key: 'current_yield_rate',
+      dataIndex: 'yield_rate',
+      key: 'yield_rate',
       width: 150,
-      render: (yieldRate: number) => Number(yieldRate) * 100 + '%',
+      render: (yieldRate: string) => Number(yieldRate) * 100 + '%',
     },
     {
       title: t('commonSpecs'),
       dataIndex: 'specs',
       key: 'specs',
-      render: (specs: MaterialPreviewDto['specs']) => (
+      render: (specs: MaterialResponseSchema['specs']) => (
         <Space orientation="vertical" size={0}>
           <Text>{specs?.map((spec) => spec.method_name).join(', ') ?? ''}</Text>
         </Space>

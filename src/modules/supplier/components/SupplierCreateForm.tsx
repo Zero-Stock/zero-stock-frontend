@@ -43,7 +43,7 @@ export default function SupplierCreateForm() {
 
       const createdSupplier = await createSupplier(payload);
       const supplierId =
-        (createdSupplier as any).results?.id || (createdSupplier as any).id;
+        (createdSupplier as any).result?.id || (createdSupplier as any).id;
 
       if (!supplierId) {
         message.error(t('supplierCreateErrorId'));

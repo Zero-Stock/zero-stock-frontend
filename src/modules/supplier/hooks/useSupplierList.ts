@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
 
 export interface SupplierListPayload {
@@ -29,8 +29,8 @@ export function useSupplierList(payload?: SupplierListPayload) {
     useSWR<ApiListResponseDto<SupplierPreviewDto[]>>(key);
 
   return {
-    suppliers: data?.results.results ?? [],
-    total: data?.results?.total ?? 0,
+    suppliers: data?.result.list ?? [],
+    total: data?.result?.total ?? 0,
     isLoading,
     isError: error,
     mutate,

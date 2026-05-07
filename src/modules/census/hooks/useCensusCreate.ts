@@ -1,5 +1,5 @@
 import { apiClient } from '@/shared/api/apiClient.client';
-import type { ApiResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type {
   CensusBatchResultDto,
   CensusCreateDto,

@@ -193,7 +193,7 @@ describe('Dish module', () => {
   it('filters, opens create state, and deletes a dish', async () => {
     mockCreateDish.mockResolvedValue(undefined);
     mockDeleteDish.mockResolvedValue(undefined);
-    mockMutate.mockResolvedValue({ results: { results: [dishes[1]] } });
+    mockMutate.mockResolvedValue({ result: { list: [dishes[1]] } });
 
     renderWithProviders(<DishList />);
 

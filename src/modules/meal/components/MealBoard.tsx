@@ -112,7 +112,7 @@ export default function MealBoard() {
     ) {
       try {
         const response = await createDiet(newCategoryName);
-        const newCategory = response.results;
+        const newCategory = response.result;
         await mutateDiets();
         setSelectedCategoryId(newCategory.id);
         setNewCategoryName('');
@@ -170,7 +170,7 @@ export default function MealBoard() {
 
     try {
       const response = await mutateDiets();
-      const latest = response?.results ?? [];
+      const latest = response?.result ?? [];
       const deleted = !latest.some((c) => c.id === dietId);
 
       if (selectedCategoryId === dietId) {

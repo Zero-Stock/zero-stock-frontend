@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import type { PaginatedResponse } from '../mockdata';
 import type { RawMaterialDto } from '../dtos/rawMaterial.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
 export function useDishMaterials(enabled = true) {
@@ -17,10 +17,10 @@ export function useDishMaterials(enabled = true) {
     : null;
 
   const { data, error, isLoading, mutate } =
-    useSWR<{ results: PaginatedResponse<RawMaterialDto> }>(key);
+    useSWR<ApiListResponseDto<RawMaterialDto[]>>(key);
 
   const materials = useMemo(() => {
-    return data?.results.results ?? [];
+    return data?.result.list ?? [];
   }, [data]);
 
   return {

@@ -5,6 +5,59 @@
 
 export interface components {
     schemas: {
+        ApiErrorDto: {
+            /**
+             * @description HTTP status code
+             * @example 400
+             */
+            status: number;
+            /**
+             * @description Request URL
+             * @example /api/materials
+             */
+            url: string;
+            /**
+             * @description Application error code
+             * @example BAD_REQUEST
+             * @enum {string}
+             */
+            type: "BAD_REQUEST" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INTERNAL_SERVER_ERROR";
+            /**
+             * @description Error details
+             * @example Validation failed
+             */
+            details: string;
+        };
+        ApiResponseDto: {
+            /** @description Response payload */
+            result: Record<string, never> | null;
+            /**
+             * @description Response status message
+             * @example success
+             * @enum {string}
+             */
+            message: "success" | "error";
+            error: components["schemas"]["ApiErrorDto"] | null;
+        };
+        ApiListResultDto: {
+            /**
+             * @description Current page
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size: number;
+            /**
+             * @description Total records matching the query
+             * @example 100
+             */
+            total: number;
+            /** @description Current page records */
+            list: unknown[][];
+        };
         StapleResponseSchema: {
             /**
              * @description Staple id
@@ -44,7 +97,7 @@ export interface components {
              */
             total: number;
             /** @description Staples matching the query */
-            results: components["schemas"]["StapleResponseSchema"][];
+            list: components["schemas"]["StapleResponseSchema"][];
         };
         StapleListSchema: {
             /**
@@ -162,7 +215,7 @@ export interface components {
              */
             total: number;
             /** @description Materials matching the query */
-            results: components["schemas"]["MaterialResponseSchema"][];
+            list: components["schemas"]["MaterialResponseSchema"][];
         };
         MaterialListSchema: {
             /**
@@ -451,7 +504,7 @@ export interface components {
              */
             total: number;
             /** @description Dishes matching the query */
-            results: components["schemas"]["DishResponseSchema"][];
+            list: components["schemas"]["DishResponseSchema"][];
         };
         DishListSchema: {
             /**
@@ -614,7 +667,7 @@ export interface components {
              */
             total: number;
             /** @description Suppliers matching the query */
-            results: components["schemas"]["SupplierResponseSchema"][];
+            list: components["schemas"]["SupplierResponseSchema"][];
         };
         SupplierListSchema: {
             /**
@@ -703,7 +756,7 @@ export interface components {
              */
             total: number;
             /** @description Supplier-material offerings matching the query */
-            results: components["schemas"]["SupplierMaterialResponseSchema"][];
+            list: components["schemas"]["SupplierMaterialResponseSchema"][];
         };
         SupplierMaterialListSchema: {
             /**
@@ -854,7 +907,7 @@ export interface components {
              */
             total: number;
             /** @description Census records matching the query */
-            results: components["schemas"]["CensusResponseSchema"][];
+            list: components["schemas"]["CensusResponseSchema"][];
         };
         CensusListSchema: {
             /**
@@ -1106,7 +1159,7 @@ export interface components {
              */
             total: number;
             /** @description Procurement rows matching the query */
-            results: components["schemas"]["ProcurementPreviewResponseSchema"][];
+            list: components["schemas"]["ProcurementPreviewResponseSchema"][];
         };
         ProcurementListSchema: {
             /**
@@ -1589,7 +1642,7 @@ export interface components {
              */
             total: number;
             /** @description Receiving rows matching the query */
-            results: components["schemas"]["ReceivingPreviewResponseSchema"][];
+            list: components["schemas"]["ReceivingPreviewResponseSchema"][];
         };
         ReceivingListSchema: {
             /**
@@ -1895,22 +1948,6 @@ export interface components {
             /** @example ok */
             status: string;
         };
-        ApiErrorDto: {
-            /** @example 400 */
-            status: number;
-            /** @example /api/materials */
-            url: string;
-            /** @example BadRequestException */
-            type: string;
-            /** @example Validation failed */
-            details: string;
-        };
-        HealthApiResponseSchema: {
-            results: components["schemas"]["HealthResponseDto"];
-            /** @example success */
-            message: string;
-            error: components["schemas"]["ApiErrorDto"] | null;
-        };
     };
     responses: never;
     parameters: never;
@@ -1918,6 +1955,9 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type ApiErrorDto = components['schemas']['ApiErrorDto'];
+export type ApiResponseDto = components['schemas']['ApiResponseDto'];
+export type ApiListResultDto = components['schemas']['ApiListResultDto'];
 export type StapleResponseSchema = components['schemas']['StapleResponseSchema'];
 export type StapleListResponseSchema = components['schemas']['StapleListResponseSchema'];
 export type StapleListSchema = components['schemas']['StapleListSchema'];
@@ -1986,5 +2026,3 @@ export type ProcessingItemResponseSchema = components['schemas']['ProcessingItem
 export type ProcessingListSchema = components['schemas']['ProcessingListSchema'];
 export type ProcessingOrderResponseSchema = components['schemas']['ProcessingOrderResponseSchema'];
 export type HealthResponseDto = components['schemas']['HealthResponseDto'];
-export type ApiErrorDto = components['schemas']['ApiErrorDto'];
-export type HealthApiResponseSchema = components['schemas']['HealthApiResponseSchema'];

@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiListResponseDto } from '@/shared/dtos/apiResponse.dto';
+import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ProcurementPreviewDto } from '../dtos/procurementPreview.dto';
 
@@ -35,12 +35,12 @@ export function useProcurementList(payload?: ProcurementListPayload) {
 
   const procurements = useMemo(() => {
     if (!data) return [];
-    return data.results?.results;
+    return data.result?.list ?? [];
   }, [data]);
 
   return {
     procurements,
-    total: data?.results.total ?? 0,
+    total: data?.result.total ?? 0,
     isLoading,
     isError: error,
     mutate,
