@@ -206,7 +206,7 @@ export default function DishList() {
           <Button
             type="link"
             onClick={() => handleEdit(record)}
-            className="!p-0"
+            className="p-0!"
           >
             {t('edit')}
           </Button>
@@ -216,7 +216,7 @@ export default function DishList() {
             okText={t('yes')}
             cancelText={t('no')}
           >
-            <Button type="link" danger className="!p-0">
+            <Button type="link" danger className="p-0!">
               {t('delete')}
             </Button>
           </Popconfirm>
@@ -228,7 +228,7 @@ export default function DishList() {
   return (
     <div>
       <div className="no-print mb-6 flex items-center justify-between">
-        <Title level={3} className="!m-0">
+        <Title level={3} className="m-0!">
           {t('dishListTitle')}
         </Title>
         <Space>
@@ -254,7 +254,7 @@ export default function DishList() {
       </div>
 
       {/* Print Header */}
-      <Title level={3} className="print-only !m-0 mb-5 hidden text-center">
+      <Title level={3} className="print-only m-0! mb-5 hidden text-center">
         {t('dishListTitle')}
       </Title>
 

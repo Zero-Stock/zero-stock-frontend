@@ -135,7 +135,7 @@ export default function DishEditModal({
                           message: t('commonSelectMaterial'),
                         },
                       ]}
-                      className="!m-0"
+                      className="m-0!"
                     >
                       <Select
                         showSearch
@@ -165,7 +165,7 @@ export default function DishEditModal({
                     <Form.Item
                       {...restField}
                       name={[name, 'processing_method_id']}
-                      className="!m-0"
+                      className="m-0!"
                     >
                       <Select
                         showSearch
@@ -197,13 +197,13 @@ export default function DishEditModal({
                           message: t('dishWeightRequired'),
                         },
                       ]}
-                      className="!m-0"
+                      className="m-0!"
                     >
                       <InputNumber
                         stringMode
                         min={1}
                         placeholder={t('dishWeightPlaceholder')}
-                        className="!w-full"
+                        className="w-full!"
                       />
                     </Form.Item>
                   </Col>
@@ -213,7 +213,7 @@ export default function DishEditModal({
                       danger
                       icon={<MinusCircleOutlined />}
                       onClick={() => remove(name)}
-                      className="!w-full"
+                      className="w-full!"
                       tabIndex={-1}
                     />
                   </Col>
