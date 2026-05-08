@@ -23,8 +23,8 @@ type SupplierMaterialFormValues = Omit<
   SupplierMaterialUpsertSchema,
   'supplier_id' | 'g_per_unit' | 'price_per_unit'
 > & {
-  g_per_unit?: number;
-  price_per_unit?: number;
+  g_per_unit?: string;
+  price_per_unit?: string;
 };
 
 export default function SupplierMaterialUpsertModal({
@@ -45,11 +45,8 @@ export default function SupplierMaterialUpsertModal({
       if (initialValues) {
         form.setFieldsValue({
           ...initialValues,
-          g_per_unit: Number(initialValues.g_per_unit),
-          price_per_unit:
-            initialValues.price_per_unit === null
-              ? undefined
-              : Number(initialValues.price_per_unit),
+          g_per_unit: initialValues.g_per_unit,
+          price_per_unit: initialValues.price_per_unit ?? undefined,
         });
       } else {
         form.resetFields();
@@ -78,8 +75,8 @@ export default function SupplierMaterialUpsertModal({
     } = {
       material_id: materialId,
       unit_name: v.unit_name,
-      g_per_unit: String(v.g_per_unit),
-      price_per_unit: v.price_per_unit ? String(v.price_per_unit) : null,
+      g_per_unit: v.g_per_unit ?? '0',
+      price_per_unit: v.price_per_unit ?? null,
       notes: v.notes,
     };
 
@@ -137,9 +134,10 @@ export default function SupplierMaterialUpsertModal({
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <InputNumber
+            stringMode
             style={{ width: '100%' }}
             min={0}
-            step={0.01}
+            step="0.01"
             placeholder={t('supplierKgPlaceholder')}
           />
         </Form.Item>
@@ -150,9 +148,10 @@ export default function SupplierMaterialUpsertModal({
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <InputNumber
+            stringMode
             style={{ width: '100%' }}
             min={0}
-            step={0.01}
+            step="0.01"
             placeholder={t('supplierPricePlaceholder')}
           />
         </Form.Item>

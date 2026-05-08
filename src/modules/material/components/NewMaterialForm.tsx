@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Table } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
@@ -9,7 +9,7 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 interface RawMaterialFields {
   name: string;
   category_id: number;
-  yield_rate: number;
+  yield_rate: string;
   processing?: string;
 }
 
@@ -26,7 +26,7 @@ export default function NewMaterialForm() {
     const data = values.items.map((item) => ({
       name: item.name,
       category_id: item.category_id,
-      yield_rate: String(item.yield_rate),
+      yield_rate: item.yield_rate,
       processing: item.processing
         ? item.processing
             .split(',')
@@ -42,7 +42,7 @@ export default function NewMaterialForm() {
     <Form form={form} onFinish={onFinish} initialValues={{ items: [{}] }}>
       <Form.List name="items">
         {(fields, { add, remove }) => {
-          const columns: ColumnsType<{ key: number | string }> = [
+          const columns: ColumnsType<(typeof fields)[number]> = [
             {
               title: t('commonName'),
               dataIndex: 'name',
@@ -50,7 +50,9 @@ export default function NewMaterialForm() {
               render: (_, _record, index) => (
                 <Form.Item
                   name={[fields[index].name, 'name']}
-                  rules={[{ required: true, message: t('materialNameRequired') }]}
+                  rules={[
+                    { required: true, message: t('materialNameRequired') },
+                  ]}
                   className="mb-0!"
                 >
                   <Input placeholder={t('materialNamePlaceholder')} />
@@ -65,7 +67,9 @@ export default function NewMaterialForm() {
               render: (_, _record, index) => (
                 <Form.Item
                   name={[fields[index].name, 'category_id']}
-                  rules={[{ required: true, message: t('materialCategoryRequired') }]}
+                  rules={[
+                    { required: true, message: t('materialCategoryRequired') },
+                  ]}
                   className="mb-0!"
                 >
                   <Select
@@ -93,7 +97,11 @@ export default function NewMaterialForm() {
                   ]}
                   className="mb-0!"
                 >
-                  <Input
+                  <InputNumber
+                    stringMode
+                    min={0}
+                    max={1}
+                    step="0.01"
                     placeholder={t('materialYieldRatePlaceholder')}
                     className="w-full"
                   />
@@ -105,7 +113,10 @@ export default function NewMaterialForm() {
               dataIndex: 'processing',
               key: 'processing',
               render: (_, _record, index) => (
-                <Form.Item name={[fields[index].name, 'processing']} className="mb-0!">
+                <Form.Item
+                  name={[fields[index].name, 'processing']}
+                  className="mb-0!"
+                >
                   <Input placeholder={t('materialSpecsPlaceholder')} />
                 </Form.Item>
               ),
@@ -131,7 +142,7 @@ export default function NewMaterialForm() {
             <>
               <Table
                 dataSource={fields}
-                columns={columns as any}
+                columns={columns}
                 pagination={false}
                 rowKey="key"
                 tableLayout="fixed"

@@ -84,7 +84,7 @@ export default function DishEditModal({
           return {
             material_id: materialId,
             processing_method_id: ingredient.processing_method_id ?? null,
-            net_quantity: String(ingredient.net_quantity ?? 0),
+            net_quantity: ingredient.net_quantity ?? '0',
           };
         }),
       };
@@ -200,6 +200,7 @@ export default function DishEditModal({
                       className="!m-0"
                     >
                       <InputNumber
+                        stringMode
                         min={1}
                         placeholder={t('dishWeightPlaceholder')}
                         className="!w-full"

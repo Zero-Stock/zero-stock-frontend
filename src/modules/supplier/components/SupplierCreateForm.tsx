@@ -14,9 +14,9 @@ const { Title, Text } = Typography;
 
 type SupplierCreateMaterialFormRow = {
   rawMaterialId?: SupplierMaterialUpsertSchema['material_id'];
-  price_per_unit?: number;
+  price_per_unit?: string;
   unit?: SupplierMaterialUpsertSchema['unit_name'];
-  g_per_unit?: number;
+  g_per_unit?: string;
 };
 
 type SupplierCreateFormValues = SupplierUpsertSchema & {
@@ -59,8 +59,8 @@ export default function SupplierCreateForm() {
               supplier_id: supplierId,
               material_id: row.rawMaterialId,
               unit_name: row.unit || 'kg',
-              g_per_unit: String(row.g_per_unit || 1),
-              price_per_unit: String(row.price_per_unit || 0),
+              g_per_unit: row.g_per_unit ?? '1',
+              price_per_unit: row.price_per_unit ?? '0',
             });
           } catch (err) {
             console.error(err);

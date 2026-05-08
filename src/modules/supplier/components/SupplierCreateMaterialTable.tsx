@@ -43,7 +43,9 @@ export default function SupplierCreateMaterialTable() {
                 style={{ marginBottom: 0 }}
               >
                 <InputNumber
+                  stringMode
                   min={0}
+                  step="0.01"
                   style={{ width: '100%' }}
                   placeholder={t('supplierPricePlaceholder')}
                 />
@@ -77,8 +79,9 @@ export default function SupplierCreateMaterialTable() {
                 style={{ marginBottom: 0 }}
               >
                 <InputNumber
+                  stringMode
                   min={0}
-                  step={0.01}
+                  step="0.01"
                   style={{ width: '100%' }}
                   placeholder={t('supplierKgPlaceholder')}
                 />

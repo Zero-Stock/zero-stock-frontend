@@ -20,7 +20,7 @@ type MaterialEditFormValues = Omit<
   'id' | 'yield_rate' | 'processing'
 > & {
   id?: MaterialUpsertSchema['id'];
-  yield_rate: number;
+  yield_rate: string;
   processing?: string;
 };
 
@@ -44,7 +44,7 @@ export default function MaterialEditModal({
     return {
       name: record.name,
       category_id: record.category_id,
-      yield_rate: Number(record.yield_rate ?? 0),
+      yield_rate: record.yield_rate ?? '0',
       processing:
         record.processing?.map((method) => method.name).join(', ') ?? '',
     };
@@ -68,7 +68,7 @@ export default function MaterialEditModal({
         id: record.id,
         name: values.name,
         category_id: values.category_id,
-        yield_rate: String(values.yield_rate),
+        yield_rate: values.yield_rate,
         processing,
       };
 
@@ -129,16 +129,28 @@ export default function MaterialEditModal({
             {
               required: true,
               message: t('materialYieldRateRequired'),
-              type: 'number',
-              min: 0,
-              max: 1,
+            },
+            {
+              validator: (_, value: string | undefined) => {
+                if (value === undefined || value === '') {
+                  return Promise.resolve();
+                }
+
+                const numericValue = Number(value);
+                if (numericValue < 0 || numericValue > 1) {
+                  return Promise.reject(new Error(t('materialYieldRateRequired')));
+                }
+
+                return Promise.resolve();
+              },
             },
           ]}
         >
           <InputNumber
+            stringMode
             min={0}
             max={1}
-            step={0.01}
+            step="0.01"
             className="w-full"
             placeholder={t('materialYieldRatePlaceholder')}
           />
