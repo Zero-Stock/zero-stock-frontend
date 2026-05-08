@@ -11,7 +11,7 @@ export default function SupplierCreateMaterialTable() {
   return (
     <Form.List name="materials">
       {(fields, { add, remove }) => {
-        const columns: ColumnsType<any> = [
+        const columns: ColumnsType<(typeof fields)[number]> = [
           {
             title: t('supplierMaterial'),
             dataIndex: 'rawMaterialId',
@@ -33,12 +33,12 @@ export default function SupplierCreateMaterialTable() {
           },
           {
             title: t('supplierPrice'),
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'price_per_unit',
+            key: 'price_per_unit',
             width: '20%',
             render: (_, _record, index) => (
               <Form.Item
-                name={[fields[index].name, 'price']}
+                name={[fields[index].name, 'price_per_unit']}
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
@@ -67,12 +67,12 @@ export default function SupplierCreateMaterialTable() {
           },
           {
             title: t('supplierKgPerUnit'),
-            dataIndex: 'kg_per_unit',
-            key: 'kg_per_unit',
+            dataIndex: 'g_per_unit',
+            key: 'g_per_unit',
             width: '20%',
             render: (_, _record, index) => (
               <Form.Item
-                name={[fields[index].name, 'kg_per_unit']}
+                name={[fields[index].name, 'g_per_unit']}
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
@@ -114,9 +114,9 @@ export default function SupplierCreateMaterialTable() {
                 onClick={() =>
                   add({
                     rawMaterialId: undefined,
-                    price: undefined,
+                    price_per_unit: undefined,
                     unit: '',
-                    kg_per_unit: undefined,
+                    g_per_unit: undefined,
                   })
                 }
                 block

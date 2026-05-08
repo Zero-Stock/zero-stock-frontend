@@ -8,9 +8,9 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface RawMaterialFields {
   name: string;
-  category: number;
+  category_id: number;
   yield_rate: number;
-  specs?: string;
+  processing?: string;
 }
 
 export default function NewMaterialForm() {
@@ -25,14 +25,13 @@ export default function NewMaterialForm() {
   const onFinish = async (values: { items: RawMaterialFields[] }) => {
     const data = values.items.map((item) => ({
       name: item.name,
-      category: item.category,
+      category_id: item.category_id,
       yield_rate: String(item.yield_rate),
-      specs: item.specs
-        ? item.specs
+      processing: item.processing
+        ? item.processing
             .split(',')
-            .map((spec) => spec.trim())
+            .map((methodName) => methodName.trim())
             .filter(Boolean)
-            .map((method_name) => ({ method_name }))
         : [],
     }));
     await createMaterial(data);
@@ -60,12 +59,12 @@ export default function NewMaterialForm() {
             },
             {
               title: t('commonCategory'),
-              dataIndex: 'category',
-              key: 'category',
+              dataIndex: 'category_id',
+              key: 'category_id',
               width: 200,
               render: (_, _record, index) => (
                 <Form.Item
-                  name={[fields[index].name, 'category']}
+                  name={[fields[index].name, 'category_id']}
                   rules={[{ required: true, message: t('materialCategoryRequired') }]}
                   className="mb-0!"
                 >
@@ -103,10 +102,10 @@ export default function NewMaterialForm() {
             },
             {
               title: t('commonSpecs'),
-              dataIndex: 'specs',
-              key: 'specs',
+              dataIndex: 'processing',
+              key: 'processing',
               render: (_, _record, index) => (
-                <Form.Item name={[fields[index].name, 'specs']} className="mb-0!">
+                <Form.Item name={[fields[index].name, 'processing']} className="mb-0!">
                   <Input placeholder={t('materialSpecsPlaceholder')} />
                 </Form.Item>
               ),

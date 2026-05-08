@@ -1,9 +1,9 @@
 import { Modal, Radio, Space, Table, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useSupplierMaterials } from '@/modules/supplier/hooks/useSupplierMaterials';
-import type { SupplierMaterialDto } from '@/modules/supplier/dtos/supplierMaterial.dto';
+import type { SupplierMaterialPreviewSchema } from '@/shared/types/schema';
 
 const { Text } = Typography;
 
@@ -30,14 +30,10 @@ export default function ProcurementSupplierEditModal({
   );
 
   const { materials, isLoading } = useSupplierMaterials(
-    rawMaterialId ? { raw_material: rawMaterialId } : undefined,
+    rawMaterialId ? { material_id: rawMaterialId } : undefined,
   );
 
-  useEffect(() => {
-    setSelectedId(selectedSupplierMaterialId);
-  }, [selectedSupplierMaterialId, open]);
-
-  const columns: ColumnsType<SupplierMaterialDto> = [
+  const columns: ColumnsType<SupplierMaterialPreviewSchema> = [
     {
       title: '',
       key: 'select',
@@ -57,8 +53,8 @@ export default function ProcurementSupplierEditModal({
     },
     {
       title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'price_per_unit',
+      key: 'price_per_unit',
       width: 120,
       render: (value: string | null) => value ?? '-',
     },
@@ -70,9 +66,9 @@ export default function ProcurementSupplierEditModal({
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: 'kg/unit',
-      dataIndex: 'kg_per_unit',
-      key: 'kg_per_unit',
+      title: 'g/unit',
+      dataIndex: 'g_per_unit',
+      key: 'g_per_unit',
       width: 120,
       render: (value: string) => value ?? '-',
     },
@@ -82,6 +78,11 @@ export default function ProcurementSupplierEditModal({
     <Modal
       title={`Edit Supplier - ${materialName}`}
       open={open}
+      afterOpenChange={(isOpen) => {
+        if (isOpen) {
+          setSelectedId(selectedSupplierMaterialId);
+        }
+      }}
       onCancel={onCancel}
       onOk={() => onSave(selectedId)}
       okText={t('save')}

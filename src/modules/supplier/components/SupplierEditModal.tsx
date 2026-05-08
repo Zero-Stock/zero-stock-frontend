@@ -1,13 +1,17 @@
 import { Modal, Form, Input } from 'antd';
 import { useEffect } from 'react';
-import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
+import type { SupplierUpsertSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface SupplierEditModalProps {
   open: boolean;
-  supplier: SupplierUpdateDto | null; // ✅ 用 UpdateDto 统一
+  supplier:
+    | (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>)
+    | null;
   onCancel: () => void;
-  onSave: (updated: SupplierUpdateDto) => void;
+  onSave: (
+    updated: SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>,
+  ) => void;
 }
 
 export default function SupplierEditModal({
@@ -29,7 +33,8 @@ export default function SupplierEditModal({
 
   const handleOk = async () => {
     const values = await form.validateFields();
-    const updated: SupplierUpdateDto = {
+    const updated: SupplierUpsertSchema &
+      Required<Pick<SupplierUpsertSchema, 'id'>> = {
       id: Number(values.id),
       name: values.name,
       contact_person: values.contact_person,

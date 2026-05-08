@@ -1,7 +1,7 @@
 export interface ProcurementItemDto {
   id: number;
-  raw_material: number;
-  raw_material_name: string;
+  material_id: number;
+  material_name: string;
   category: string;
 
   demand_quantity: string;
@@ -15,7 +15,7 @@ export interface ProcurementItemDto {
   supplier: number | null;
   supplier_name: string | null;
   supplier_unit_name: string | null;
-  supplier_kg_per_unit: string | null;
+  supplier_g_per_unit: string | null;
   supplier_price: string | null;
 
   notes: string;

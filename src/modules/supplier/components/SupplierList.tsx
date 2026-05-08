@@ -14,9 +14,12 @@ import SupplierEditModal from './SupplierEditModal';
 import { useSupplierList } from '../hooks/useSupplierList';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
-import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
-import type { SupplierUpdateDto } from '../dtos/supplierUpdate.dto';
+import type {
+  SupplierPreviewSchema,
+  SupplierUpsertSchema,
+} from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import type { ColumnsType } from 'antd/es/table';
 
 const { Title } = Typography;
 
@@ -26,16 +29,19 @@ export default function SupplierList() {
 
   const [keyword, setKeyword] = useState('');
   const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<SupplierUpdateDto | null>(null);
+  const [editing, setEditing] = useState<
+    | (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>)
+    | null
+  >(null);
 
   const { suppliers, isLoading, mutate } = useSupplierList({
-    search: keyword.trim() || undefined,
+    name: keyword.trim() || undefined,
   });
 
   const { trigger: updateTrigger } = useSupplierUpdate();
   const { trigger: deleteTrigger } = useSupplierDelete();
 
-  const columns = [
+  const columns: ColumnsType<SupplierPreviewSchema> = [
     { title: t('commonName'), dataIndex: 'name', key: 'name' },
     {
       title: t('commonContactPerson'),
@@ -48,7 +54,7 @@ export default function SupplierList() {
       title: t('commonOperation'),
       key: 'operation',
       width: 220,
-      render: (_: any, record: SupplierPreviewDto) => (
+      render: (_, record) => (
         <Space size="middle">
           <Button
             type="link"
@@ -118,7 +124,7 @@ export default function SupplierList() {
 
       <Table
         rowKey="id"
-        columns={columns as any}
+        columns={columns}
         dataSource={suppliers}
         loading={isLoading}
         pagination={{ pageSize: 10 }}

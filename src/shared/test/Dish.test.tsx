@@ -24,11 +24,12 @@ const dishes = [
     ingredients: [
       {
         id: 11,
-        raw_material: 21,
-        raw_material_name: 'Tomato',
+        material_id: 21,
+        material_name: 'Tomato',
         net_quantity: '0.100',
-        processing: 31,
-        processing_name: 'Diced',
+        processing_method_id: 31,
+        processing_method: 'Diced',
+        yield_rate: 1,
       },
     ],
   },
@@ -40,11 +41,12 @@ const dishes = [
     ingredients: [
       {
         id: 12,
-        raw_material: 22,
-        raw_material_name: 'Chicken',
+        material_id: 22,
+        material_name: 'Chicken',
         net_quantity: '0.200',
-        processing: 32,
-        processing_name: 'Cut',
+        processing_method_id: 32,
+        processing_method: 'Cut',
+        yield_rate: 1,
       },
     ],
   },

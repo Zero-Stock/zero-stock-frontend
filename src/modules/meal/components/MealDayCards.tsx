@@ -1,11 +1,12 @@
 import { Button, Card, Col, Divider, Row } from 'antd';
-import type { DayPlan, DishDetail } from '../mockdata';
+import type { DayPlan } from '../mockdata';
+import type { DishPreviewSchema } from '@/shared/types/schema';
 import MealSection from './MealSection';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface MealDayCardsProps {
   days: DayPlan[];
-  dishDetails: Map<number, DishDetail>;
+  dishDetails: Map<number, DishPreviewSchema>;
   loadingDishDetails: boolean;
   onEdit: (day: DayPlan) => void;
 }

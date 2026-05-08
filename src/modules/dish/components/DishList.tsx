@@ -9,15 +9,11 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  type Dish,
-  type DishIngredient,
-  type DishFormValues,
-} from '../mockdata';
-import {
-  formValuesToWritePayload,
-  formatIngredients,
-} from '../hooks/dishFormAdapter';
+import type {
+  DishIngredientSchema,
+  DishPreviewSchema,
+  DishUpsertSchema,
+} from '@/shared/types/schema';
 import { useDishCreate } from '../hooks/useDishCreate';
 import { useDishDelete } from '../hooks/useDishDelete';
 import { useDishList } from '../hooks/useDishList';
@@ -28,12 +24,25 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 const { Title } = Typography;
 const { Search } = Input;
 
+function formatIngredient(ingredient: DishIngredientSchema): string {
+  const grams = Math.round(parseFloat(ingredient.net_quantity));
+  const processingMethod = (ingredient.processing_method ?? '').trim();
+
+  if (!processingMethod || processingMethod === '无') {
+    return `${ingredient.material_name} ${grams}g`;
+  }
+
+  return `${ingredient.material_name} (${processingMethod}) ${grams}g`;
+}
+
 export default function DishList() {
   const { t } = useTranslation();
   const [searchText, setSearchText] = useState('');
   const [searchIngredient, setSearchIngredient] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingDish, setEditingDish] = useState<Dish | null>(null);
+  const [editingDish, setEditingDish] = useState<DishPreviewSchema | null>(
+    null,
+  );
   const { dishes, isLoading: loading, isError, mutate } = useDishList();
   const { trigger: createDish } = useDishCreate();
   const { trigger: updateDish } = useDishUpdate();
@@ -76,7 +85,7 @@ export default function DishList() {
     if (searchIngredient) {
       data = data.filter((dish) =>
         dish.ingredients.some((ing) =>
-          ing.raw_material_name
+          ing.material_name
             .toLowerCase()
             .includes(searchIngredient.toLowerCase()),
         ),
@@ -91,7 +100,7 @@ export default function DishList() {
     });
   };
 
-  const handleEdit = (record: Dish) => {
+  const handleEdit = (record: DishPreviewSchema) => {
     setEditingDish(record);
     setIsModalVisible(true);
   };
@@ -102,9 +111,7 @@ export default function DishList() {
   };
 
   // ─── Save via API ───
-  const handleSave = async (formValues: DishFormValues & { id: number }) => {
-    const payload = formValuesToWritePayload(formValues);
-
+  const handleSave = async (payload: DishUpsertSchema) => {
     try {
       if (editingDish) {
         await updateDish(editingDish.id, payload);
@@ -150,7 +157,7 @@ export default function DishList() {
     message.error(t('dishDeleteFailed'));
   };
 
-  const columns: ColumnsType<Dish> = [
+  const columns: ColumnsType<DishPreviewSchema> = [
     {
       title: t('dishColName'),
       dataIndex: 'name',
@@ -163,9 +170,11 @@ export default function DishList() {
       dataIndex: 'ingredients',
       key: 'ingredients',
       width: '19%',
-      render: (ingredients: DishIngredient[]) => (
+      render: (ingredients: DishIngredientSchema[]) => (
         <div style={{ whiteSpace: 'pre-wrap' }}>
-          {formatIngredients(ingredients)}
+          {ingredients
+            .map((ingredient) => formatIngredient(ingredient))
+            .join('\n')}
         </div>
       ),
     },

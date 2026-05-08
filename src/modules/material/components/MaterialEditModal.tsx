@@ -4,24 +4,25 @@ import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
-  MaterialResponseSchema,
+  MaterialPreviewSchema,
   MaterialUpsertSchema,
 } from '@/shared/types/schema';
 
 interface MaterialEditModalProps {
   visible: boolean;
-  record: MaterialResponseSchema | null;
+  record: MaterialPreviewSchema | null;
   onCancel: () => void;
   onUpdated?: () => void;
 }
 
-interface MaterialEditFormValues {
-  id: number;
-  name: string;
-  category: number;
+type MaterialEditFormValues = Omit<
+  MaterialUpsertSchema,
+  'id' | 'yield_rate' | 'processing'
+> & {
+  id?: MaterialUpsertSchema['id'];
   yield_rate: number;
-  specs?: string;
-}
+  processing?: string;
+};
 
 export default function MaterialEditModal({
   visible,
@@ -42,9 +43,10 @@ export default function MaterialEditModal({
 
     return {
       name: record.name,
-      category: record.category,
+      category_id: record.category_id,
       yield_rate: Number(record.yield_rate ?? 0),
-      specs: record.specs?.map((spec) => spec.method_name).join(', ') ?? '',
+      processing:
+        record.processing?.map((method) => method.name).join(', ') ?? '',
     };
   }, [record]);
 
@@ -55,20 +57,19 @@ export default function MaterialEditModal({
 
     try {
       const values = await form.validateFields();
-      const specs = values.specs
-        ? values.specs
+      const processing = values.processing
+        ? values.processing
             .split(',')
-            .map((spec) => spec.trim())
+            .map((methodName) => methodName.trim())
             .filter(Boolean)
-            .map((method_name) => ({ method_name }))
         : [];
 
       const payload: Omit<MaterialUpsertSchema, 'id'> & { id: number } = {
         id: record.id,
         name: values.name,
-        category: values.category,
+        category_id: values.category_id,
         yield_rate: String(values.yield_rate),
-        specs,
+        processing,
       };
 
       setIsSubmitting(true);
@@ -111,7 +112,7 @@ export default function MaterialEditModal({
           <Input placeholder={t('materialNamePlaceholder')} />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
-          name="category"
+          name="category_id"
           label={t('commonCategory')}
           rules={[{ required: true, message: t('materialCategoryRequired') }]}
         >
@@ -143,7 +144,7 @@ export default function MaterialEditModal({
           />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
-          name="specs"
+          name="processing"
           label={t('commonSpecs')}
         >
           <Input placeholder={t('materialSpecsPlaceholder')} />

@@ -1,10 +1,17 @@
 import { apiClient } from '@/shared/api/apiClient.client';
-import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type {
+  SupplierPreviewSchema,
+  SupplierUpsertSchema,
+} from '@/shared/types/schema';
 
 export function useSupplierCreate() {
   return {
-    trigger: async (data: SupplierCreateDto) => {
-      return apiClient.post('/api/suppliers/', { body: data });
+    trigger: async (data: SupplierUpsertSchema) => {
+      return apiClient.post<ApiResponseDto<SupplierPreviewSchema>>(
+        '/api/suppliers',
+        { body: data },
+      );
     },
   };
 }

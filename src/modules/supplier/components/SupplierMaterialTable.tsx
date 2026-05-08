@@ -4,11 +4,11 @@ import { useMemo, useState } from 'react';
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import { useSupplierMaterialUpdate } from '../hooks/useSupplierMaterialUpdate';
-import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
+import type { SupplierMaterialPreviewSchema } from '@/shared/types/schema';
 
 const { Title } = Typography;
 
@@ -24,7 +24,7 @@ export default function SupplierMaterialTable(
   const [keyword, setKeyword] = useState('');
 
   const { materials, isLoading, mutate } = useSupplierMaterials({
-    supplier: supplierId,
+    supplier_id: supplierId,
   });
   const { trigger: createTrigger } = useSupplierMaterialCreate();
   const { trigger: updateTrigger } = useSupplierMaterialUpdate();
@@ -32,18 +32,18 @@ export default function SupplierMaterialTable(
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] =
-    useState<SupplierMaterialDto | null>(null);
+    useState<SupplierMaterialPreviewSchema | null>(null);
 
   const existingRawMaterialIds = useMemo(
-    () => new Set(materials.map((m) => m.raw_material)),
+    () => new Set(materials.map((m) => m.material_id)),
     [materials],
   );
 
-  const columns: ColumnsType<SupplierMaterialDto> = [
+  const columns: ColumnsType<SupplierMaterialPreviewSchema> = [
     {
       title: t('commonName'),
-      dataIndex: 'raw_material_name',
-      key: 'raw_material_name',
+      dataIndex: 'material_name',
+      key: 'material_name',
       width: 120,
     },
     {
@@ -54,17 +54,22 @@ export default function SupplierMaterialTable(
     },
     {
       title: t('supplierKgPerUnit'),
-      dataIndex: 'kg_per_unit',
-      key: 'kg_per_unit',
+      dataIndex: 'g_per_unit',
+      key: 'g_per_unit',
       width: 120,
     },
-    { title: t('supplierPrice'), dataIndex: 'price', key: 'price', width: 120 },
+    {
+      title: t('supplierPrice'),
+      dataIndex: 'price_per_unit',
+      key: 'price_per_unit',
+      width: 120,
+    },
     { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
     {
       title: t('supplierMaterialActions'),
       key: 'actions',
       width: 200,
-      render: (_, record: SupplierMaterialDto) => (
+      render: (_, record: SupplierMaterialPreviewSchema) => (
         <Space size="small">
           <Button
             type="link"
@@ -126,9 +131,9 @@ export default function SupplierMaterialTable(
         </Space>
       </Space>
 
-      <Table<SupplierMaterialDto>
+      <Table<SupplierMaterialPreviewSchema>
         rowKey="id"
-        columns={columns as any}
+        columns={columns}
         dataSource={materials}
         loading={isLoading}
         pagination={{ pageSize: 8 }}
@@ -145,13 +150,13 @@ export default function SupplierMaterialTable(
         onSave={async (payload) => {
           if (editingMaterial) {
             await updateTrigger({
-              id: payload.id,
               ...payload,
-              supplier: supplierId,
+              id: editingMaterial.id,
+              supplier_id: supplierId,
             });
             message.success(t('supplierMaterialUpdated'));
           } else {
-            await createTrigger({ ...payload, supplier: supplierId });
+            await createTrigger({ ...payload, supplier_id: supplierId });
             message.success(t('supplierMaterialAdded'));
           }
           setModalOpen(false);

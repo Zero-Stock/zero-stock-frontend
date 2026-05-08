@@ -3,38 +3,39 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
 import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
-import type { SupplierCreateDto } from '../dtos/supplierCreate.dto';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import SupplierCreateMaterialTable from './SupplierCreateMaterialTable';
+import type {
+  SupplierMaterialUpsertSchema,
+  SupplierUpsertSchema,
+} from '@/shared/types/schema';
 
 const { Title, Text } = Typography;
 
-type FormValues = {
-  name: string;
-  contact_person: string;
-  phone: string;
-  address: string;
-  materials: Array<{
-    rawMaterialId?: number;
-    price?: number;
-    unit?: string;
-    kg_per_unit?: number;
-  }>;
+type SupplierCreateMaterialFormRow = {
+  rawMaterialId?: SupplierMaterialUpsertSchema['material_id'];
+  price_per_unit?: number;
+  unit?: SupplierMaterialUpsertSchema['unit_name'];
+  g_per_unit?: number;
+};
+
+type SupplierCreateFormValues = SupplierUpsertSchema & {
+  materials?: SupplierCreateMaterialFormRow[];
 };
 
 export default function SupplierCreateForm() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const [form] = Form.useForm<FormValues>();
+  const [form] = Form.useForm<SupplierCreateFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { trigger: createSupplier } = useSupplierCreate();
   const { trigger: createMaterial } = useSupplierMaterialCreate();
 
-  const onFinish = async (values: FormValues) => {
+  const onFinish = async (values: SupplierCreateFormValues) => {
     setIsSubmitting(true);
     try {
-      const payload: SupplierCreateDto = {
+      const payload: SupplierUpsertSchema = {
         name: values.name,
         contact_person: values.contact_person,
         phone: values.phone,
@@ -42,8 +43,7 @@ export default function SupplierCreateForm() {
       };
 
       const createdSupplier = await createSupplier(payload);
-      const supplierId =
-        (createdSupplier as any).result?.id || (createdSupplier as any).id;
+      const supplierId = createdSupplier.result.id;
 
       if (!supplierId) {
         message.error(t('supplierCreateErrorId'));
@@ -56,11 +56,11 @@ export default function SupplierCreateForm() {
         if (row.rawMaterialId) {
           try {
             await createMaterial({
-              supplier: supplierId,
-              raw_material: row.rawMaterialId,
+              supplier_id: supplierId,
+              material_id: row.rawMaterialId,
               unit_name: row.unit || 'kg',
-              kg_per_unit: String(row.kg_per_unit || 1),
-              price: String(row.price || 0),
+              g_per_unit: String(row.g_per_unit || 1),
+              price_per_unit: String(row.price_per_unit || 0),
             });
           } catch (err) {
             console.error(err);
@@ -82,7 +82,7 @@ export default function SupplierCreateForm() {
   };
 
   return (
-    <Form<FormValues>
+    <Form<SupplierCreateFormValues>
       form={form}
       layout="vertical"
       onFinish={onFinish}
@@ -90,9 +90,9 @@ export default function SupplierCreateForm() {
         materials: [
           {
             rawMaterialId: undefined,
-            price: undefined,
+            price_per_unit: undefined,
             unit: '',
-            kg_per_unit: undefined,
+            g_per_unit: undefined,
           },
         ],
       }}

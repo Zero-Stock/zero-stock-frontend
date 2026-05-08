@@ -57,15 +57,15 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
         <tr>
           <td style="${tdStyle}">${item.name ?? '-'}</td>
           <td style="${tdStyle}">${item.category ?? '-'}</td>
-          <td style="${tdStyle}">${item.demand_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.demand_g ?? '-'}</td>
           <td style="${tdStyle}">${item.demand_unit_qty ?? '-'}</td>
-          <td style="${tdStyle}">${item.stock_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.stock_g ?? '-'}</td>
           <td style="${tdStyle}">${item.stock_unit_qty ?? '-'}</td>
-          <td style="${tdStyle}">${item.purchase_kg ?? '-'}</td>
+          <td style="${tdStyle}">${item.purchase_g ?? '-'}</td>
           <td style="${tdStyle}">${item.purchase_unit_qty ?? '-'}</td>
           <td style="${tdStyle}">${item.supplier ?? '-'}</td>
           <td style="${tdStyle}">${item.supplier_unit_name ?? '-'}</td>
-          <td style="${tdStyle}">${item.supplier_kg_per_unit ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_g_per_unit ?? '-'}</td>
           <td style="${tdStyle}">${item.supplier_price ?? '-'}</td>
         </tr>
       `,

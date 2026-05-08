@@ -60,8 +60,8 @@ export function handleExportMealPdf({
         if (detail && detail.ingredients && detail.ingredients.length > 0) {
           const ingText = detail.ingredients
             .map((ing: any) => {
-              const grams = Math.round(parseFloat(ing.net_quantity) * 1000);
-              return `${ing.raw_material_name}${ing.processing_name !== '无' ? `[${ing.processing_name}]` : ''} ${grams}g`;
+              const grams = Math.round(parseFloat(ing.net_quantity));
+              return `${ing.material_name}${ing.processing_method ? `[${ing.processing_method}]` : ''} ${grams}g`;
             })
             .join('、');
           ingredientsHtml = `<div style="color: #666; font-size: 10px; margin-top: 2px;">${ingText}</div>`;

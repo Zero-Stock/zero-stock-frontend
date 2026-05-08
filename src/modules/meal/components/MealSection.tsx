@@ -1,5 +1,6 @@
 import { Skeleton, Typography } from 'antd';
-import type { DishItem, DishDetail } from '../mockdata';
+import type { DishItem } from '../mockdata';
+import type { DishPreviewSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Text } = Typography;
@@ -7,7 +8,7 @@ const { Text } = Typography;
 interface MealSectionProps {
   sectionTitle: string;
   dishes: DishItem[];
-  dishDetails: Map<number, DishDetail>;
+  dishDetails: Map<number, DishPreviewSchema>;
   loadingDishDetails: boolean;
 }
 
@@ -58,10 +59,8 @@ export default function MealSection({
                   <div className="mt-0.5 pl-1 text-xs text-gray-500">
                     {detail.ingredients
                       .map((ing) => {
-                        const grams = Math.round(
-                          parseFloat(ing.net_quantity) * 1000,
-                        );
-                        return `${ing.raw_material_name}${ing.processing_name !== '无' ? `[${ing.processing_name}]` : ''} ${grams}g`;
+                        const grams = Math.round(parseFloat(ing.net_quantity));
+                        return `${ing.material_name}${ing.processing_method ? `[${ing.processing_method}]` : ''} ${grams}g`;
                       })
                       .join('、')}
                   </div>

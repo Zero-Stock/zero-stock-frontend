@@ -126,9 +126,9 @@ export default function ProcurementList() {
 
     const matchedProcurementItem =
       procurementItems.find(
-        (item) => item.raw_material === record.material_id,
+        (item) => item.material_id === record.material_id,
       ) ??
-      procurementItems.find((item) => item.raw_material_name === record.name) ??
+      procurementItems.find((item) => item.material_name === record.name) ??
       null;
 
     if (!matchedProcurementItem) {
@@ -186,8 +186,8 @@ export default function ProcurementList() {
     },
     {
       title: t('procurementColDemandKg'),
-      dataIndex: 'demand_kg',
-      key: 'demand_kg',
+      dataIndex: 'demand_g',
+      key: 'demand_g',
       width: 100,
     },
     {
@@ -198,8 +198,8 @@ export default function ProcurementList() {
     },
     {
       title: t('procurementColStockKg'),
-      dataIndex: 'stock_kg',
-      key: 'stock_kg',
+      dataIndex: 'stock_g',
+      key: 'stock_g',
       width: 120,
     },
     {
@@ -210,8 +210,8 @@ export default function ProcurementList() {
     },
     {
       title: t('procurementColPurchaseKg'),
-      dataIndex: 'purchase_kg',
-      key: 'purchase_kg',
+      dataIndex: 'purchase_g',
+      key: 'purchase_g',
       width: 140,
     },
     {
@@ -248,7 +248,7 @@ export default function ProcurementList() {
       width: 100,
       render: (_, record) => {
         if (record.supplier_price != null) {
-          const qty = record.demand_unit_qty || record.demand_kg || 0;
+          const qty = record.demand_unit_qty || record.demand_g || 0;
           const total = record.supplier_price * Math.ceil(qty);
           return total > 0
             ? `${t('commonCurrencySymbol')}${total.toFixed(2)}`
@@ -323,7 +323,7 @@ export default function ProcurementList() {
       <ProcurementSupplierEditModal
         open={supplierModalOpen}
         materialName={editingRow?.name ?? ''}
-        rawMaterialId={editingProcurementItem?.raw_material}
+        rawMaterialId={editingProcurementItem?.material_id}
         selectedSupplierMaterialId={null}
         onCancel={() => {
           setSupplierModalOpen(false);

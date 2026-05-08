@@ -1,7 +1,7 @@
 // Re-export all types from DTOs for backwards compatibility
 export type { DietCategory } from './dtos/diet.dto';
 export type { WeeklyMenuRow, WeeklyMenuBatchItem, WeeklyMenuDishDetail, WeeklyMenuBatchDish } from './dtos/menu.dto';
-export type { DishItem, DishDetail, DishIngredient, DayPlan, WeeklyPlan } from './dtos/meal-plan.dto';
+export type { DishItem, DayPlan, WeeklyPlan } from './dtos/meal-plan.dto';
 export { MEAL_TIME_MAP } from './dtos/meal-plan.dto';
 
 import type { DietCategory } from './dtos/diet.dto';

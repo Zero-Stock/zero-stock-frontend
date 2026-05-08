@@ -1,32 +1,22 @@
 import useSWR from 'swr';
-import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
-import type { SupplierPreviewDto } from '../dtos/supplierPreview.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type {
+  SupplierListResponseSchema,
+  SupplierQuerySchema,
+} from '@/shared/types/schema';
 
-export interface SupplierListPayload {
-  search?: string;
-}
-
-export function useSupplierList(payload?: SupplierListPayload) {
-  const qs = useMemo(() => {
-    const p = new URLSearchParams();
-    const search = payload?.search?.trim();
-
-    if (search) p.set('search', search);
-    const s = p.toString();
-
-    return s ? `?${s}` : '';
-  }, [payload?.search]);
-
+export function useSupplierList(payload?: SupplierQuerySchema) {
   const key: SWRKey = {
-    url: `/api/suppliers/${qs}`,
-    method: 'GET',
-    options: {},
+    url: '/api/suppliers/list',
+    method: 'POST',
+    options: {
+      body: payload ?? {},
+    },
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<SupplierPreviewDto[]>>(key);
+    useSWR<ApiResponseDto<SupplierListResponseSchema>>(key);
 
   return {
     suppliers: data?.result.list ?? [],

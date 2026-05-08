@@ -1,21 +1,22 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import type { Dish } from '@/modules/dish/mockdata';
-import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
+import type { DishListResponseSchema } from '@/shared/types/schema';
 
 export function useMealDishList() {
   const key: SWRKey = {
-    url: '/api/dishes/',
+    url: '/api/dishes/list',
+    method: 'POST',
     options: {
-      query: {
+      body: {
         page_size: 500,
       },
     },
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<Dish[]>>(key);
+    useSWR<ApiResponseDto<DishListResponseSchema>>(key);
 
   const dishes = useMemo(() => data?.result.list ?? [], [data]);
 

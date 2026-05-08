@@ -11,10 +11,10 @@ export interface ReceivingPreviewDto {
   supplier_id: number | null;
   supplier_name: string | null;
 
-  required_kg: number;
+  required_g: number;
   required_special_unit: number | null;
 
-  actual_received_kg: number | null;
+  actual_received_g: number | null;
   actual_received_special_unit: number | null;
 
   status: ProcurementStatus;

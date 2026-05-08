@@ -19,8 +19,8 @@ const mockExportPdf = vi.fn();
 let procurementItemsState = [
   {
     id: 91,
-    raw_material: 41,
-    raw_material_name: 'Chicken Breast',
+    material_id: 41,
+    material_name: 'Chicken Breast',
   },
 ];
 
@@ -43,16 +43,16 @@ vi.mock('@/modules/procurement/hooks/useProcurementSheet', () => ({
       {
         name: 'Chicken Breast',
         category: 'Protein',
-        demand_kg: 12,
+        demand_g: 12,
         demand_unit_qty: 6,
-        stock_kg: 1,
+        stock_g: 1,
         stock_unit_qty: 0,
-        purchase_kg: 11,
+        purchase_g: 11,
         purchase_unit_qty: 6,
         supplier: 'Farm Co',
         supplier_unit_name: 'Box',
         supplier_price: 5.25,
-        supplier_kg_per_unit: 2,
+        supplier_g_per_unit: 2,
       },
     ],
     isLoading: false,
@@ -90,7 +90,7 @@ vi.mock('@/modules/procurement/hooks/useReceivingTemplate', () => ({
   useReceivingTemplate: () => ({
     template: {
       procurement_id: 7,
-      items: [{ raw_material_id: 41, raw_material_name: 'Chicken Breast' }],
+      items: [{ material_id: 41, material_name: 'Chicken Breast' }],
     },
     isLoading: false,
     mutate: mockMutateTemplate,
@@ -158,8 +158,8 @@ describe('Procurement module', () => {
     procurementItemsState = [
       {
         id: 91,
-        raw_material: 41,
-        raw_material_name: 'Chicken Breast',
+        material_id: 41,
+        material_name: 'Chicken Breast',
       },
     ];
     vi.mocked(message.success).mockReset();
@@ -268,7 +268,7 @@ describe('Procurement module', () => {
     await waitFor(() => {
       expect(mockCreateReceiving).toHaveBeenCalledWith({
         procurement_id: 7,
-        items: [{ raw_material_id: 41, actual_quantity: 8 }],
+        items: [{ material_id: 41, actual_quantity: 8 }],
       });
       expect(mockMutateList).toHaveBeenCalled();
       expect(mockMutateSheet).toHaveBeenCalled();

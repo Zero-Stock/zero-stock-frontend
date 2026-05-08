@@ -10,9 +10,11 @@ import {
   Select,
 } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { Dish, DishFormValues, DishFormIngredient } from '../mockdata';
-import type { RawMaterialDto } from '../dtos/rawMaterial.dto';
-import { dishToFormValues } from '../hooks/dishFormAdapter';
+import type {
+  DishPreviewSchema,
+  DishUpsertSchema,
+  MaterialPreviewSchema,
+} from '@/shared/types/schema';
 import { useDishMaterials } from '../hooks/useDishMaterials';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
@@ -20,9 +22,9 @@ const { TextArea } = Input;
 
 interface DishEditModalProps {
   visible: boolean;
-  record: Dish | null;
+  record: DishPreviewSchema | null;
   onCancel: () => void;
-  onSave: (values: DishFormValues & { id: number }) => void;
+  onSave: (values: DishUpsertSchema) => void;
 }
 
 export default function DishEditModal({
@@ -31,7 +33,7 @@ export default function DishEditModal({
   onCancel,
   onSave,
 }: DishEditModalProps) {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<DishUpsertSchema>();
   const { t } = useTranslation();
   const { materials } = useDishMaterials(visible);
 
@@ -41,7 +43,16 @@ export default function DishEditModal({
     }
 
     if (record) {
-      form.setFieldsValue(dishToFormValues(record, materials));
+      form.setFieldsValue({
+        name: record.name,
+        seasonings: record.seasonings,
+        cooking_method: record.cooking_method,
+        ingredients: record.ingredients.map((ingredient) => ({
+          material_id: ingredient.material_id,
+          processing_method_id: ingredient.processing_method_id,
+          net_quantity: ingredient.net_quantity,
+        })),
+      });
     } else {
       form.resetFields();
     }
@@ -50,36 +61,35 @@ export default function DishEditModal({
   // Get processing options for a selected material
   const getProcessingOptions = (materialId: number | undefined) => {
     if (!materialId) return [];
-    const mat = materials.find((m: RawMaterialDto) => m.id === materialId);
+    const mat = materials.find(
+      (m: MaterialPreviewSchema) => m.id === materialId,
+    );
     if (!mat) return [];
-    return mat.specs.map((s) => ({
-      label: s.method_name,
-      value: s.id,
+    return mat.processing.map((method) => ({
+      label: method.name,
+      value: method.id,
     }));
   };
 
   const handleOk = () => {
-    form.validateFields().then((values) => {
-      const structuredIngredients = (values.ingredients || []).map(
-        (ing: DishFormIngredient) => {
-          // Look up display names from materials
-          const mat = materials.find((m) => m.id === ing.raw_material_id);
-          const spec = mat?.specs.find((s) => s.id === ing.processing_id);
-          return {
-            ...ing,
-            material: mat?.name ?? ing.material ?? '',
-            processing: spec?.method_name ?? ing.processing ?? '',
-            category: mat?.category_name ?? ing.category ?? '',
-            id: ing.id || Date.now() + Math.floor(Math.random() * 1000),
-          };
-        },
-      );
+    form.validateFields().then((values: DishUpsertSchema) => {
+      const payload: DishUpsertSchema = {
+        id: record?.id,
+        name: values.name,
+        seasonings: values.seasonings,
+        cooking_method: values.cooking_method,
+        ingredients: (values.ingredients || []).map((ingredient) => {
+          const materialId = ingredient.material_id ?? 0;
 
-      onSave({
-        ...values,
-        ingredients: structuredIngredients,
-        id: record?.id || Date.now(),
-      });
+          return {
+            material_id: materialId,
+            processing_method_id: ingredient.processing_method_id ?? null,
+            net_quantity: String(ingredient.net_quantity ?? 0),
+          };
+        }),
+      };
+
+      onSave(payload);
     });
   };
 
@@ -115,15 +125,10 @@ export default function DishEditModal({
             <>
               {fields.map(({ key, name, ...restField }) => (
                 <Row key={key} gutter={8} className="mb-2">
-                  {/* Hidden fields to carry IDs */}
-                  <Form.Item {...restField} name={[name, 'id']} hidden>
-                    <Input />
-                  </Form.Item>
-
                   <Col span={7}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'raw_material_id']}
+                      name={[name, 'material_id']}
                       rules={[
                         {
                           required: true,
@@ -144,7 +149,7 @@ export default function DishEditModal({
                           // Clear processing when material changes
                           const ingredients = form.getFieldValue('ingredients');
                           if (ingredients?.[name]) {
-                            ingredients[name].processing_id = undefined;
+                            ingredients[name].processing_method_id = undefined;
                             form.setFieldsValue({ ingredients });
                           }
                         }}
@@ -159,7 +164,7 @@ export default function DishEditModal({
                   <Col span={6}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'processing_id']}
+                      name={[name, 'processing_method_id']}
                       className="!m-0"
                     >
                       <Select
@@ -171,7 +176,7 @@ export default function DishEditModal({
                           form.getFieldValue([
                             'ingredients',
                             name,
-                            'raw_material_id',
+                            'material_id',
                           ]),
                         )}
                         notFoundContent={
@@ -185,7 +190,7 @@ export default function DishEditModal({
                   <Col span={5}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'quantity']}
+                      name={[name, 'net_quantity']}
                       rules={[
                         {
                           required: true,

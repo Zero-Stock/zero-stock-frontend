@@ -155,7 +155,7 @@ describe('Supplier module', () => {
     await user.clear(input);
     await user.type(input, 'Fresh');
 
-    expect(mockUseSupplierList).toHaveBeenLastCalledWith({ search: 'Fresh' });
+    expect(mockUseSupplierList).toHaveBeenLastCalledWith({ name: 'Fresh' });
   });
 
   it('renders supplier detail and updates the supplier', async () => {

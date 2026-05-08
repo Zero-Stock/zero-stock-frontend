@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useMaterialList } from '../hooks/useMaterialList';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import type { MaterialResponseSchema } from '@/shared/types/schema';
+import type { MaterialPreviewSchema } from '@/shared/types/schema';
 
 import MaterialEditModal from './MaterialEditModal';
 import useMaterialCategories from '../hooks/useMaterialCategories';
@@ -18,19 +18,19 @@ export default function MaterialList() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] =
-    useState<MaterialResponseSchema | null>(null);
+    useState<MaterialPreviewSchema | null>(null);
 
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
 
   const payload = useMemo(() => {
     return {
-      category: selectedCategory ?? undefined,
+      category_id: selectedCategory ?? undefined,
     };
   }, [selectedCategory]);
   const { materials, isLoading, mutate } = useMaterialList(payload);
 
-  const handleEdit = (record: MaterialResponseSchema) => {
+  const handleEdit = (record: MaterialPreviewSchema) => {
     setEditingRecord(record);
     setIsEditModalOpen(true);
   };
@@ -47,7 +47,7 @@ export default function MaterialList() {
     }
   };
 
-  const columns: ColumnsType<MaterialResponseSchema> = [
+  const columns: ColumnsType<MaterialPreviewSchema> = [
     {
       title: t('commonName'),
       dataIndex: 'name',
@@ -68,11 +68,11 @@ export default function MaterialList() {
     },
     {
       title: t('commonSpecs'),
-      dataIndex: 'specs',
-      key: 'specs',
-      render: (specs: MaterialResponseSchema['specs']) => (
+      dataIndex: 'processing',
+      key: 'processing',
+      render: (processing: MaterialPreviewSchema['processing']) => (
         <Space orientation="vertical" size={0}>
-          <Text>{specs?.map((spec) => spec.method_name).join(', ') ?? ''}</Text>
+          <Text>{processing?.map((method) => method.name).join(', ') ?? ''}</Text>
         </Space>
       ),
     },

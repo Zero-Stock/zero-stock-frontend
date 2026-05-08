@@ -2,12 +2,12 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type {
   MaterialListResponseSchema,
-  MaterialListSchema,
+  MaterialQuerySchema,
 } from '@/shared/types/schema';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
-export type MaterialListPayload = MaterialListSchema;
+export type MaterialListPayload = MaterialQuerySchema;
 
 export function useMaterialList(payload?: MaterialListPayload) {
   const key: SWRKey = {

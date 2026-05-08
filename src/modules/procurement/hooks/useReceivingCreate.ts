@@ -1,7 +1,7 @@
 import { apiClient } from '@/shared/api/apiClient.client';
 
 interface ReceivingCreateItemDto {
-  raw_material_id: number;
+  material_id: number;
   actual_quantity: number;
   notes?: string;
 }

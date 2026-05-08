@@ -1,16 +1,31 @@
 import { Modal, Form, Input, InputNumber, Select } from 'antd';
 import { useEffect } from 'react';
-import type { SupplierMaterialDto } from '../dtos/supplierMaterial.dto';
 import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import type {
+  SupplierMaterialPreviewSchema,
+  SupplierMaterialUpsertSchema,
+} from '@/shared/types/schema';
 
 export interface SupplierMaterialUpsertModalProps {
   open: boolean;
-  initialValues?: SupplierMaterialDto | null;
+  initialValues?: SupplierMaterialPreviewSchema | null;
   existingRawMaterialIds: Set<number>;
   onCancel: () => void;
-  onSave: (payload: any) => void;
+  onSave: (
+    payload: Omit<SupplierMaterialUpsertSchema, 'supplier_id'> & {
+      id?: SupplierMaterialUpsertSchema['id'];
+    },
+  ) => void;
 }
+
+type SupplierMaterialFormValues = Omit<
+  SupplierMaterialUpsertSchema,
+  'supplier_id' | 'g_per_unit' | 'price_per_unit'
+> & {
+  g_per_unit?: number;
+  price_per_unit?: number;
+};
 
 export default function SupplierMaterialUpsertModal({
   open,
@@ -20,7 +35,7 @@ export default function SupplierMaterialUpsertModal({
   onSave,
 }: SupplierMaterialUpsertModalProps) {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<SupplierMaterialFormValues>();
 
   // optionally pass page_size: 1000 or similar to fetch all materials, depending on backend pagination
   const { materialOptions, isLoading } = useMaterialList({ page_size: 1000 });
@@ -28,7 +43,14 @@ export default function SupplierMaterialUpsertModal({
   useEffect(() => {
     if (open) {
       if (initialValues) {
-        form.setFieldsValue(initialValues);
+        form.setFieldsValue({
+          ...initialValues,
+          g_per_unit: Number(initialValues.g_per_unit),
+          price_per_unit:
+            initialValues.price_per_unit === null
+              ? undefined
+              : Number(initialValues.price_per_unit),
+        });
       } else {
         form.resetFields();
       }
@@ -38,24 +60,26 @@ export default function SupplierMaterialUpsertModal({
   const handleOk = async () => {
     const v = await form.validateFields();
 
-    const rawId = Number(v.raw_material);
+    const materialId = Number(v.material_id);
 
     // 同一供应商不能重复添加同一原料（后端规则），仅在新建时校验
-    if (!initialValues && existingRawMaterialIds.has(rawId)) {
+    if (!initialValues && existingRawMaterialIds.has(materialId)) {
       form.setFields([
         {
-          name: 'raw_material',
+          name: 'material_id',
           errors: [t('supplierMaterialDuplicateError')],
         },
       ]);
       return;
     }
 
-    const payload: any = {
-      raw_material: rawId,
+    const payload: Omit<SupplierMaterialUpsertSchema, 'supplier_id'> & {
+      id?: SupplierMaterialUpsertSchema['id'];
+    } = {
+      material_id: materialId,
       unit_name: v.unit_name,
-      kg_per_unit: String(v.kg_per_unit),
-      price: v.price ? String(v.price) : null,
+      g_per_unit: String(v.g_per_unit),
+      price_per_unit: v.price_per_unit ? String(v.price_per_unit) : null,
       notes: v.notes,
     };
 
@@ -86,7 +110,7 @@ export default function SupplierMaterialUpsertModal({
       <Form form={form} layout="vertical">
         <Form.Item
           label={t('commonName')}
-          name="raw_material"
+          name="material_id"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <Select
@@ -109,7 +133,7 @@ export default function SupplierMaterialUpsertModal({
 
         <Form.Item
           label={t('supplierKgPerUnit')}
-          name="kg_per_unit"
+          name="g_per_unit"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <InputNumber
@@ -122,7 +146,7 @@ export default function SupplierMaterialUpsertModal({
 
         <Form.Item
           label={t('supplierPrice')}
-          name="price"
+          name="price_per_unit"
           rules={[{ required: true, message: t('supplierRequired') }]}
         >
           <InputNumber

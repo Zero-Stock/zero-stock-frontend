@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import { apiClient } from '@/shared/api/apiClient.client';
-import type { DishDetail } from '../mockdata';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type { DishPreviewSchema } from '@/shared/types/schema';
 
-async function fetchDishDetail(dishId: number): Promise<DishDetail | null> {
+async function fetchDishDetail(
+  dishId: number,
+): Promise<DishPreviewSchema | null> {
   try {
-    const response = await apiClient.get<{ result: DishDetail }>(
-      `/api/dishes/${dishId}/`,
+    const response = await apiClient.get<ApiResponseDto<DishPreviewSchema>>(
+      `/api/dishes/${dishId}`,
     );
     return response.result;
   } catch {
@@ -17,9 +20,9 @@ async function fetchDishDetail(dishId: number): Promise<DishDetail | null> {
 
 async function fetchDishDetails(
   dishIds: number[],
-): Promise<Map<number, DishDetail>> {
+): Promise<Map<number, DishPreviewSchema>> {
   const uniqueIds = [...new Set(dishIds)];
-  const results = new Map<number, DishDetail>();
+  const results = new Map<number, DishPreviewSchema>();
 
   const fetches = uniqueIds.map(async (id) => {
     const detail = await fetchDishDetail(id);
@@ -43,13 +46,12 @@ export function useMealDishDetails(dishIds: number[]) {
       ? ['meal-dish-details', uniqueDishIds.join(',')]
       : null;
 
-  const { data, error, isLoading, mutate } = useSWR<Map<number, DishDetail>>(
-    key,
-    () => fetchDishDetails(uniqueDishIds),
-  );
+  const { data, error, isLoading, mutate } = useSWR<
+    Map<number, DishPreviewSchema>
+  >(key, () => fetchDishDetails(uniqueDishIds));
 
   return {
-    dishDetails: data ?? new Map<number, DishDetail>(),
+    dishDetails: data ?? new Map<number, DishPreviewSchema>(),
     isLoading,
     isError: error,
     mutate,

@@ -282,9 +282,9 @@ export const translations = {
     en: 'Optional. You can add materials now, or edit later in the supplier detail page.',
   },
   supplierMaterial: { zh: '原料', en: 'Material' },
-  supplierPrice: { zh: '单价', en: 'Price' },
+  supplierPrice: { zh: '单位价格', en: 'Price per unit' },
   supplierUnitSpec: { zh: '单位（规格）', en: 'Unit (Spec)' },
-  supplierKgPerUnit: { zh: '千克/单位', en: 'kg/unit' },
+  supplierKgPerUnit: { zh: '克/单位', en: 'g/unit' },
   supplierPricePlaceholder: { zh: '例如：12.5', en: 'e.g. 12.5' },
   supplierUnitPlaceholder: { zh: '例如：箱 / 袋', en: 'e.g. 箱 / 袋' },
   supplierUnitPlaceholderKg: {
@@ -391,19 +391,19 @@ export const translations = {
 
   procurementColName: { zh: '品名', en: 'Name' },
   procurementColCategory: { zh: '规格/类别', en: 'Category' },
-  procurementColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
+  procurementColDemandKg: { zh: '需求(g)', en: 'Demand (g)' },
   procurementColDemandUnit: {
     zh: '需求(特殊单位)',
     en: 'Demand (Unit)',
   },
-  procurementColStockKg: { zh: '库存(kg)', en: 'Stock (kg)' },
+  procurementColStockKg: { zh: '库存(g)', en: 'Stock (g)' },
   procurementColStockUnit: {
     zh: '库存(特殊单位)',
     en: 'Stock (Unit)',
   },
   procurementColPurchaseKg: {
-    zh: '采购需求(kg)',
-    en: 'Purchase (kg)',
+    zh: '采购需求(g)',
+    en: 'Purchase (g)',
   },
   procurementColPurchaseUnit: {
     zh: '采购需求(特殊单位)',
@@ -414,8 +414,8 @@ export const translations = {
     en: 'Supplier Unit',
   },
   procurementColSupplierKgPerUnit: {
-    zh: 'kg/单位',
-    en: 'kg/unit',
+    zh: 'g/单位',
+    en: 'g/unit',
   },
   procurementColSupplierPrice: { zh: '供应商单价', en: 'Supplier Unit Price' },
 
@@ -462,12 +462,12 @@ export const translations = {
     en: 'Failed to regenerate procurement order',
   },
 
-  receivingColExpectedKg: { zh: '应收(kg)', en: 'Expected (kg)' },
+  receivingColExpectedKg: { zh: '应收(g)', en: 'Expected (g)' },
   receivingColExpectedUnit: {
     zh: '应收(特殊单位)',
     en: 'Expected (Unit)',
   },
-  receivingColActualKg: { zh: '实收(kg)', en: 'Actual (kg)' },
+  receivingColActualKg: { zh: '实收(g)', en: 'Actual (g)' },
   receivingColActualUnit: {
     zh: '实收(特殊单位)',
     en: 'Actual (Unit)',

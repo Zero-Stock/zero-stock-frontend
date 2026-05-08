@@ -66,7 +66,7 @@ export default function ReceivingList() {
 
   const tableData = useMemo<ReceivingTableRow[]>(() => {
     return sheetItems.map((sheetItem) => {
-      const expectedQuantity = Number(sheetItem.purchase_kg ?? 0);
+      const expectedQuantity = Number(sheetItem.purchase_g ?? 0);
       const expectedUnitQty = Number(sheetItem.purchase_unit_qty ?? 0);
 
       const edited = editedRows[sheetItem.name];
@@ -81,16 +81,17 @@ export default function ReceivingList() {
     });
   }, [sheetItems, editedRows]);
 
-  const handleActualKgChange = (
+  const handleActualGChange = (
     record: ReceivingTableRow,
     value: number | null,
   ) => {
     const nextValue = value == null ? 0 : Number(value);
 
     setEditedRows((prev) => {
-      let nextUnitQty = prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty;
-      if (record.supplier_kg_per_unit) {
-        nextUnitQty = Number((nextValue / record.supplier_kg_per_unit).toFixed(2));
+      let nextUnitQty =
+        prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty;
+      if (record.supplier_g_per_unit) {
+        nextUnitQty = Number((nextValue / record.supplier_g_per_unit).toFixed(2));
       }
       return {
         ...prev,
@@ -109,14 +110,15 @@ export default function ReceivingList() {
     const nextValue = value == null ? 0 : Number(value);
 
     setEditedRows((prev) => {
-      let nextKgQty = prev[record.name]?.actual_quantity ?? record.expected_quantity;
-      if (record.supplier_kg_per_unit) {
-        nextKgQty = Number((nextValue * record.supplier_kg_per_unit).toFixed(2));
+      let nextGQty =
+        prev[record.name]?.actual_quantity ?? record.expected_quantity;
+      if (record.supplier_g_per_unit) {
+        nextGQty = Number((nextValue * record.supplier_g_per_unit).toFixed(2));
       }
       return {
         ...prev,
         [record.name]: {
-          actual_quantity: nextKgQty,
+          actual_quantity: nextGQty,
           actual_unit_qty: nextValue,
         },
       };
@@ -133,13 +135,13 @@ export default function ReceivingList() {
       await createReceivingTrigger({
         procurement_id: template.procurement_id,
         items: (template.items ?? []).map((item: ReceivingTemplateItemDto) => ({
-          raw_material_id: item.raw_material_id,
+          material_id: item.material_id,
           actual_quantity:
-            editedRows[item.raw_material_name]?.actual_quantity ??
+            editedRows[item.material_name]?.actual_quantity ??
             Number(
               sheetItems.find(
-                (sheetItem) => sheetItem.name === item.raw_material_name,
-              )?.purchase_kg ?? 0,
+                (sheetItem) => sheetItem.name === item.material_name,
+              )?.purchase_g ?? 0,
             ),
         })),
       });
@@ -170,8 +172,8 @@ export default function ReceivingList() {
     },
     {
       title: t('procurementColDemandKg'),
-      dataIndex: 'demand_kg',
-      key: 'demand_kg',
+      dataIndex: 'demand_g',
+      key: 'demand_g',
       width: 120,
     },
     {
@@ -182,8 +184,8 @@ export default function ReceivingList() {
     },
     {
       title: t('procurementColStockKg'),
-      dataIndex: 'stock_kg',
-      key: 'stock_kg',
+      dataIndex: 'stock_g',
+      key: 'stock_g',
       width: 120,
     },
     {
@@ -226,7 +228,7 @@ export default function ReceivingList() {
         <InputNumber
           value={record.actual_quantity}
           min={0}
-          onChange={(value) => handleActualKgChange(record, value)}
+          onChange={(value) => handleActualGChange(record, value)}
           className="w-full"
         />
       ),

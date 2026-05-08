@@ -1,6 +1,3 @@
-// Re-export dish types from the dish module (single source of truth)
-export type { DishIngredient, Dish as DishDetail } from '@/modules/dish/dtos/dish.dto';
-
 /** A single dish in the weekly menu (from dish_names / dishes array) */
 export interface DishItem {
     id: number;       // dish ID from backend

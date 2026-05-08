@@ -58,7 +58,7 @@ export interface components {
             /** @description Current page records */
             list: unknown[][];
         };
-        StapleResponseSchema: {
+        StaplePreviewSchema: {
             /**
              * @description Staple id
              * @example 1
@@ -71,14 +71,14 @@ export interface components {
             name: string;
             /**
              * @description Unit name
-             * @example kg
+             * @example g
              */
             unit_name: string;
             /**
-             * @description Kilograms per unit
-             * @example 1.000
+             * @description Grams per unit
+             * @example 180
              */
-            kg_per_unit: string;
+            g_per_unit: string;
         };
         StapleListResponseSchema: {
             /**
@@ -97,14 +97,35 @@ export interface components {
              */
             total: number;
             /** @description Staples matching the query */
-            list: components["schemas"]["StapleResponseSchema"][];
+            list: components["schemas"]["StaplePreviewSchema"][];
         };
-        StapleListSchema: {
+        StapleQuerySchema: {
             /**
-             * @description Staple name search
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
              * @example rice
              */
             name?: string;
+            /**
+             * @description Column name to sort by
+             * @example name
+             */
+            sort_by?: string;
+            /**
+             * @description Sort order
+             * @example desc
+             * @enum {string}
+             */
+            sort_order?: "asc" | "desc";
             /**
              * @description Page number
              * @example 1
@@ -116,17 +137,39 @@ export interface components {
              */
             page_size?: number;
         };
-        OptionResponseSchema: {
+        StapleOptionSchema: {
             /**
-             * @description Resource id
+             * @description Staple id
              * @example 1
              */
             id: number;
             /**
-             * @description Resource name
+             * @description Staple name
              * @example Rice
              */
             name: string;
+        };
+        StapleDetailSchema: {
+            /**
+             * @description Staple id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Staple name
+             * @example Rice
+             */
+            name: string;
+            /**
+             * @description Unit name
+             * @example g
+             */
+            unit_name: string;
+            /**
+             * @description Grams per unit
+             * @example 180
+             */
+            g_per_unit: string;
         };
         StapleUpsertSchema: {
             /**
@@ -141,14 +184,14 @@ export interface components {
             name: string;
             /**
              * @description Unit name
-             * @example kg
+             * @example g
              */
             unit_name?: string;
             /**
-             * @description Kilograms per unit
-             * @example 1.000
+             * @description Grams per unit
+             * @example 180
              */
-            kg_per_unit?: string;
+            g_per_unit?: string;
         };
         IdResponseSchema: {
             /**
@@ -157,19 +200,19 @@ export interface components {
              */
             id: number;
         };
-        MaterialSpecResponseSchema: {
+        MaterialProcessingMethodSchema: {
             /**
-             * @description Processed material id
+             * @description Material processing method id
              * @example 1
              */
             id: number;
             /**
-             * @description Processing method name
+             * @description Material processing method name
              * @example washed
              */
-            method_name: string;
+            name: string;
         };
-        MaterialResponseSchema: {
+        MaterialPreviewSchema: {
             /**
              * @description Material id
              * @example 1
@@ -184,7 +227,7 @@ export interface components {
              * @description Material category id
              * @example 1
              */
-            category: number;
+            category_id: number;
             /**
              * @description Material category name
              * @example Grains
@@ -195,8 +238,20 @@ export interface components {
              * @example 1.00
              */
             yield_rate: string;
-            /** @description Processing methods */
-            specs: components["schemas"]["MaterialSpecResponseSchema"][];
+            /**
+             * @description Processing methods
+             * @example [
+             *       {
+             *         "id": 1,
+             *         "name": "washed"
+             *       },
+             *       {
+             *         "id": 2,
+             *         "name": "cut"
+             *       }
+             *     ]
+             */
+            processing: components["schemas"]["MaterialProcessingMethodSchema"][];
         };
         MaterialListResponseSchema: {
             /**
@@ -215,17 +270,32 @@ export interface components {
              */
             total: number;
             /** @description Materials matching the query */
-            list: components["schemas"]["MaterialResponseSchema"][];
+            list: components["schemas"]["MaterialPreviewSchema"][];
         };
-        MaterialListSchema: {
+        MaterialQuerySchema: {
             /**
-             * @description Column to sort by
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -240,22 +310,63 @@ export interface components {
              */
             page_size?: number;
             /**
-             * @description Material name filter
-             * @example rice
-             */
-            name?: string;
-            /**
              * @description Material category id filter
              * @example 1
              */
-            category?: number;
+            category_id?: number;
         };
-        MaterialSpecSchema: {
+        MaterialOptionSchema: {
             /**
-             * @description Processing method name
-             * @example washed
+             * @description Material id
+             * @example 1
              */
-            method_name: string;
+            id: number;
+            /**
+             * @description Material name
+             * @example Rice
+             */
+            name: string;
+        };
+        MaterialDetailSchema: {
+            /**
+             * @description Material id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Material name
+             * @example Rice
+             */
+            name: string;
+            /**
+             * @description Material category id
+             * @example 1
+             */
+            category_id: number;
+            /**
+             * @description Material category name
+             * @example Grains
+             */
+            category_name: string | null;
+            /**
+             * @description Yield rate
+             * @example 1.00
+             */
+            yield_rate: string;
+            /**
+             * @description Processing methods
+             * @example [
+             *       {
+             *         "id": 1,
+             *         "name": "washed"
+             *       },
+             *       {
+             *         "id": 2,
+             *         "name": "cut"
+             *       }
+             *     ]
+             */
+            processing: components["schemas"]["MaterialProcessingMethodSchema"][];
         };
         MaterialUpsertSchema: {
             /**
@@ -272,16 +383,34 @@ export interface components {
              * @description Material category id
              * @example 1
              */
-            category: number;
+            category_id: number;
             /**
              * @description Yield rate as decimal string
              * @example 1.00
              */
             yield_rate: string;
-            /** @description Processing methods */
-            specs?: components["schemas"]["MaterialSpecSchema"][];
+            /**
+             * @description Processing methods
+             * @example [
+             *       "washed",
+             *       "cut"
+             *     ]
+             */
+            processing?: string[];
         };
-        DietPreviewResponseSchema: {
+        MaterialCategoryOptionSchema: {
+            /**
+             * @description Material category id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Material category name
+             * @example Grains
+             */
+            name: string;
+        };
+        DietPreviewSchema: {
             /**
              * @description Diet id
              * @example 1
@@ -293,7 +422,33 @@ export interface components {
              */
             name: string;
         };
-        DietListSchema: {
+        DietQuerySchema: {
+            /**
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
+             * @example name
+             */
+            sort_by?: string;
+            /**
+             * @description Sort order
+             * @example desc
+             * @enum {string}
+             */
+            sort_order?: "asc" | "desc";
             /**
              * @description Page number
              * @example 1
@@ -305,7 +460,19 @@ export interface components {
              */
             page_size?: number;
         };
-        DietMealSlotDishDetailResponseSchema: {
+        DietOptionSchema: {
+            /**
+             * @description Diet id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Diet name
+             * @example Regular
+             */
+            name: string;
+        };
+        DietQuantitySchema: {
             /**
              * @description Dish id
              * @example 1
@@ -322,7 +489,7 @@ export interface components {
              */
             quantity: number;
         };
-        DietMealSlotResponseSchema: {
+        DietMealSlotSchema: {
             /**
              * @description Meal slot id
              * @example 1
@@ -354,9 +521,9 @@ export interface components {
             /** @description Dish names */
             dish_names: string[];
             /** @description Dish details */
-            dishes_detail: components["schemas"]["DietMealSlotDishDetailResponseSchema"][];
+            dishes_detail: components["schemas"]["DietQuantitySchema"][];
         };
-        DietDetailResponseSchema: {
+        DietDetailSchema: {
             /**
              * @description Diet id
              * @example 1
@@ -371,14 +538,14 @@ export interface components {
              * @description Staple id
              * @example 1
              */
-            staple: number | null;
+            staple_id: number | null;
             /**
              * @description Staple name
              * @example Rice
              */
             staple_name: string | null;
             /** @description Meal slots */
-            meal_slots: components["schemas"]["DietMealSlotResponseSchema"][];
+            meal_slots: components["schemas"]["DietMealSlotSchema"][];
         };
         DietCreateSchema: {
             /**
@@ -426,44 +593,44 @@ export interface components {
             /** @description Dishes in this slot */
             dishes: components["schemas"]["DietMealSlotDishSchema"][];
         };
-        DishIngredientResponseSchema: {
+        DishIngredientSchema: {
             /**
              * @description Dish ingredient id
              * @example 1
              */
             id: number;
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material: number;
+            material_id: number;
             /**
-             * @description Raw material name
+             * @description Material name
              * @example Rice
              */
-            raw_material_name: string;
+            material_name: string;
             /**
-             * @description Processed material id
+             * @description Material processing method id
              * @example null
              */
-            processing: number | null;
+            processing_method_id: number | null;
             /**
-             * @description Processing method name
-             * @example washed
+             * @description Material processing method name
+             * @example cut
              */
-            processing_name: string;
+            processing_method: string | null;
             /**
              * @description Yield rate
              * @example 1
              */
             yield_rate: number;
             /**
-             * @description Net quantity in kg
-             * @example 0.150
+             * @description Net quantity in grams
+             * @example 150
              */
             net_quantity: string;
         };
-        DishResponseSchema: {
+        DishPreviewSchema: {
             /**
              * @description Dish id
              * @example 1
@@ -485,7 +652,7 @@ export interface components {
              */
             cooking_method: string;
             /** @description Dish ingredients */
-            ingredients: components["schemas"]["DishIngredientResponseSchema"][];
+            ingredients: components["schemas"]["DishIngredientSchema"][];
         };
         DishListResponseSchema: {
             /**
@@ -504,19 +671,35 @@ export interface components {
              */
             total: number;
             /** @description Dishes matching the query */
-            list: components["schemas"]["DishResponseSchema"][];
+            list: components["schemas"]["DishPreviewSchema"][];
         };
-        DishListSchema: {
+        DishQuerySchema: {
             /**
-             * @description Column to sort by
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
              * @description Sort order
-             * @example asc
+             * @example desc
+             * @enum {string}
              */
-            sort_order?: string;
+            sort_order?: "asc" | "desc";
             /**
              * @description Page number
              * @example 1
@@ -527,26 +710,57 @@ export interface components {
              * @example 50
              */
             page_size?: number;
-            /**
-             * @description Dish name search
-             * @example noodles
-             */
-            name?: string;
         };
-        DishIngredientWriteSchema: {
+        DishOptionSchema: {
             /**
-             * @description Raw material id
+             * @description Dish id
              * @example 1
              */
-            raw_material: number;
+            id: number;
             /**
-             * @description Processed material id
+             * @description Dish name
+             * @example Tomato noodles
+             */
+            name: string;
+        };
+        DishDetailSchema: {
+            /**
+             * @description Dish id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Dish name
+             * @example Tomato noodles
+             */
+            name: string;
+            /**
+             * @description Seasonings
+             * @example salt
+             */
+            seasonings: string;
+            /**
+             * @description Cooking method
+             * @example Boil noodles and sauce
+             */
+            cooking_method: string;
+            /** @description Dish ingredients */
+            ingredients: components["schemas"]["DishIngredientSchema"][];
+        };
+        DishIngredientUpsertSchema: {
+            /**
+             * @description Material id
+             * @example 1
+             */
+            material_id: number;
+            /**
+             * @description Material processing method id
              * @example null
              */
-            processing?: number | null;
+            processing_method_id?: number | null;
             /**
-             * @description Net quantity in kg
-             * @example 0.150
+             * @description Net quantity in grams
+             * @example 150
              */
             net_quantity: string;
         };
@@ -571,10 +785,10 @@ export interface components {
              * @example Boil noodles and sauce
              */
             cooking_method?: string;
-            /** @description Ingredients to write */
-            ingredients_write?: components["schemas"]["DishIngredientWriteSchema"][];
+            /** @description Ingredients */
+            ingredients?: components["schemas"]["DishIngredientUpsertSchema"][];
         };
-        SupplierMaterialResponseSchema: {
+        SupplierMaterialPreviewSchema: {
             /**
              * @description Supplier material id
              * @example 1
@@ -584,44 +798,44 @@ export interface components {
              * @description Supplier id
              * @example 1
              */
-            supplier: number;
+            supplier_id: number;
             /**
              * @description Supplier name
              * @example Fresh Market
              */
             supplier_name: string;
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material: number;
+            material_id: number;
             /**
-             * @description Raw material name
+             * @description Material name
              * @example Rice
              */
-            raw_material_name: string;
+            material_name: string;
             /**
              * @description Supplier unit name
              * @example bag
              */
             unit_name: string;
             /**
-             * @description Kilograms per supplier unit
-             * @example 25.000
+             * @description Grams per supplier unit
+             * @example 25000
              */
-            kg_per_unit: string;
+            g_per_unit: string;
             /**
              * @description Supplier price
              * @example 50.00
              */
-            price: string | null;
+            price_per_unit: string | null;
             /**
              * @description Notes
              * @example
              */
             notes: string;
         };
-        SupplierResponseSchema: {
+        SupplierPreviewSchema: {
             /**
              * @description Supplier id
              * @example 1
@@ -648,7 +862,7 @@ export interface components {
              */
             address: string;
             /** @description Supplier material offerings */
-            materials: components["schemas"]["SupplierMaterialResponseSchema"][];
+            materials: components["schemas"]["SupplierMaterialPreviewSchema"][];
         };
         SupplierListResponseSchema: {
             /**
@@ -667,9 +881,9 @@ export interface components {
              */
             total: number;
             /** @description Suppliers matching the query */
-            list: components["schemas"]["SupplierResponseSchema"][];
+            list: components["schemas"]["SupplierPreviewSchema"][];
         };
-        SupplierListSchema: {
+        SupplierQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -681,18 +895,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -706,11 +920,47 @@ export interface components {
              * @example 50
              */
             page_size?: number;
+        };
+        SupplierOptionSchema: {
             /**
-             * @description Supplier search text
-             * @example market
+             * @description Supplier-material id
+             * @example 1
              */
-            search?: string;
+            id: number;
+            /**
+             * @description Supplier name
+             * @example Fresh Market
+             */
+            name: string;
+        };
+        SupplierDetailSchema: {
+            /**
+             * @description Supplier id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Supplier name
+             * @example Fresh Market
+             */
+            name: string;
+            /**
+             * @description Contact person
+             * @example Alice
+             */
+            contact_person: string;
+            /**
+             * @description Phone number
+             * @example 555-0100
+             */
+            phone: string;
+            /**
+             * @description Address
+             * @example 123 Main St
+             */
+            address: string;
+            /** @description Supplier material offerings */
+            materials: components["schemas"]["SupplierMaterialPreviewSchema"][];
         };
         SupplierUpsertSchema: {
             /**
@@ -756,9 +1006,9 @@ export interface components {
              */
             total: number;
             /** @description Supplier-material offerings matching the query */
-            list: components["schemas"]["SupplierMaterialResponseSchema"][];
+            list: components["schemas"]["SupplierMaterialPreviewSchema"][];
         };
-        SupplierMaterialListSchema: {
+        SupplierMaterialQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -770,18 +1020,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -799,17 +1049,71 @@ export interface components {
              * @description Supplier id
              * @example 1
              */
-            supplier?: number;
+            supplier_id?: number;
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material?: number;
+            material_id?: number;
+        };
+        SupplierMaterialOptionSchema: {
             /**
-             * @description Search text
-             * @example rice
+             * @description Supplier material id
+             * @example 1
              */
-            search?: string;
+            id: number;
+            /**
+             * @description Supplier material option name
+             * @example Fresh Market - Rice
+             */
+            name: string;
+        };
+        SupplierMaterialDetailSchema: {
+            /**
+             * @description Supplier material id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Supplier id
+             * @example 1
+             */
+            supplier_id: number;
+            /**
+             * @description Supplier name
+             * @example Fresh Market
+             */
+            supplier_name: string;
+            /**
+             * @description Material id
+             * @example 1
+             */
+            material_id: number;
+            /**
+             * @description Material name
+             * @example Rice
+             */
+            material_name: string;
+            /**
+             * @description Supplier unit name
+             * @example bag
+             */
+            unit_name: string;
+            /**
+             * @description Grams per supplier unit
+             * @example 25000
+             */
+            g_per_unit: string;
+            /**
+             * @description Supplier price
+             * @example 50.00
+             */
+            price_per_unit: string | null;
+            /**
+             * @description Notes
+             * @example
+             */
+            notes: string;
         };
         SupplierMaterialUpsertSchema: {
             /**
@@ -821,34 +1125,34 @@ export interface components {
              * @description Supplier id
              * @example 1
              */
-            supplier: number;
+            supplier_id: number;
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material: number;
+            material_id: number;
             /**
              * @description Supplier unit name
              * @example bag
              */
             unit_name?: string;
             /**
-             * @description Kilograms per supplier unit
-             * @example 25.000
+             * @description Grams per supplier unit
+             * @example 25000
              */
-            kg_per_unit?: string;
+            g_per_unit?: string;
             /**
              * @description Supplier price
              * @example 50.00
              */
-            price?: string | null;
+            price_per_unit?: string | null;
             /**
              * @description Notes
              * @example
              */
             notes?: string;
         };
-        CensusResponseSchema: {
+        CensusPreviewSchema: {
             /**
              * @description Census row id
              * @example 1
@@ -858,7 +1162,7 @@ export interface components {
              * @description Company id
              * @example 1
              */
-            company: number;
+            company_id: number;
             /**
              * @description Census date
              * @example 2026-04-28
@@ -868,7 +1172,7 @@ export interface components {
              * @description Region id
              * @example 1
              */
-            region: number;
+            region_id: number;
             /**
              * @description Region name
              * @example North Wing
@@ -878,7 +1182,7 @@ export interface components {
              * @description Diet id
              * @example 1
              */
-            diet_category: number;
+            diet_category_id: number;
             /**
              * @description Diet name
              * @example Regular
@@ -907,9 +1211,9 @@ export interface components {
              */
             total: number;
             /** @description Census records matching the query */
-            list: components["schemas"]["CensusResponseSchema"][];
+            list: components["schemas"]["CensusPreviewSchema"][];
         };
-        CensusListSchema: {
+        CensusQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -921,18 +1225,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1013,18 +1317,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1041,19 +1345,7 @@ export interface components {
             /** @description Census rows */
             items: components["schemas"]["CensusItemSchema"][];
         };
-        ProcurementAvailableSupplierResponseSchema: {
-            /**
-             * @description Supplier-material id
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description Supplier name
-             * @example Fresh Market
-             */
-            name: string;
-        };
-        ProcurementPreviewResponseSchema: {
+        ProcurementPreviewSchema: {
             /**
              * @description Procurement item id
              * @example 1
@@ -1080,30 +1372,30 @@ export interface components {
              */
             material_category: string;
             /**
-             * @description Demand in kg
-             * @example 20
+             * @description Demand in grams
+             * @example 20000
              */
-            demand_kg: number;
+            demand_g: number;
             /**
              * @description Demand in supplier units
              * @example 1
              */
             demand_special_unit: number | null;
             /**
-             * @description Stock in kg
-             * @example 5
+             * @description Stock in grams
+             * @example 5000
              */
-            stock_kg: number;
+            stock_g: number;
             /**
              * @description Stock in supplier units
              * @example 0.2
              */
             stock_special_unit: number | null;
             /**
-             * @description Required purchase quantity in kg
-             * @example 15
+             * @description Required purchase quantity in grams
+             * @example 15000
              */
-            required_kg: number;
+            required_g: number;
             /**
              * @description Required purchase quantity in supplier units
              * @example 0.6
@@ -1130,7 +1422,7 @@ export interface components {
              */
             supplier_unit: string | null;
             /** @description Available suppliers */
-            available_suppliers: components["schemas"]["ProcurementAvailableSupplierResponseSchema"][];
+            available_suppliers: components["schemas"]["SupplierOptionSchema"][];
             /**
              * @description Procurement status
              * @example pending
@@ -1159,9 +1451,9 @@ export interface components {
              */
             total: number;
             /** @description Procurement rows matching the query */
-            list: components["schemas"]["ProcurementPreviewResponseSchema"][];
+            list: components["schemas"]["ProcurementPreviewSchema"][];
         };
-        ProcurementListSchema: {
+        ProcurementQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -1173,18 +1465,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1214,7 +1506,7 @@ export interface components {
              */
             status?: string;
         };
-        ProcurementRecordResponseSchema: {
+        ProcurementRecordSchema: {
             /**
              * @description Procurement record id
              * @example 1
@@ -1243,18 +1535,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1293,18 +1585,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1352,18 +1644,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1380,40 +1672,40 @@ export interface components {
             /** @description Supplier assignments */
             assignments: components["schemas"]["ProcurementSupplierAssignmentSchema"][];
         };
-        ProcurementItemResponseSchema: {
+        ProcurementItemSchema: {
             /**
              * @description Procurement item id
              * @example 1
              */
             id: number;
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material: number;
+            material_id: number;
             /**
-             * @description Raw material name
+             * @description Material name
              * @example Rice
              */
-            raw_material_name: string;
+            material_name: string;
             /**
              * @description Material category
              * @example Grains
              */
             category: string;
             /**
-             * @description Demand quantity in kg
-             * @example 20.000
+             * @description Demand quantity in grams
+             * @example 20000
              */
             demand_quantity: string;
             /**
-             * @description Stock quantity in kg
-             * @example 5.000
+             * @description Stock quantity in grams
+             * @example 5000
              */
             stock_quantity: string;
             /**
-             * @description Purchase quantity in kg
-             * @example 15.000
+             * @description Purchase quantity in grams
+             * @example 15000
              */
             purchase_quantity: string;
             /**
@@ -1435,7 +1727,7 @@ export interface components {
              * @description Supplier id
              * @example 1
              */
-            supplier: number | null;
+            supplier_id: number | null;
             /**
              * @description Supplier name
              * @example Fresh Market
@@ -1447,10 +1739,10 @@ export interface components {
              */
             supplier_unit_name: string | null;
             /**
-             * @description Kilograms per supplier unit
-             * @example 25.000
+             * @description Grams per supplier unit
+             * @example 25000
              */
-            supplier_kg_per_unit: string | null;
+            supplier_g_per_unit: string | null;
             /**
              * @description Supplier price
              * @example 50.00
@@ -1462,7 +1754,7 @@ export interface components {
              */
             notes: string;
         };
-        ProcurementSheetItemResponseSchema: {
+        ProcurementSheetItemSchema: {
             /**
              * @description Material id
              * @example 1
@@ -1479,30 +1771,30 @@ export interface components {
              */
             category: string;
             /**
-             * @description Demand in kg
-             * @example 20
+             * @description Demand in grams
+             * @example 20000
              */
-            demand_kg: number;
+            demand_g: number;
             /**
              * @description Demand in supplier units
              * @example 1
              */
             demand_unit_qty: number | null;
             /**
-             * @description Stock in kg
-             * @example 5
+             * @description Stock in grams
+             * @example 5000
              */
-            stock_kg: number;
+            stock_g: number;
             /**
              * @description Stock in supplier units
              * @example 0.2
              */
             stock_unit_qty: number | null;
             /**
-             * @description Purchase quantity in kg
-             * @example 15
+             * @description Purchase quantity in grams
+             * @example 15000
              */
-            purchase_kg: number;
+            purchase_g: number;
             /**
              * @description Purchase quantity in supplier units
              * @example 0.6
@@ -1519,17 +1811,17 @@ export interface components {
              */
             supplier_unit_name: string | null;
             /**
-             * @description Kilograms per supplier unit
-             * @example 25
+             * @description Grams per supplier unit
+             * @example 25000
              */
-            supplier_kg_per_unit: number | null;
+            supplier_g_per_unit: number | null;
             /**
              * @description Supplier price
              * @example 50
              */
             supplier_price: number | null;
         };
-        ProcurementSheetResponseSchema: {
+        ProcurementSheetSchema: {
             /**
              * @description Procurement record id
              * @example 1
@@ -1556,9 +1848,9 @@ export interface components {
              */
             status: string;
             /** @description Sheet items */
-            items: components["schemas"]["ProcurementSheetItemResponseSchema"][];
+            items: components["schemas"]["ProcurementSheetItemSchema"][];
         };
-        ReceivingPreviewResponseSchema: {
+        ReceivingPreviewSchema: {
             /**
              * @description Receiving item id
              * @example 1
@@ -1595,20 +1887,20 @@ export interface components {
              */
             supplier_name: string | null;
             /**
-             * @description Required quantity in kg
-             * @example 15
+             * @description Required quantity in grams
+             * @example 15000
              */
-            required_kg: number;
+            required_g: number;
             /**
              * @description Required quantity in supplier units
              * @example 0.6
              */
             required_special_unit: number | null;
             /**
-             * @description Actual received quantity in kg
-             * @example 15
+             * @description Actual received quantity in grams
+             * @example 15000
              */
-            actual_received_kg: number;
+            actual_received_g: number;
             /**
              * @description Actual received quantity in supplier units
              * @example 0.6
@@ -1642,9 +1934,9 @@ export interface components {
              */
             total: number;
             /** @description Receiving rows matching the query */
-            list: components["schemas"]["ReceivingPreviewResponseSchema"][];
+            list: components["schemas"]["ReceivingPreviewSchema"][];
         };
-        ReceivingListSchema: {
+        ReceivingQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -1656,18 +1948,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1681,35 +1973,42 @@ export interface components {
              * @example 50
              */
             page_size?: number;
-            /**
-             * @description Material or supplier search
-             * @example rice
-             */
-            search?: string;
         };
-        ReceivingTemplateItemResponseSchema: {
+        ReceivingOptionSchema: {
             /**
-             * @description Raw material id
+             * @description Receiving record id
              * @example 1
              */
-            raw_material_id: number;
+            id: number;
             /**
-             * @description Raw material name
+             * @description Receiving date
+             * @example 2026-04-28
+             */
+            name: string;
+        };
+        ReceivingTemplateItemSchema: {
+            /**
+             * @description Material id
+             * @example 1
+             */
+            material_id: number;
+            /**
+             * @description Material name
              * @example Rice
              */
-            raw_material_name: string;
+            material_name: string;
             /**
-             * @description Expected quantity in kg
-             * @example 15
+             * @description Expected quantity in grams
+             * @example 15000
              */
             expected_quantity: number;
             /**
-             * @description Actual quantity in kg
-             * @example 15
+             * @description Actual quantity in grams
+             * @example 15000
              */
             actual_quantity: number;
         };
-        ReceivingTemplateResponseSchema: {
+        ReceivingTemplateSchema: {
             /**
              * @description Procurement record id
              * @example 1
@@ -1726,17 +2025,17 @@ export interface components {
              */
             status: string;
             /** @description Receiving template items */
-            items: components["schemas"]["ReceivingTemplateItemResponseSchema"][];
+            items: components["schemas"]["ReceivingTemplateItemSchema"][];
         };
         ReceivingCreateItemSchema: {
             /**
-             * @description Raw material id
+             * @description Material id
              * @example 1
              */
-            raw_material_id: number;
+            material_id: number;
             /**
-             * @description Actual received quantity in kg
-             * @example 10
+             * @description Actual received quantity in grams
+             * @example 10000
              */
             actual_quantity: number;
             /**
@@ -1757,18 +2056,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1802,10 +2101,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description Actual received kg
-             * @example 10
+             * @description Actual received grams
+             * @example 10000
              */
-            actual_received_kg: number | null;
+            actual_received_g: number | null;
             /**
              * @description Actual received supplier units
              * @example null
@@ -1824,18 +2123,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1852,7 +2151,7 @@ export interface components {
             /** @description Receiving item updates */
             items: components["schemas"]["ReceivingUpdateItemSchema"][];
         };
-        ProcessingItemResponseSchema: {
+        ProcessingItemSchema: {
             /**
              * @description Material id
              * @example 1
@@ -1884,7 +2183,7 @@ export interface components {
              */
             processing_time: string;
         };
-        ProcessingListSchema: {
+        ProcessingQuerySchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -1896,18 +2195,18 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Column to sort by
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
              * @example name
              */
             sort_by?: string;
             /**
-             * @description Legacy ordering value
-             * @example -date
-             */
-            ordering?: string;
-            /**
              * @description Sort order
-             * @example asc
+             * @example desc
              * @enum {string}
              */
             sort_order?: "asc" | "desc";
@@ -1927,7 +2226,7 @@ export interface components {
              */
             material_id?: number;
         };
-        ProcessingOrderResponseSchema: {
+        ProcessingOrderSchema: {
             /**
              * @description Processing order id
              * @example 1
@@ -1958,71 +2257,81 @@ export interface components {
 export type ApiErrorDto = components['schemas']['ApiErrorDto'];
 export type ApiResponseDto = components['schemas']['ApiResponseDto'];
 export type ApiListResultDto = components['schemas']['ApiListResultDto'];
-export type StapleResponseSchema = components['schemas']['StapleResponseSchema'];
+export type StaplePreviewSchema = components['schemas']['StaplePreviewSchema'];
 export type StapleListResponseSchema = components['schemas']['StapleListResponseSchema'];
-export type StapleListSchema = components['schemas']['StapleListSchema'];
-export type OptionResponseSchema = components['schemas']['OptionResponseSchema'];
+export type StapleQuerySchema = components['schemas']['StapleQuerySchema'];
+export type StapleOptionSchema = components['schemas']['StapleOptionSchema'];
+export type StapleDetailSchema = components['schemas']['StapleDetailSchema'];
 export type StapleUpsertSchema = components['schemas']['StapleUpsertSchema'];
 export type IdResponseSchema = components['schemas']['IdResponseSchema'];
-export type MaterialSpecResponseSchema = components['schemas']['MaterialSpecResponseSchema'];
-export type MaterialResponseSchema = components['schemas']['MaterialResponseSchema'];
+export type MaterialProcessingMethodSchema = components['schemas']['MaterialProcessingMethodSchema'];
+export type MaterialPreviewSchema = components['schemas']['MaterialPreviewSchema'];
 export type MaterialListResponseSchema = components['schemas']['MaterialListResponseSchema'];
-export type MaterialListSchema = components['schemas']['MaterialListSchema'];
-export type MaterialSpecSchema = components['schemas']['MaterialSpecSchema'];
+export type MaterialQuerySchema = components['schemas']['MaterialQuerySchema'];
+export type MaterialOptionSchema = components['schemas']['MaterialOptionSchema'];
+export type MaterialDetailSchema = components['schemas']['MaterialDetailSchema'];
 export type MaterialUpsertSchema = components['schemas']['MaterialUpsertSchema'];
-export type DietPreviewResponseSchema = components['schemas']['DietPreviewResponseSchema'];
-export type DietListSchema = components['schemas']['DietListSchema'];
-export type DietMealSlotDishDetailResponseSchema = components['schemas']['DietMealSlotDishDetailResponseSchema'];
-export type DietMealSlotResponseSchema = components['schemas']['DietMealSlotResponseSchema'];
-export type DietDetailResponseSchema = components['schemas']['DietDetailResponseSchema'];
+export type MaterialCategoryOptionSchema = components['schemas']['MaterialCategoryOptionSchema'];
+export type DietPreviewSchema = components['schemas']['DietPreviewSchema'];
+export type DietQuerySchema = components['schemas']['DietQuerySchema'];
+export type DietOptionSchema = components['schemas']['DietOptionSchema'];
+export type DietQuantitySchema = components['schemas']['DietQuantitySchema'];
+export type DietMealSlotSchema = components['schemas']['DietMealSlotSchema'];
+export type DietDetailSchema = components['schemas']['DietDetailSchema'];
 export type DietCreateSchema = components['schemas']['DietCreateSchema'];
 export type DietUpdateSchema = components['schemas']['DietUpdateSchema'];
 export type DietMealSlotDishSchema = components['schemas']['DietMealSlotDishSchema'];
 export type DietMealSlotUpsertSchema = components['schemas']['DietMealSlotUpsertSchema'];
-export type DishIngredientResponseSchema = components['schemas']['DishIngredientResponseSchema'];
-export type DishResponseSchema = components['schemas']['DishResponseSchema'];
+export type DishIngredientSchema = components['schemas']['DishIngredientSchema'];
+export type DishPreviewSchema = components['schemas']['DishPreviewSchema'];
 export type DishListResponseSchema = components['schemas']['DishListResponseSchema'];
-export type DishListSchema = components['schemas']['DishListSchema'];
-export type DishIngredientWriteSchema = components['schemas']['DishIngredientWriteSchema'];
+export type DishQuerySchema = components['schemas']['DishQuerySchema'];
+export type DishOptionSchema = components['schemas']['DishOptionSchema'];
+export type DishDetailSchema = components['schemas']['DishDetailSchema'];
+export type DishIngredientUpsertSchema = components['schemas']['DishIngredientUpsertSchema'];
 export type DishUpsertSchema = components['schemas']['DishUpsertSchema'];
-export type SupplierMaterialResponseSchema = components['schemas']['SupplierMaterialResponseSchema'];
-export type SupplierResponseSchema = components['schemas']['SupplierResponseSchema'];
+export type SupplierMaterialPreviewSchema = components['schemas']['SupplierMaterialPreviewSchema'];
+export type SupplierPreviewSchema = components['schemas']['SupplierPreviewSchema'];
 export type SupplierListResponseSchema = components['schemas']['SupplierListResponseSchema'];
-export type SupplierListSchema = components['schemas']['SupplierListSchema'];
+export type SupplierQuerySchema = components['schemas']['SupplierQuerySchema'];
+export type SupplierOptionSchema = components['schemas']['SupplierOptionSchema'];
+export type SupplierDetailSchema = components['schemas']['SupplierDetailSchema'];
 export type SupplierUpsertSchema = components['schemas']['SupplierUpsertSchema'];
 export type SupplierMaterialListResponseSchema = components['schemas']['SupplierMaterialListResponseSchema'];
-export type SupplierMaterialListSchema = components['schemas']['SupplierMaterialListSchema'];
+export type SupplierMaterialQuerySchema = components['schemas']['SupplierMaterialQuerySchema'];
+export type SupplierMaterialOptionSchema = components['schemas']['SupplierMaterialOptionSchema'];
+export type SupplierMaterialDetailSchema = components['schemas']['SupplierMaterialDetailSchema'];
 export type SupplierMaterialUpsertSchema = components['schemas']['SupplierMaterialUpsertSchema'];
-export type CensusResponseSchema = components['schemas']['CensusResponseSchema'];
+export type CensusPreviewSchema = components['schemas']['CensusPreviewSchema'];
 export type CensusListResponseSchema = components['schemas']['CensusListResponseSchema'];
-export type CensusListSchema = components['schemas']['CensusListSchema'];
+export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
 export type DatedMutationCountResponseSchema = components['schemas']['DatedMutationCountResponseSchema'];
 export type CensusItemSchema = components['schemas']['CensusItemSchema'];
 export type CensusUpsertSchema = components['schemas']['CensusUpsertSchema'];
-export type ProcurementAvailableSupplierResponseSchema = components['schemas']['ProcurementAvailableSupplierResponseSchema'];
-export type ProcurementPreviewResponseSchema = components['schemas']['ProcurementPreviewResponseSchema'];
+export type ProcurementPreviewSchema = components['schemas']['ProcurementPreviewSchema'];
 export type ProcurementListResponseSchema = components['schemas']['ProcurementListResponseSchema'];
-export type ProcurementListSchema = components['schemas']['ProcurementListSchema'];
-export type ProcurementRecordResponseSchema = components['schemas']['ProcurementRecordResponseSchema'];
+export type ProcurementQuerySchema = components['schemas']['ProcurementQuerySchema'];
+export type ProcurementRecordSchema = components['schemas']['ProcurementRecordSchema'];
 export type DateCompanySchema = components['schemas']['DateCompanySchema'];
 export type ProcurementUpdateItemSchema = components['schemas']['ProcurementUpdateItemSchema'];
 export type ProcurementUpdateSchema = components['schemas']['ProcurementUpdateSchema'];
 export type UpdatedCountResponseSchema = components['schemas']['UpdatedCountResponseSchema'];
 export type ProcurementSupplierAssignmentSchema = components['schemas']['ProcurementSupplierAssignmentSchema'];
 export type ProcurementAssignSuppliersSchema = components['schemas']['ProcurementAssignSuppliersSchema'];
-export type ProcurementItemResponseSchema = components['schemas']['ProcurementItemResponseSchema'];
-export type ProcurementSheetItemResponseSchema = components['schemas']['ProcurementSheetItemResponseSchema'];
-export type ProcurementSheetResponseSchema = components['schemas']['ProcurementSheetResponseSchema'];
-export type ReceivingPreviewResponseSchema = components['schemas']['ReceivingPreviewResponseSchema'];
+export type ProcurementItemSchema = components['schemas']['ProcurementItemSchema'];
+export type ProcurementSheetItemSchema = components['schemas']['ProcurementSheetItemSchema'];
+export type ProcurementSheetSchema = components['schemas']['ProcurementSheetSchema'];
+export type ReceivingPreviewSchema = components['schemas']['ReceivingPreviewSchema'];
 export type ReceivingListResponseSchema = components['schemas']['ReceivingListResponseSchema'];
-export type ReceivingListSchema = components['schemas']['ReceivingListSchema'];
-export type ReceivingTemplateItemResponseSchema = components['schemas']['ReceivingTemplateItemResponseSchema'];
-export type ReceivingTemplateResponseSchema = components['schemas']['ReceivingTemplateResponseSchema'];
+export type ReceivingQuerySchema = components['schemas']['ReceivingQuerySchema'];
+export type ReceivingOptionSchema = components['schemas']['ReceivingOptionSchema'];
+export type ReceivingTemplateItemSchema = components['schemas']['ReceivingTemplateItemSchema'];
+export type ReceivingTemplateSchema = components['schemas']['ReceivingTemplateSchema'];
 export type ReceivingCreateItemSchema = components['schemas']['ReceivingCreateItemSchema'];
 export type ReceivingUpsertSchema = components['schemas']['ReceivingUpsertSchema'];
 export type ReceivingUpdateItemSchema = components['schemas']['ReceivingUpdateItemSchema'];
 export type ReceivingUpdateSchema = components['schemas']['ReceivingUpdateSchema'];
-export type ProcessingItemResponseSchema = components['schemas']['ProcessingItemResponseSchema'];
-export type ProcessingListSchema = components['schemas']['ProcessingListSchema'];
-export type ProcessingOrderResponseSchema = components['schemas']['ProcessingOrderResponseSchema'];
+export type ProcessingItemSchema = components['schemas']['ProcessingItemSchema'];
+export type ProcessingQuerySchema = components['schemas']['ProcessingQuerySchema'];
+export type ProcessingOrderSchema = components['schemas']['ProcessingOrderSchema'];
 export type HealthResponseDto = components['schemas']['HealthResponseDto'];
