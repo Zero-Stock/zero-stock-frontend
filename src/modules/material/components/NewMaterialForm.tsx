@@ -1,9 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Table } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Table, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
 import useMaterialCategories from '../hooks/useMaterialCategories';
+import { useMaterialList } from '../hooks/useMaterialList';
 import {
   isValidYieldRatePercent,
   percentYieldRateToDecimal,
@@ -17,24 +18,69 @@ interface RawMaterialFields {
   processing?: string[];
 }
 
+function normalizeMaterialName(name: string) {
+  return name.trim().toLocaleLowerCase();
+}
+
 export default function NewMaterialForm() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   const { trigger: createMaterial } = useMaterialCreate();
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
+  const { materials: existingMaterials, isLoading: isLoadingMaterials } =
+    useMaterialList({ page_size: 10000 });
 
   const [form] = Form.useForm();
 
   const onFinish = async (values: { items: RawMaterialFields[] }) => {
+    const existingNames = new Set(
+      existingMaterials.map((material) => normalizeMaterialName(material.name)),
+    );
+    const submittedNameCounts = values.items.reduce<Record<string, number>>(
+      (counts, item) => {
+        const name = normalizeMaterialName(item.name);
+        counts[name] = (counts[name] ?? 0) + 1;
+        return counts;
+      },
+      {},
+    );
+    const duplicateFieldErrors = values.items.flatMap((item, index) => {
+      const name = normalizeMaterialName(item.name);
+      const isDuplicate =
+        existingNames.has(name) || submittedNameCounts[name] > 1;
+
+      if (!isDuplicate) return [];
+
+      return [
+        {
+          name: ['items', index, 'name'],
+          errors: [t('materialDuplicateName')],
+        },
+      ];
+    });
+
+    if (duplicateFieldErrors.length > 0) {
+      form.setFields(duplicateFieldErrors);
+      return;
+    }
+
     const data = values.items.map((item) => ({
       name: item.name,
       category_id: item.category_id,
       yield_rate: percentYieldRateToDecimal(item.yield_rate),
       processing: item.processing ?? [],
     }));
-    await createMaterial(data);
-    navigate('/material');
+
+    try {
+      await createMaterial(data);
+      message.success(t('materialCreateSuccess'));
+      navigate('/material');
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : t('materialCreateFailed'),
+      );
+    }
   };
 
   return (
@@ -178,7 +224,11 @@ export default function NewMaterialForm() {
                 <Button onClick={() => navigate('/material')}>
                   {t('cancel')}
                 </Button>
-                <Button type="primary" htmlType="submit">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoadingMaterials}
+                >
                   {t('materialSubmit')}
                 </Button>
               </div>
