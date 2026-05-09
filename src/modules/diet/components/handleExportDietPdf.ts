@@ -1,34 +1,36 @@
 import { message } from 'antd';
 import type { TranslationKey } from '@/shared/translation/translations';
+import type { DayPlan, DishItem } from '../mockdata';
+import type { DishPreviewSchema } from '@/shared/types/schema';
 
 // 定义传入参数的接口，确保与组件内的数据结构一致
-export interface ExportMealPdfParams {
+export interface ExportDietPdfParams {
   t: (key: TranslationKey) => string;
   categoryName: string;
-  dayPlans: any[]; // 对应 DayPlan[]
-  dishDetails: Map<number, any>; // 对应组件里的 dishDetails
+  dayPlans: DayPlan[];
+  dishDetails: Map<number, DishPreviewSchema>;
 }
 
-export function handleExportMealPdf({
+export function handleExportDietPdf({
   t,
   categoryName,
   dayPlans,
   dishDetails,
-}: ExportMealPdfParams) {
+}: ExportDietPdfParams) {
   if (!dayPlans || dayPlans.length === 0) {
-    message.warning(t('procurementNoData' as any));
+    message.warning(t('procurementNoData'));
     return;
   }
 
   // 1. 获取或创建隐藏 iframe
   let iframe = document.getElementById(
-    'print-meal-iframe',
+    'print-diet-iframe',
   ) as HTMLIFrameElement;
   if (iframe) {
     document.body.removeChild(iframe);
   }
   iframe = document.createElement('iframe');
-  iframe.id = 'print-meal-iframe';
+  iframe.id = 'print-diet-iframe';
   iframe.setAttribute(
     'style',
     'position:absolute;width:0;height:0;top:-100px;left:-100px;border:0;',
@@ -46,10 +48,10 @@ export function handleExportMealPdf({
     }
   };
 
-  // 2. 构建渲染菜品详情的内部函数（模拟组件内的 renderMealSection）
-  const getMealHtml = (sectionTitle: string, dishes: any[]) => {
+  // 2. 构建渲染菜品详情的内部函数（模拟组件内的 renderDietSection）
+  const getDietHtml = (sectionTitle: string, dishes: DishItem[]) => {
     if (!dishes || dishes.length === 0) {
-      return `<p style="color: #999; font-style: italic; font-size: 11px;">${t('none' as any)}</p>`;
+      return `<p style="color: #999; font-style: italic; font-size: 11px;">${t('none')}</p>`;
     }
 
     const itemsHtml = dishes
@@ -59,7 +61,7 @@ export function handleExportMealPdf({
 
         if (detail && detail.ingredients && detail.ingredients.length > 0) {
           const ingText = detail.ingredients
-            .map((ing: any) => {
+            .map((ing) => {
               const grams = Math.round(parseFloat(ing.net_quantity));
               return `${ing.material_name}${ing.processing_method ? `[${ing.processing_method}]` : ''} ${grams}g`;
             })
@@ -94,9 +96,9 @@ export function handleExportMealPdf({
       <div style="font-size: 14px; font-weight: bold; background: #f5f5f5; padding: 4px 8px; margin: -10px -10px 10px -10px; border-bottom: 1px solid #000;">
         ${day.dayOfWeek}
       </div>
-      ${getMealHtml(t('mealBreakfast' as any), day.breakfast)}
-      ${getMealHtml(t('mealLunch' as any), day.lunch)}
-      ${getMealHtml(t('mealDinner' as any), day.dinner)}
+      ${getDietHtml(t('dietBreakfast'), day.breakfast)}
+      ${getDietHtml(t('dietLunch'), day.lunch)}
+      ${getDietHtml(t('dietDinner'), day.dinner)}
     </div>
   `,
     )
@@ -108,7 +110,7 @@ export function handleExportMealPdf({
     <html>
       <head>
         <meta charset="utf-8">
-        <title>Meal Print</title>
+        <title>Diet Print</title>
         <style>
           @page { size: A4 portrait; margin: 10mm; }
           body { 
@@ -131,8 +133,8 @@ export function handleExportMealPdf({
       </head>
       <body>
         <div class="header">
-          <h1>${t('mealPrintTitle' as any)}</h1>
-          <p>${categoryName} ${t('mealConfigSheet' as any)}</p>
+          <h1>${t('dietPrintTitle')}</h1>
+          <p>${categoryName} ${t('dietConfigSheet')}</p>
         </div>
         <div class="grid">
           ${dayCardsHtml}
@@ -160,4 +162,4 @@ export function handleExportMealPdf({
   document.body.appendChild(iframe);
 }
 
-export const mealPrintStyles = ``; // 既然用了 iframe，组件里的 style 标签可以清空了
+export const dietPrintStyles = ``; // 既然用了 iframe，组件里的 style 标签可以清空了

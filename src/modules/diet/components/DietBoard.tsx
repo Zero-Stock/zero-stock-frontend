@@ -16,23 +16,24 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { type DayPlan, type DietCategory } from '../mockdata';
 import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
-import MealDayCards from './MealDayCards';
-import MealEditModal from './MealEditModal';
-import { handleExportMealPdf, mealPrintStyles } from './handleExportMealPdf';
+import DietDayCards from './DietDayCards';
+import DietEditModal from './DietEditModal';
+import { handleExportDietPdf, dietPrintStyles } from './handleExportDietPdf';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import { useMealDietList } from '../hooks/useMealDietList';
-import { useMealDishDetails } from '../hooks/useMealDishDetails';
-import { useMealMenuList } from '../hooks/useMealMenuList';
-import { useMealCreateDiet } from '../hooks/useMealCreateDiet';
-import { useMealUpdateDiet } from '../hooks/useMealUpdateDiet';
-import { useMealDeleteDiet } from '../hooks/useMealDeleteDiet';
-import { useMealSaveWeeklyMenu } from '../hooks/useMealSaveWeeklyMenu';
+import { useDietCategoryList } from '../hooks/useDietCategoryList';
+import { useDietDishDetails } from '../hooks/useDietDishDetails';
+import { useDietMenuList } from '../hooks/useDietMenuList';
+import { useDietCategoryCreate } from '../hooks/useDietCategoryCreate';
+import { useDietCategoryUpdate } from '../hooks/useDietCategoryUpdate';
+import { useDietCategoryDelete } from '../hooks/useDietCategoryDelete';
+import { useDietSaveWeeklyMenu } from '../hooks/useDietSaveWeeklyMenu';
+import type { TranslationKey } from '@/shared/translation/translations';
 
 const { Title, Text } = Typography;
 
 const COMPANY_ID = 1; // TODO: get from auth context
 
-export default function MealBoard() {
+export default function DietBoard() {
   const { t } = useTranslation();
   const [newCategoryName, setNewCategoryName] = useState('');
   const inputRef = useRef<InputRef>(null);
@@ -46,48 +47,43 @@ export default function MealBoard() {
     isLoading: loadingDiets,
     isError: dietError,
     mutate: mutateDiets,
-  } = useMealDietList();
+  } = useDietCategoryList();
+  const activeCategoryId = selectedCategoryId || dietCategories[0]?.id || 0;
   const {
     menuRows,
     isLoading: loadingMenus,
     isError: menuError,
     mutate: mutateMenus,
-  } = useMealMenuList({
+  } = useDietMenuList({
     companyId: COMPANY_ID,
-    dietCategoryId: selectedCategoryId || undefined,
+    dietCategoryId: activeCategoryId || undefined,
   });
-  const { trigger: createDiet } = useMealCreateDiet();
-  const { trigger: updateDiet } = useMealUpdateDiet();
-  const { trigger: deleteDiet } = useMealDeleteDiet();
-  const { trigger: saveWeeklyMenu } = useMealSaveWeeklyMenu();
-
-  useEffect(() => {
-    if (dietCategories.length > 0 && selectedCategoryId === 0) {
-      setSelectedCategoryId(dietCategories[0].id);
-    }
-  }, [dietCategories, selectedCategoryId]);
+  const { trigger: createDiet } = useDietCategoryCreate();
+  const { trigger: updateDiet } = useDietCategoryUpdate();
+  const { trigger: deleteDiet } = useDietCategoryDelete();
+  const { trigger: saveWeeklyMenu } = useDietSaveWeeklyMenu();
 
   useEffect(() => {
     if (dietError) {
       console.error('Failed to fetch diets:', dietError);
-      message.error(t('mealLoadDietsFailed'));
+      message.error(t('dietLoadDietsFailed'));
     }
   }, [dietError, t]);
 
   useEffect(() => {
     if (menuError) {
       console.error('Failed to fetch weekly menus:', menuError);
-      message.error(t('mealLoadMenuFailed'));
+      message.error(t('dietLoadMenuFailed'));
     }
   }, [menuError, t]);
 
   // Convert flat rows → grouped day plans for the selected diet category
   const dayPlans = useMemo(() => {
     const filtered = menuRows.filter(
-      (r) => r.diet_category === selectedCategoryId,
+      (r) => r.diet_category === activeCategoryId,
     );
-    return rowsToDayPlans(filtered, (d) => t(`day${d}` as any));
-  }, [menuRows, selectedCategoryId, t]);
+    return rowsToDayPlans(filtered, (d) => t(`day${d}` as TranslationKey));
+  }, [menuRows, activeCategoryId, t]);
 
   const dishIds = useMemo(
     () =>
@@ -99,13 +95,9 @@ export default function MealBoard() {
     [dayPlans],
   );
   const { dishDetails, isLoading: loadingDishDetails } =
-    useMealDishDetails(dishIds);
+    useDietDishDetails(dishIds);
 
-  const addDietCategory = async (
-    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const createDietCategory = async () => {
     if (
       newCategoryName &&
       !dietCategories.some((c) => c.name === newCategoryName)
@@ -117,26 +109,34 @@ export default function MealBoard() {
         setSelectedCategoryId(newCategory.id);
         setNewCategoryName('');
         setSelectOpen(false);
-        message.success(t('mealDietCreated'));
+        message.success(t('dietCategoryCreated'));
       } catch (err) {
         console.error('Failed to create diet:', err);
-        message.error(t('mealDietCreateFailed'));
+        message.error(t('dietCategoryCreateFailed'));
       }
     }
+  };
+
+  const addDietCategory = async (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await createDietCategory();
   };
 
   // ─── Rename diet category ───
   const handleRenameDiet = (diet: DietCategory) => {
     let newName = diet.name;
     Modal.confirm({
-      title: t('mealRenameTitle'),
+      title: t('dietRenameTitle'),
       content: (
         <Input
           defaultValue={diet.name}
           onChange={(e) => {
             newName = e.target.value;
           }}
-          placeholder={t('mealRenameInput')}
+          placeholder={t('dietRenameInput')}
         />
       ),
       okText: t('save'),
@@ -146,10 +146,10 @@ export default function MealBoard() {
         try {
           await updateDiet(diet.id, newName);
           await mutateDiets();
-          message.success(t('mealDietRenamed'));
+          message.success(t('dietCategoryRenamed'));
         } catch (err) {
           console.error('Failed to rename diet:', err);
-          message.error(t('mealDietRenameFailed'));
+          message.error(t('dietCategoryRenameFailed'));
         }
       },
     });
@@ -173,19 +173,19 @@ export default function MealBoard() {
       const latest = response?.result ?? [];
       const deleted = !latest.some((c) => c.id === dietId);
 
-      if (selectedCategoryId === dietId) {
+      if (activeCategoryId === dietId) {
         setSelectedCategoryId(latest.length > 0 ? latest[0].id : 0);
       }
 
       if (deleted) {
-        message.success(t('mealDietDeleted'));
+        message.success(t('dietCategoryDeleted'));
         return;
       }
     } catch (syncErr) {
       console.error('Failed to refresh diets after delete:', syncErr);
     }
 
-    message.error(t('mealDietDeleteFailed'));
+    message.error(t('dietCategoryDeleteFailed'));
   };
 
   const handleEdit = (day: DayPlan) => {
@@ -198,17 +198,17 @@ export default function MealBoard() {
     const batchItems = dayPlanToBatchItems(
       updatedDay,
       COMPANY_ID,
-      selectedCategoryId,
+      activeCategoryId,
     );
 
     try {
       await saveWeeklyMenu(batchItems);
-      message.success(t('mealSaved'));
+      message.success(t('dietSaved'));
       setIsModalVisible(false);
       await mutateMenus();
     } catch (err) {
       console.error('Failed to save weekly menu:', err);
-      message.error(t('mealSaveFailed'));
+      message.error(t('dietSaveFailed'));
     }
   };
 
@@ -216,11 +216,11 @@ export default function MealBoard() {
     <div>
       <div className="no-print mb-6 flex items-center justify-between">
         <Title level={3} className="m-0!">
-          {t('mealBoardTitle')}
+          {t('dietBoardTitle')}
         </Title>
         <Space>
           <Select
-            value={dietCategories.length ? selectedCategoryId : undefined}
+            value={dietCategories.length ? activeCategoryId : undefined}
             className="w-80"
             open={selectOpen}
             onOpenChange={setSelectOpen}
@@ -257,8 +257,8 @@ export default function MealBoard() {
                       onClick={(e) => {
                         e.stopPropagation();
                         Modal.confirm({
-                          title: t('mealDeleteConfirm'),
-                          content: t('mealDeleteConfirmContent', {
+                          title: t('dietDeleteConfirm'),
+                          content: t('dietDeleteConfirmContent', {
                             name: diet.name,
                           }),
                           okText: t('delete'),
@@ -278,14 +278,14 @@ export default function MealBoard() {
                 <Divider className="my-2!" />
                 <div className="flex items-center justify-between gap-2 p-2">
                   <Input
-                    placeholder={t('mealNewDietPlaceholder')}
+                    placeholder={t('dietNewDietPlaceholder')}
                     ref={inputRef}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                   <Button icon={<PlusOutlined />} onClick={addDietCategory}>
-                    {t('mealAddDiet')}
+                    {t('dietAddDiet')}
                   </Button>
                 </div>
               </>
@@ -293,11 +293,11 @@ export default function MealBoard() {
           />
           <Button
             onClick={() =>
-              handleExportMealPdf({
+              handleExportDietPdf({
                 t,
                 categoryName:
-                  dietCategories.find((c) => c.id === selectedCategoryId)
-                    ?.name ?? t('mealUnknownDiet'),
+                  dietCategories.find((c) => c.id === activeCategoryId)?.name ??
+                  t('dietUnknownDiet'),
                 dayPlans,
                 dishDetails,
               })
@@ -311,12 +311,12 @@ export default function MealBoard() {
       {/* Print Header */}
       <div className="print-only mb-5 hidden text-center">
         <Title level={3} className="m-0!">
-          {t('mealPrintTitle')}
+          {t('dietPrintTitle')}
         </Title>
         <Title level={3} className="my-2!">
-          {dietCategories.find((c) => c.id === selectedCategoryId)?.name ??
-            t('mealUnknownDiet')}
-          {t('mealConfigSheet')}
+          {dietCategories.find((c) => c.id === activeCategoryId)?.name ??
+            t('dietUnknownDiet')}
+          {t('dietConfigSheet')}
         </Title>
       </div>
 
@@ -329,25 +329,25 @@ export default function MealBoard() {
             description={
               <div className="flex flex-col items-center">
                 <Text strong className="text-lg">
-                  {t('mealNoDietTitle')}
+                  {t('dietNoDietTitle')}
                 </Text>
                 <Text type="secondary" className="mt-1 mb-4">
-                  {t('mealNoDietDesc')}
+                  {t('dietNoDietDesc')}
                 </Text>
                 <Space>
                   <Input
-                    placeholder={t('mealNewDietPlaceholder')}
+                    placeholder={t('dietNewDietPlaceholder')}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     style={{ width: 200 }}
-                    onPressEnter={(e) => addDietCategory(e as any)}
+                    onPressEnter={createDietCategory}
                   />
                   <Button
                     type="primary"
                     icon={<PlusOutlined />}
                     onClick={addDietCategory}
                   >
-                    {t('mealAddDiet')}
+                    {t('dietAddDiet')}
                   </Button>
                 </Space>
               </div>
@@ -356,7 +356,7 @@ export default function MealBoard() {
         </Card>
       ) : (
         <Spin spinning={loadingMenus || loadingDiets}>
-          <MealDayCards
+          <DietDayCards
             days={dayPlans}
             dishDetails={dishDetails}
             loadingDishDetails={loadingDishDetails}
@@ -365,14 +365,14 @@ export default function MealBoard() {
         </Spin>
       )}
 
-      <MealEditModal
+      <DietEditModal
         visible={isModalVisible}
         dayData={editingDay}
         onCancel={() => setIsModalVisible(false)}
         onSave={handleSave}
       />
 
-      <style>{mealPrintStyles}</style>
+      <style>{dietPrintStyles}</style>
     </div>
   );
 }

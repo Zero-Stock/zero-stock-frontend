@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/apiClient.client';
 
-export function useMealDeleteDiet() {
+export function useDietCategoryDelete() {
   return {
     trigger: async (dietId: number) => {
       return apiClient.delete(`/api/diets/${dietId}/`);

@@ -57,7 +57,7 @@ export default function HomePage() {
                   >
                     {t('homePrimaryAction')}
                   </Button>
-                  <Button size="large" onClick={() => setLocation('/meal')}>
+                  <Button size="large" onClick={() => setLocation('/diet')}>
                     {t('homeSecondaryAction')}
                   </Button>
                   <Text type="secondary">{t('homeDateLabel', { date })}</Text>

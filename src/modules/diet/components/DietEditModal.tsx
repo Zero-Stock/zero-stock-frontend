@@ -3,29 +3,29 @@ import { Modal, Form, Button, InputNumber, Select, message } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../mockdata';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import { useMealDishList } from '../hooks/useMealDishList';
+import { useDietDishList } from '../hooks/useDietDishList';
 
-interface MealEditModalProps {
+interface DietEditModalProps {
   visible: boolean;
   dayData: DayPlan | null;
   onCancel: () => void;
   onSave: (updatedDay: DayPlan) => void;
 }
 
-export default function MealEditModal({
+export default function DietEditModal({
   visible,
   dayData,
   onCancel,
   onSave,
-}: MealEditModalProps) {
+}: DietEditModalProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const { dishes: availableDishes, isLoading, isError } = useMealDishList();
+  const { dishes: availableDishes, isLoading, isError } = useDietDishList();
 
   useEffect(() => {
     if (isError) {
       console.error('Failed to fetch dishes:', isError);
-      message.error(t('mealLoadDishesFailed'));
+      message.error(t('dietLoadDishesFailed'));
     }
   }, [isError, t]);
 
@@ -80,20 +80,20 @@ export default function MealEditModal({
                   {...restField}
                   name={[fieldName, 'id']}
                   rules={[
-                    { required: true, message: t('mealSelectDishRequired') },
+                    { required: true, message: t('dietSelectDishRequired') },
                   ]}
                   className="m-0! min-w-0 flex-1"
                 >
                   <Select
                     showSearch
-                    placeholder={t('mealSelectDish')}
+                    placeholder={t('dietSelectDish')}
                     optionFilterProp="label"
                     loading={isLoading}
                     options={availableDishes.map((dish) => ({
                       label: dish.name,
                       value: dish.id,
                     }))}
-                    notFoundContent={t('mealNoDishes')}
+                    notFoundContent={t('dietNoDishes')}
                   />
                 </Form.Item>
 
@@ -125,7 +125,7 @@ export default function MealEditModal({
                 block
                 icon={<PlusOutlined />}
               >
-                {t('mealAddDish')}
+                {t('dietAddDish')}
               </Button>
             </Form.Item>
           </>
@@ -138,8 +138,8 @@ export default function MealEditModal({
     <Modal
       title={
         dayData
-          ? t('mealEditTitle', { day: dayData.dayOfWeek })
-          : t('mealEditTitleGeneric')
+          ? t('dietEditTitle', { day: dayData.dayOfWeek })
+          : t('dietEditTitleGeneric')
       }
       open={visible}
       onOk={handleOk}
@@ -153,9 +153,9 @@ export default function MealEditModal({
       forceRender
     >
       <Form form={form} layout="vertical">
-        {renderDishList('breakfast', t('mealBreakfast'))}
-        {renderDishList('lunch', t('mealLunch'))}
-        {renderDishList('dinner', t('mealDinner'))}
+        {renderDishList('breakfast', t('dietBreakfast'))}
+        {renderDishList('lunch', t('dietLunch'))}
+        {renderDishList('dinner', t('dietDinner'))}
       </Form>
     </Modal>
   );

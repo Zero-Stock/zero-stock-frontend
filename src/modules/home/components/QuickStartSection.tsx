@@ -12,10 +12,10 @@ const { Paragraph, Text } = Typography;
 
 const quickLinks = [
   {
-    path: '/meal',
+    path: '/diet',
     icon: <CalendarOutlined className="text-xl" />,
-    titleKey: 'navMeals',
-    descriptionKey: 'homeQuickMealsDesc',
+    titleKey: 'navDiet',
+    descriptionKey: 'homeQuickDietDesc',
   },
   {
     path: '/census',

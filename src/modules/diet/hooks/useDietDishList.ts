@@ -4,7 +4,7 @@ import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { DishListResponseSchema } from '@/shared/types/schema';
 
-export function useMealDishList() {
+export function useDietDishList() {
   const key: SWRKey = {
     url: '/api/dishes/list',
     method: 'POST',

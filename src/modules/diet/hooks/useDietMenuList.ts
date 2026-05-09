@@ -4,15 +4,15 @@ import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { WeeklyMenuRow } from '../dtos/menu.dto';
 
-interface UseMealMenuListOptions {
+interface UseDietMenuListOptions {
   companyId: number;
   dietCategoryId?: number;
 }
 
-export function useMealMenuList({
+export function useDietMenuList({
   companyId,
   dietCategoryId,
-}: UseMealMenuListOptions) {
+}: UseDietMenuListOptions) {
   const key: SWRKey | null = dietCategoryId
     ? {
         url: '/api/weekly-menus/',

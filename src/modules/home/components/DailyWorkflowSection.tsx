@@ -12,8 +12,8 @@ const operationSteps = [
     statusKey: 'homeStatusReady',
   },
   {
-    titleKey: 'homeStepMealsTitle',
-    descriptionKey: 'homeStepMealsDesc',
+    titleKey: 'homeStepDietTitle',
+    descriptionKey: 'homeStepDietDesc',
     progress: 82,
     statusKey: 'homeStatusInProgress',
   },

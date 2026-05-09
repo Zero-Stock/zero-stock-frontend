@@ -35,7 +35,7 @@ async function fetchDishDetails(
   return results;
 }
 
-export function useMealDishDetails(dishIds: number[]) {
+export function useDietDishDetails(dishIds: number[]) {
   const uniqueDishIds = useMemo(
     () => [...new Set(dishIds)].sort((a, b) => a - b),
     [dishIds],
@@ -43,7 +43,7 @@ export function useMealDishDetails(dishIds: number[]) {
 
   const key =
     uniqueDishIds.length > 0
-      ? ['meal-dish-details', uniqueDishIds.join(',')]
+      ? ['diet-dish-details', uniqueDishIds.join(',')]
       : null;
 
   const { data, error, isLoading, mutate } = useSWR<

@@ -29,7 +29,7 @@ export default function TodayOverviewSection() {
         <Row gutter={[16, 16]}>
           <Col span={12}>
             <Statistic
-              title={t('homeStatMeals')}
+              title={t('homeStatDiet')}
               value={24}
               prefix={<CalendarOutlined />}
             />

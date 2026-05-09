@@ -12,21 +12,21 @@ export const translations = {
   homeHeroBadge: { zh: '今日生产指挥台', en: 'Daily Operations Hub' },
   homeHeroTitle: {
     zh: '把备餐、人数、采购和加工安排在一个起点完成。',
-    en: 'Start the day with meals, census, procurement, and processing aligned.',
+    en: 'Start the day with diet plans, census, procurement, and processing aligned.',
   },
   homeHeroDescription: {
     zh: '首页聚合了零库存餐饮生产流程中的关键入口，帮助你从人数统计快速推进到菜单、采购和加工执行。',
     en: 'The home page brings together the key entry points in the zero-stock workflow so teams can move from headcount to menus, purchasing, and prep without friction.',
   },
   homePrimaryAction: { zh: '先去更新人数统计', en: 'Update Census First' },
-  homeSecondaryAction: { zh: '查看标准菜谱', en: 'Review Meal Plan' },
+  homeSecondaryAction: { zh: '查看膳食计划', en: 'Review Diet Plan' },
   homeDateLabel: { zh: '当前生产日期：{date}', en: 'Working date: {date}' },
   homeOverviewTitle: { zh: '今日概览', en: 'Today Overview' },
   homeOverviewDescription: {
     zh: '用一个统一视图把当天的主流程衔接起来。',
     en: 'Keep the core daily workflow connected from a single view.',
   },
-  homeStatMeals: { zh: '菜单项', en: 'Menu Items' },
+  homeStatDiet: { zh: '膳食菜单项', en: 'Diet Menu Items' },
   homeStatProcurement: { zh: '待采购单', en: 'Purchase Batches' },
   homeStatProcessing: { zh: '加工明细', en: 'Prep Items' },
   homeStatReadiness: { zh: '执行就绪度', en: 'Readiness' },
@@ -35,9 +35,9 @@ export const translations = {
     zh: '从最常用的业务入口继续今天的工作',
     en: 'Jump back into the workflows used most often',
   },
-  homeQuickMealsDesc: {
-    zh: '维护标准菜谱并核对每个餐次的菜品安排。',
-    en: 'Maintain cycle meals and verify dishes by service period.',
+  homeQuickDietDesc: {
+    zh: '维护膳食计划并核对每个餐次的菜品安排。',
+    en: 'Maintain cycle diets and verify dishes by service period.',
   },
   homeQuickCensusDesc: {
     zh: '更新各区域各餐次人数，为后续采购和加工提供基础。',
@@ -65,8 +65,8 @@ export const translations = {
     zh: '先更新各区域人数，后续采购量和加工量才有可靠依据。',
     en: 'Finalize headcounts first so purchasing and prep quantities are grounded in the latest demand.',
   },
-  homeStepMealsTitle: { zh: '核对标准菜谱', en: 'Validate Meals' },
-  homeStepMealsDesc: {
+  homeStepDietTitle: { zh: '核对膳食计划', en: 'Validate Diet' },
+  homeStepDietDesc: {
     zh: '检查早餐、午餐、晚餐的菜品安排是否符合当日供应计划。',
     en: 'Check breakfast, lunch, and dinner menus against the day’s service plan.',
   },
@@ -101,7 +101,7 @@ export const translations = {
 
   // ─── Navigation ───
   navHome: { zh: '首页', en: 'Home' },
-  navMeals: { zh: '菜谱安排', en: 'Meals' },
+  navDiet: { zh: '膳食安排', en: 'Diet' },
   navCensus: { zh: '人数统计', en: 'Census' },
   navProcurement: { zh: '采购管理', en: 'Procurement' },
   navProcurementOrder: { zh: '采购单', en: 'Procurement Order' },
@@ -188,13 +188,13 @@ export const translations = {
     en: '1. Pan-fry with salt until golden\n2. Stir-fry tomatoes',
   },
 
-  // ─── Meal Module ───
-  mealBoardTitle: {
-    zh: '标准菜谱安排',
-    en: 'Standard Cycle Meals',
+  // ─── Diet Module ───
+  dietBoardTitle: {
+    zh: '标准膳食安排',
+    en: 'Standard Cycle Diets',
   },
-  mealPrintTitle: { zh: '标准菜谱', en: 'Standard Meals' },
-  mealConfigSheet: { zh: '配料表', en: 'Recipe Sheet' },
+  dietPrintTitle: { zh: '标准膳食计划', en: 'Standard Diet Plan' },
+  dietConfigSheet: { zh: '配料表', en: 'Recipe Sheet' },
   day1: { zh: '周一', en: 'Mon' },
   day2: { zh: '周二', en: 'Tue' },
   day3: { zh: '周三', en: 'Wed' },
@@ -202,47 +202,47 @@ export const translations = {
   day5: { zh: '周五', en: 'Fri' },
   day6: { zh: '周六', en: 'Sat' },
   day7: { zh: '周日', en: 'Sun' },
-  mealNewDietPlaceholder: { zh: '新套餐名称', en: 'New diet name' },
-  mealAddDiet: { zh: '添加', en: 'Add' },
-  mealDietCreated: { zh: '套餐类别已创建', en: 'Diet category created' },
-  mealDietCreateFailed: {
+  dietNewDietPlaceholder: { zh: '新套餐名称', en: 'New diet name' },
+  dietAddDiet: { zh: '添加', en: 'Add' },
+  dietCategoryCreated: { zh: '套餐类别已创建', en: 'Diet category created' },
+  dietCategoryCreateFailed: {
     zh: '创建套餐类别失败',
     en: 'Failed to create diet category',
   },
-  mealDietRenamed: { zh: '套餐类别已重命名', en: 'Diet category renamed' },
-  mealDietRenameFailed: { zh: '重命名失败', en: 'Rename failed' },
-  mealDietDeleted: { zh: '套餐类别已删除', en: 'Diet category deleted' },
-  mealDietDeleteFailed: { zh: '删除失败', en: 'Delete failed' },
-  mealRenameTitle: { zh: '重命名套餐类别', en: 'Rename Diet Category' },
-  mealRenameInput: { zh: '输入新名称', en: 'Enter new name' },
-  mealDeleteConfirm: { zh: '确认删除', en: 'Confirm Delete' },
-  mealDeleteConfirmContent: {
+  dietCategoryRenamed: { zh: '套餐类别已重命名', en: 'Diet category renamed' },
+  dietCategoryRenameFailed: { zh: '重命名失败', en: 'Rename failed' },
+  dietCategoryDeleted: { zh: '套餐类别已删除', en: 'Diet category deleted' },
+  dietCategoryDeleteFailed: { zh: '删除失败', en: 'Delete failed' },
+  dietRenameTitle: { zh: '重命名套餐类别', en: 'Rename Diet Category' },
+  dietRenameInput: { zh: '输入新名称', en: 'Enter new name' },
+  dietDeleteConfirm: { zh: '确认删除', en: 'Confirm Delete' },
+  dietDeleteConfirmContent: {
     zh: '确定要删除套餐类别「{name}」吗？该类别下的所有菜单数据也将被删除。',
     en: 'Are you sure you want to delete diet category "{name}"? All menu data under this category will also be deleted.',
   },
-  mealSaved: { zh: '菜单已保存', en: 'Menu saved' },
-  mealSaveFailed: { zh: '保存菜单失败', en: 'Failed to save menu' },
-  mealLoadDietsFailed: {
+  dietSaved: { zh: '菜单已保存', en: 'Menu saved' },
+  dietSaveFailed: { zh: '保存菜单失败', en: 'Failed to save menu' },
+  dietLoadDietsFailed: {
     zh: '加载套餐类别失败',
     en: 'Failed to load diet categories',
   },
-  mealLoadMenuFailed: {
+  dietLoadMenuFailed: {
     zh: '加载周菜单失败',
     en: 'Failed to load weekly menu',
   },
-  mealLoadDishesFailed: { zh: '加载菜品列表失败', en: 'Failed to load dishes' },
-  mealUnknownDiet: { zh: '未知套餐', en: 'Unknown Diet' },
-  mealBreakfast: { zh: '早餐', en: 'Breakfast' },
-  mealLunch: { zh: '午餐', en: 'Lunch' },
-  mealDinner: { zh: '晚餐', en: 'Dinner' },
-  mealEditTitle: { zh: '编辑 {day} 食谱', en: 'Edit {day} Menu' },
-  mealEditTitleGeneric: { zh: '编辑食谱', en: 'Edit Menu' },
-  mealSelectDish: { zh: '选择菜品', en: 'Select dish' },
-  mealSelectDishRequired: { zh: '请选择菜品', en: 'Please select a dish' },
-  mealNoDishes: { zh: '暂无菜品', en: 'No dishes' },
-  mealAddDish: { zh: '添加菜品', en: 'Add Dish' },
-  mealNoDietTitle: { zh: '暂无套餐类别', en: 'No Diet Categories' },
-  mealNoDietDesc: {
+  dietLoadDishesFailed: { zh: '加载菜品列表失败', en: 'Failed to load dishes' },
+  dietUnknownDiet: { zh: '未知套餐', en: 'Unknown Diet' },
+  dietBreakfast: { zh: '早餐', en: 'Breakfast' },
+  dietLunch: { zh: '午餐', en: 'Lunch' },
+  dietDinner: { zh: '晚餐', en: 'Dinner' },
+  dietEditTitle: { zh: '编辑 {day} 食谱', en: 'Edit {day} Menu' },
+  dietEditTitleGeneric: { zh: '编辑食谱', en: 'Edit Menu' },
+  dietSelectDish: { zh: '选择菜品', en: 'Select dish' },
+  dietSelectDishRequired: { zh: '请选择菜品', en: 'Please select a dish' },
+  dietNoDishes: { zh: '暂无菜品', en: 'No dishes' },
+  dietAddDish: { zh: '添加菜品', en: 'Add Dish' },
+  dietNoDietTitle: { zh: '暂无套餐类别', en: 'No Diet Categories' },
+  dietNoDietDesc: {
     zh: '请先添加一个套餐类别开始制定菜单',
     en: 'Please add a diet category to start planning menus',
   },

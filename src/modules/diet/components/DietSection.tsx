@@ -5,26 +5,26 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Text } = Typography;
 
-interface MealSectionProps {
+interface DietSectionProps {
   sectionTitle: string;
   dishes: DishItem[];
   dishDetails: Map<number, DishPreviewSchema>;
   loadingDishDetails: boolean;
 }
 
-export default function MealSection({
+export default function DietSection({
   sectionTitle,
   dishes,
   dishDetails,
   loadingDishDetails,
-}: MealSectionProps) {
+}: DietSectionProps) {
   const { t } = useTranslation();
 
   return (
     <div className="mb-3">
       <Text
         strong
-        className="print-meal-title mb-1 block"
+        className="print-diet-title mb-1 block"
         style={{ color: '#1890ff' }}
       >
         {sectionTitle}

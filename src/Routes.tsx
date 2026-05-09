@@ -1,5 +1,10 @@
 import { Route } from 'wouter';
-import { lazy, type LazyExoticComponent, type ReactNode, type ComponentType } from 'react';
+import {
+  lazy,
+  type LazyExoticComponent,
+  type ReactNode,
+  type ComponentType,
+} from 'react';
 
 import {
   HomeOutlined,
@@ -13,8 +18,13 @@ import {
 } from '@ant-design/icons';
 import type { TranslationKey } from './shared/translation/translations';
 
-type RouteComponent = ComponentType<any> | LazyExoticComponent<ComponentType<any>>;
+type RouteComponent =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | ComponentType<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | LazyExoticComponent<ComponentType<any>>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lazyPage = <T extends ComponentType<any>>(
   load: () => Promise<{ default: T }>,
 ): LazyExoticComponent<T> => lazy(load);
@@ -26,8 +36,12 @@ const MaterialListPage = lazyPage(
 const MaterialCreatePage = lazyPage(
   () => import('./modules/material/pages/MaterialCreatePage'),
 );
-const MealListPage = lazyPage(() => import('./modules/meal/pages/MealListPage'));
-const DishListPage = lazyPage(() => import('./modules/dish/pages/DishListPage'));
+const DietListPage = lazyPage(
+  () => import('./modules/diet/pages/DietListPage'),
+);
+const DishListPage = lazyPage(
+  () => import('./modules/dish/pages/DishListPage'),
+);
 const SupplierListPage = lazyPage(
   () => import('./modules/supplier/pages/SupplierListPage'),
 );
@@ -71,12 +85,12 @@ export const routes: RouteConfig[] = [
   },
 
   {
-    path: '/meal',
-    title: 'Meals',
-    titleKey: 'navMeals',
+    path: '/diet',
+    title: 'Diet',
+    titleKey: 'navDiet',
     icon: <ReadOutlined />,
     showInMenu: true,
-    component: MealListPage,
+    component: DietListPage,
   },
 
   {

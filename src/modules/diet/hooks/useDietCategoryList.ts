@@ -4,7 +4,7 @@ import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { DietCategory } from '../dtos/diet.dto';
 
-export function useMealDietList() {
+export function useDietCategoryList() {
   const key: SWRKey = {
     url: '/api/diets/',
   };

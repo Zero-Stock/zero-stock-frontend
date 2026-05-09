@@ -1,22 +1,22 @@
 import { Button, Card, Col, Divider, Row } from 'antd';
 import type { DayPlan } from '../mockdata';
 import type { DishPreviewSchema } from '@/shared/types/schema';
-import MealSection from './MealSection';
+import DietSection from './DietSection';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
-interface MealDayCardsProps {
+interface DietDayCardsProps {
   days: DayPlan[];
   dishDetails: Map<number, DishPreviewSchema>;
   loadingDishDetails: boolean;
   onEdit: (day: DayPlan) => void;
 }
 
-export default function MealDayCards({
+export default function DietDayCards({
   days,
   dishDetails,
   loadingDishDetails,
   onEdit,
-}: MealDayCardsProps) {
+}: DietDayCardsProps) {
   const { t } = useTranslation();
 
   return (
@@ -45,22 +45,22 @@ export default function MealDayCards({
             className="print-card h-full"
             styles={{ body: { padding: '12px' } }}
           >
-            <MealSection
-              sectionTitle={t('mealBreakfast')}
+            <DietSection
+              sectionTitle={t('dietBreakfast')}
               dishes={day.breakfast}
               dishDetails={dishDetails}
               loadingDishDetails={loadingDishDetails}
             />
             <Divider className="print-divider my-2!" />
-            <MealSection
-              sectionTitle={t('mealLunch')}
+            <DietSection
+              sectionTitle={t('dietLunch')}
               dishes={day.lunch}
               dishDetails={dishDetails}
               loadingDishDetails={loadingDishDetails}
             />
             <Divider className="print-divider my-2!" />
-            <MealSection
-              sectionTitle={t('mealDinner')}
+            <DietSection
+              sectionTitle={t('dietDinner')}
               dishes={day.dinner}
               dishDetails={dishDetails}
               loadingDishDetails={loadingDishDetails}
