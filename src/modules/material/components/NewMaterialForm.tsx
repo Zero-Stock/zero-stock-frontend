@@ -77,9 +77,11 @@ export default function NewMaterialForm() {
       message.success(t('materialCreateSuccess'));
       navigate('/material');
     } catch (error) {
-      message.error(
-        error instanceof Error ? error.message : t('materialCreateFailed'),
-      );
+      const details =
+        error instanceof Error && 'details' in error
+          ? String(error.details)
+          : undefined;
+      message.error(details || t('materialCreateFailed'));
     }
   };
 
