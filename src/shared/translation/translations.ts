@@ -101,7 +101,7 @@ export const translations = {
 
   // ─── Navigation ───
   navHome: { zh: '首页', en: 'Home' },
-  navDiet: { zh: '膳食安排', en: 'Diet' },
+  navDiet: { zh: '膳食计划', en: 'Diet' },
   navCensus: { zh: '人数统计', en: 'Census' },
   navProcurement: { zh: '采购管理', en: 'Procurement' },
   navProcurementOrder: { zh: '采购单', en: 'Procurement Order' },

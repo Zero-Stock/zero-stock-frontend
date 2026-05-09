@@ -1,12 +1,21 @@
 import { apiClient } from '@/shared/api/apiClient.client';
-import type { CensusBatchResultDto } from '../dtos/censusCreate.dto';
-import type { CensusUpdateDto } from '../dtos/censusUpdate.dto';
+import { useDateStore } from '@/shared/stores/dateStore';
+import type { components } from '@/shared/types/schema';
 
 export function useCensusUpdate() {
+  const selectedDate = useDateStore((state) => state.date);
+
   return {
-    trigger: async (data: CensusUpdateDto) => {
-      return apiClient.post<CensusBatchResultDto>('/api/census/batch/', {
-        body: data,
+    trigger: async (data: components['schemas']['CensusUpsertSchema']) => {
+      return apiClient.post<
+        Omit<components['schemas']['ApiResponseDto'], 'result'> & {
+          result: components['schemas']['DatedMutationCountResponseSchema'];
+        }
+      >('/api/census', {
+        body: {
+          date: selectedDate,
+          ...data,
+        },
       });
     },
   };

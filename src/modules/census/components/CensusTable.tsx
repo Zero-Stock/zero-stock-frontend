@@ -10,10 +10,9 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
+import type { components } from '@/shared/types/schema';
 import { useCensusList } from '../hooks/useCensusList';
 import { useCensusUpdate } from '../hooks/useCensusUpdate';
-import type { CensusUpdateDto } from '../dtos/censusUpdate.dto';
 
 const { Title, Text } = Typography;
 
@@ -34,15 +33,20 @@ function getRowTotal(row: RegionRow) {
   return Object.values(row.values).reduce((sum, value) => sum + value, 0);
 }
 
-function buildTableData(records: CensusPreviewDto[]) {
+function buildTableData(
+  records: components['schemas']['CensusPreviewSchema'][],
+) {
   const regionMap = new Map<number, string>();
   const dietMap = new Map<number, string>();
   const valueMap = new Map<string, number>();
 
   records.forEach((record) => {
-    regionMap.set(record.region, record.region_name);
-    dietMap.set(record.diet_category, record.diet_category_name);
-    valueMap.set(`${record.region}:${record.diet_category}`, record.count);
+    regionMap.set(record.region_id, record.region_name);
+    dietMap.set(record.diet_category_id, record.diet_category_name);
+    valueMap.set(
+      `${record.region_id}:${record.diet_category_id}`,
+      record.count,
+    );
   });
 
   const dietColumns: DietColumn[] = Array.from(dietMap.entries())
@@ -110,7 +114,7 @@ export default function CensusTable() {
   };
 
   const handleSave = async () => {
-    const payload: CensusUpdateDto = {
+    const payload: components['schemas']['CensusUpsertSchema'] = {
       items: draftRows.flatMap((row) =>
         dietColumns.map((diet) => ({
           region_id: row.regionId,

@@ -1,26 +1,16 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
-import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import { useDateStore } from '@/shared/stores/dateStore';
-import type { CensusPreviewDto } from '../dtos/censusPreview.dto';
+import type { components } from '@/shared/types/schema';
 
-export interface CensusListPayload {
-  date: string;
-  start?: string;
-  end?: string;
-  region_id?: number;
-  diet_category_id?: number;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export function useCensusList(payload?: CensusListPayload) {
+export function useCensusList(
+  payload?: components['schemas']['CensusQuerySchema'],
+) {
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
-    url: '/api/census/search/',
+    url: '/api/census/list',
     method: 'POST',
     options: {
       body: {
@@ -30,8 +20,11 @@ export function useCensusList(payload?: CensusListPayload) {
     },
   };
 
-  const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<CensusPreviewDto[]>>(key);
+  const { data, error, isLoading, mutate } = useSWR<
+    Omit<components['schemas']['ApiResponseDto'], 'result'> & {
+      result: components['schemas']['CensusListResponseSchema'];
+    }
+  >(key);
 
   const census = useMemo(() => {
     if (!data) return [];
