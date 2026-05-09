@@ -3,7 +3,13 @@ import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import type { ReactNode } from 'react';
 import { SWRConfigProvider } from './SWRConfigProvider';
-import { LanguageProvider, useTranslation } from '../translation/LanguageContext';
+import {
+  LanguageProvider,
+  useTranslation,
+} from '../translation/LanguageContext';
+
+const APP_FONT_SIZE = 15;
+const TAG_FONT_SIZE = 14;
 
 export interface ProvidersProps {
   children: ReactNode;
@@ -12,7 +18,19 @@ export interface ProvidersProps {
 function AntdLocaleWrapper({ children }: { children: ReactNode }) {
   const { locale } = useTranslation();
   return (
-    <ConfigProvider locale={locale === 'zh' ? zhCN : enUS}>
+    <ConfigProvider
+      locale={locale === 'zh' ? zhCN : enUS}
+      theme={{ token: { fontSize: APP_FONT_SIZE } }}
+      tag={{
+        style: {
+          fontSize: TAG_FONT_SIZE,
+          paddingTop: 1,
+          paddingBottom: 1,
+          paddingLeft: 8,
+          paddingRight: 8,
+        },
+      }}
+    >
       {children}
     </ConfigProvider>
   );
