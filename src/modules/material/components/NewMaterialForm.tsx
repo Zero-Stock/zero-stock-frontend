@@ -4,6 +4,10 @@ import type { ColumnsType } from 'antd/es/table';
 import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
 import useMaterialCategories from '../hooks/useMaterialCategories';
+import {
+  isValidYieldRatePercent,
+  percentYieldRateToDecimal,
+} from '../utils/yieldRate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface RawMaterialFields {
@@ -26,7 +30,7 @@ export default function NewMaterialForm() {
     const data = values.items.map((item) => ({
       name: item.name,
       category_id: item.category_id,
-      yield_rate: item.yield_rate,
+      yield_rate: percentYieldRateToDecimal(item.yield_rate),
       processing: item.processing ?? [],
     }));
     await createMaterial(data);
@@ -89,14 +93,26 @@ export default function NewMaterialForm() {
                       required: true,
                       message: t('materialYieldRateRequired'),
                     },
+                    {
+                      validator: (_, value: string | undefined) => {
+                        if (isValidYieldRatePercent(value)) {
+                          return Promise.resolve();
+                        }
+
+                        return Promise.reject(
+                          new Error(t('materialYieldRateRange')),
+                        );
+                      },
+                    },
                   ]}
                   className="mb-0!"
                 >
                   <InputNumber
                     stringMode
                     min={0}
-                    max={1}
-                    step="0.01"
+                    max={100}
+                    step="1"
+                    suffix="%"
                     placeholder={t('materialYieldRatePlaceholder')}
                     className="w-full!"
                   />

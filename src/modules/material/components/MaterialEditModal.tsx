@@ -2,6 +2,11 @@ import { Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useMemo, useState } from 'react';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
+import {
+  decimalYieldRateToPercent,
+  isValidYieldRatePercent,
+  percentYieldRateToDecimal,
+} from '../utils/yieldRate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
   MaterialPreviewSchema,
@@ -44,7 +49,7 @@ export default function MaterialEditModal({
     return {
       name: record.name,
       category_id: record.category_id,
-      yield_rate: record.yield_rate ?? '0',
+      yield_rate: decimalYieldRateToPercent(record.yield_rate),
       processing: record.processing?.map((method) => method.name) ?? [],
     };
   }, [record]);
@@ -62,7 +67,7 @@ export default function MaterialEditModal({
         id: record.id,
         name: values.name,
         category_id: values.category_id,
-        yield_rate: values.yield_rate,
+        yield_rate: percentYieldRateToDecimal(values.yield_rate),
         processing,
       };
 
@@ -130,10 +135,9 @@ export default function MaterialEditModal({
                   return Promise.resolve();
                 }
 
-                const numericValue = Number(value);
-                if (numericValue < 0 || numericValue > 1) {
+                if (!isValidYieldRatePercent(value)) {
                   return Promise.reject(
-                    new Error(t('materialYieldRateRequired')),
+                    new Error(t('materialYieldRateRange')),
                   );
                 }
 
@@ -145,8 +149,9 @@ export default function MaterialEditModal({
           <InputNumber
             stringMode
             min={0}
-            max={1}
-            step="0.01"
+            max={100}
+            step="1"
+            suffix="%"
             className="w-full"
             placeholder={t('materialYieldRatePlaceholder')}
           />

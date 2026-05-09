@@ -513,7 +513,11 @@ export const translations = {
     zh: '请输入出成率',
     en: 'Please input yield rate',
   },
-  materialYieldRatePlaceholder: { zh: '例如：0.8', en: 'e.g. 0.8' },
+  materialYieldRateRange: {
+    zh: '出成率必须在 0 到 100 之间',
+    en: 'Yield rate must be between 0 and 100',
+  },
+  materialYieldRatePlaceholder: { zh: '例如：80', en: 'e.g. 80' },
   materialSpecsRequired: { zh: '请输入加工规格', en: 'Please input specs' },
   materialSpecsPlaceholder: {
     zh: '例如：块、片、丝',
