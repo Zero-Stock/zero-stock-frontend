@@ -30,8 +30,7 @@ export default function SupplierList() {
   const [keyword, setKeyword] = useState('');
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<
-    | (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>)
-    | null
+    (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>) | null
   >(null);
 
   const { suppliers, isLoading, mutate } = useSupplierList({
@@ -113,11 +112,11 @@ export default function SupplierList() {
       </div>
 
       <div className="mb-4 flex items-center gap-4">
-        <Input
+        <Input.Search
           placeholder={t('supplierSearchName')}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="w-105"
+          className="w-80!"
           allowClear
         />
       </div>

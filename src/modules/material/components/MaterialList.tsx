@@ -128,12 +128,12 @@ export default function MaterialList() {
           placeholder={t('materialSearchName')}
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
-          className="w-50!"
+          className="w-60!"
         />
         <Select
           allowClear
           placeholder={t('materialFilterCategory')}
-          className="w-50"
+          className="w-60"
           onChange={(value) => setSelectedCategory(value)}
           options={categoryOptions}
           loading={isLoadingCategories}
