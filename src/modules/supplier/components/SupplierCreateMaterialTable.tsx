@@ -2,11 +2,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
+import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 
 export default function SupplierCreateMaterialTable() {
-  const { materialOptions } = useMaterialList();
   const { t } = useTranslation();
+  const { materialOptions } = useMaterialOptions();
 
   return (
     <Form.List name="materials">
@@ -46,6 +46,7 @@ export default function SupplierCreateMaterialTable() {
                   stringMode
                   min={0}
                   step="0.01"
+                  suffix="¥"
                   style={{ width: '100%' }}
                   placeholder={t('supplierPricePlaceholder')}
                 />
@@ -82,6 +83,7 @@ export default function SupplierCreateMaterialTable() {
                   stringMode
                   min={0}
                   step="0.01"
+                  suffix="kg"
                   style={{ width: '100%' }}
                   placeholder={t('supplierKgPlaceholder')}
                 />

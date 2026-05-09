@@ -7,9 +7,7 @@ import type {
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 
-export type MaterialListPayload = MaterialQuerySchema;
-
-export function useMaterialList(payload?: MaterialListPayload) {
+export function useMaterialList(payload?: MaterialQuerySchema) {
   const key: SWRKey = {
     url: '/api/materials/list',
     method: 'POST',
@@ -28,17 +26,8 @@ export function useMaterialList(payload?: MaterialListPayload) {
     return data.result?.list ?? [];
   }, [data]);
 
-  const materialOptions = useMemo(() => {
-    if (!data) return [];
-    return data.result.list.map((material) => ({
-      value: material.id,
-      label: material.name,
-    }));
-  }, [data]);
-
   return {
     materials,
-    materialOptions,
     isLoading,
     isError: error,
     mutate,

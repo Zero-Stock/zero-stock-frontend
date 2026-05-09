@@ -114,7 +114,7 @@ export default function MaterialList() {
       </div>
 
       <div className="mb-4 flex items-center gap-4">
-        <Input
+        <Input.Search
           allowClear
           placeholder={t('materialSearchName')}
           value={keyword}

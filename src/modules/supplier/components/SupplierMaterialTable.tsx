@@ -9,6 +9,7 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
 import type { SupplierMaterialPreviewSchema } from '@/shared/types/schema';
+import { gramsToKg } from '../utils/supplierMaterialUnit';
 
 const { Title } = Typography;
 
@@ -57,6 +58,8 @@ export default function SupplierMaterialTable(
       dataIndex: 'g_per_unit',
       key: 'g_per_unit',
       width: 120,
+      render: (value: SupplierMaterialPreviewSchema['g_per_unit']) =>
+        `${gramsToKg(value)} kg`,
     },
     {
       title: t('supplierPrice'),

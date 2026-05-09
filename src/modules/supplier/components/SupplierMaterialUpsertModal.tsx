@@ -1,11 +1,12 @@
 import { Modal, Form, Input, InputNumber, Select } from 'antd';
 import { useEffect } from 'react';
-import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
   SupplierMaterialPreviewSchema,
   SupplierMaterialUpsertSchema,
 } from '@/shared/types/schema';
+import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
+import { gramsToKg, kgToGrams } from '../utils/supplierMaterialUnit';
 
 export interface SupplierMaterialUpsertModalProps {
   open: boolean;
@@ -37,15 +38,14 @@ export default function SupplierMaterialUpsertModal({
   const { t } = useTranslation();
   const [form] = Form.useForm<SupplierMaterialFormValues>();
 
-  // optionally pass page_size: 1000 or similar to fetch all materials, depending on backend pagination
-  const { materialOptions, isLoading } = useMaterialList({ page_size: 1000 });
+  const { materialOptions, isLoading } = useMaterialOptions();
 
   useEffect(() => {
     if (open) {
       if (initialValues) {
         form.setFieldsValue({
           ...initialValues,
-          g_per_unit: initialValues.g_per_unit,
+          g_per_unit: gramsToKg(initialValues.g_per_unit),
           price_per_unit: initialValues.price_per_unit ?? undefined,
         });
       } else {
@@ -75,7 +75,7 @@ export default function SupplierMaterialUpsertModal({
     } = {
       material_id: materialId,
       unit_name: v.unit_name,
-      g_per_unit: v.g_per_unit ?? '0',
+      g_per_unit: kgToGrams(v.g_per_unit) ?? '0',
       price_per_unit: v.price_per_unit ?? null,
       notes: v.notes,
     };
@@ -138,6 +138,7 @@ export default function SupplierMaterialUpsertModal({
             style={{ width: '100%' }}
             min={0}
             step="0.01"
+            suffix="kg"
             placeholder={t('supplierKgPlaceholder')}
           />
         </Form.Item>
@@ -149,10 +150,11 @@ export default function SupplierMaterialUpsertModal({
         >
           <InputNumber
             stringMode
-            style={{ width: '100%' }}
             min={0}
             step="0.01"
+            suffix="¥"
             placeholder={t('supplierPricePlaceholder')}
+            style={{ width: '100%' }}
           />
         </Form.Item>
 

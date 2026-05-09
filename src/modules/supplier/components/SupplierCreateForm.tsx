@@ -9,6 +9,7 @@ import type {
   SupplierMaterialUpsertSchema,
   SupplierUpsertSchema,
 } from '@/shared/types/schema';
+import { kgToGrams } from '../utils/supplierMaterialUnit';
 
 const { Title, Text } = Typography;
 
@@ -59,7 +60,7 @@ export default function SupplierCreateForm() {
               supplier_id: supplierId,
               material_id: row.rawMaterialId,
               unit_name: row.unit || 'kg',
-              g_per_unit: row.g_per_unit ?? '1',
+              g_per_unit: kgToGrams(row.g_per_unit) ?? '1000',
               price_per_unit: row.price_per_unit ?? '0',
             });
           } catch (err) {
@@ -127,7 +128,7 @@ export default function SupplierCreateForm() {
         </Title>
         <Text type="secondary">{t('supplierMaterialDetailsDesc')}</Text>
 
-        <div className="mt-4 max-w-[1100px]">
+        <div className="mt-4 max-w-275">
           <SupplierCreateMaterialTable />
         </div>
       </div>

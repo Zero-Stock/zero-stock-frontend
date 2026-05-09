@@ -284,7 +284,7 @@ export const translations = {
   supplierMaterial: { zh: '原料', en: 'Material' },
   supplierPrice: { zh: '单位价格', en: 'Price per unit' },
   supplierUnitSpec: { zh: '单位（规格）', en: 'Unit (Spec)' },
-  supplierKgPerUnit: { zh: '克/单位', en: 'g/unit' },
+  supplierKgPerUnit: { zh: '千克/单位', en: 'kg/unit' },
   supplierPricePlaceholder: { zh: '例如：12.5', en: 'e.g. 12.5' },
   supplierUnitPlaceholder: { zh: '例如：箱 / 袋', en: 'e.g. 箱 / 袋' },
   supplierUnitPlaceholderKg: {

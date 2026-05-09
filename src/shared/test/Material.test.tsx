@@ -11,8 +11,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LanguageProvider } from '@/shared/translation/LanguageContext';
 import MaterialList from '@/modules/material/components/MaterialList';
 import MaterialCreatePage from '@/modules/material/pages/MaterialCreatePage';
-import type { MaterialListPayload } from '@/modules/material/hooks/useMaterialList';
-import type { MaterialPreviewSchema } from '@/shared/types/schema';
+import type {
+  MaterialPreviewSchema,
+  MaterialQuerySchema,
+} from '@/shared/types/schema';
 
 const mockNavigate = vi.fn();
 const mockUseMaterialList = vi.fn();
@@ -25,7 +27,8 @@ vi.mock('wouter', () => ({
 }));
 
 vi.mock('@/modules/material/hooks/useMaterialList', () => ({
-  useMaterialList: (payload?: MaterialListPayload) => mockUseMaterialList(payload),
+  useMaterialList: (payload?: MaterialQuerySchema) =>
+    mockUseMaterialList(payload),
 }));
 
 vi.mock('@/modules/material/hooks/useMaterialCategories', () => ({
@@ -108,7 +111,9 @@ describe('MaterialList', () => {
 
     renderMaterialList();
 
-    expect(screen.getByRole('heading', { name: 'Materials' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Materials' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Chicken Breast')).toBeInTheDocument();
     expect(screen.getByText('Broccoli')).toBeInTheDocument();
     expect(screen.getByText('85%')).toBeInTheDocument();
@@ -133,7 +138,9 @@ describe('MaterialList', () => {
 
     fireEvent.mouseDown(select!);
 
-    expect(await screen.findByRole('option', { name: 'Vegetables' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('option', { name: 'Vegetables' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Protein' })).toBeInTheDocument();
   });
 
@@ -142,7 +149,10 @@ describe('MaterialList', () => {
 
     renderMaterialList();
 
-    await user.type(screen.getByPlaceholderText('Search material name'), 'Chicken');
+    await user.type(
+      screen.getByPlaceholderText('Search material name'),
+      'Chicken',
+    );
 
     await waitFor(() => {
       expect(mockUseMaterialList).toHaveBeenLastCalledWith({
