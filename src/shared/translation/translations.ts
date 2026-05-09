@@ -495,6 +495,7 @@ export const translations = {
 
   // ─── Material Module ───
   materialCreate: { zh: '新建原料', en: 'New Material' },
+  materialSearchName: { zh: '搜索原料名', en: 'Search material name' },
   materialFilterCategory: { zh: '按类别筛选：', en: 'Filter by Category:' },
   materialEditTitle: { zh: '编辑原料', en: 'Edit Material' },
   materialEditSuccess: { zh: '原料已更新', en: 'Material updated' },

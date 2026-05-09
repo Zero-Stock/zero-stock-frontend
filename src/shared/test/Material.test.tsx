@@ -122,7 +122,10 @@ describe('MaterialList', () => {
   it('renders the category filter options', async () => {
     renderMaterialList();
 
-    expect(mockUseMaterialList).toHaveBeenCalledWith({ category_id: undefined });
+    expect(mockUseMaterialList).toHaveBeenCalledWith({
+      category_id: undefined,
+      name: undefined,
+    });
     expect(screen.getByText('Filter by Category:')).toBeInTheDocument();
 
     const select = document.querySelector('.ant-select');
@@ -132,6 +135,21 @@ describe('MaterialList', () => {
 
     expect(await screen.findByRole('option', { name: 'Vegetables' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Protein' })).toBeInTheDocument();
+  });
+
+  it('searches materials by name', async () => {
+    const user = userEvent.setup();
+
+    renderMaterialList();
+
+    await user.type(screen.getByPlaceholderText('Search material name'), 'Chicken');
+
+    await waitFor(() => {
+      expect(mockUseMaterialList).toHaveBeenLastCalledWith({
+        category_id: undefined,
+        name: 'Chicken',
+      });
+    });
   });
 
   it('opens edit state and deletes a material', async () => {

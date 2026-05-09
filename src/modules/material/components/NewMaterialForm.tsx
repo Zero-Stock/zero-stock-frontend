@@ -98,7 +98,7 @@ export default function NewMaterialForm() {
                     max={1}
                     step="0.01"
                     placeholder={t('materialYieldRatePlaceholder')}
-                    className="w-full"
+                    className="w-full!"
                   />
                 </Form.Item>
               ),

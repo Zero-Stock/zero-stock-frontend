@@ -1,4 +1,4 @@
-import { Button, Select, Space, Table, Typography, message } from 'antd';
+import { Button, Input, Select, Space, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
@@ -16,6 +16,7 @@ export default function MaterialList() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [keyword, setKeyword] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] =
     useState<MaterialPreviewSchema | null>(null);
@@ -26,8 +27,9 @@ export default function MaterialList() {
   const payload = useMemo(() => {
     return {
       category_id: selectedCategory ?? undefined,
+      name: keyword.trim() || undefined,
     };
-  }, [selectedCategory]);
+  }, [keyword, selectedCategory]);
   const { materials, isLoading, mutate } = useMaterialList(payload);
 
   const handleEdit = (record: MaterialPreviewSchema) => {
@@ -112,10 +114,17 @@ export default function MaterialList() {
       </div>
 
       <div className="mb-4 flex items-center gap-4">
+        <Input
+          allowClear
+          placeholder={t('materialSearchName')}
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          className="w-50!"
+        />
         <Select
           allowClear
           placeholder={t('materialFilterCategory')}
-          className="w-60"
+          className="w-50"
           onChange={(value) => setSelectedCategory(value)}
           options={categoryOptions}
           loading={isLoadingCategories}
