@@ -10,7 +10,7 @@ interface RawMaterialFields {
   name: string;
   category_id: number;
   yield_rate: string;
-  processing?: string;
+  processing?: string[];
 }
 
 export default function NewMaterialForm() {
@@ -27,12 +27,7 @@ export default function NewMaterialForm() {
       name: item.name,
       category_id: item.category_id,
       yield_rate: item.yield_rate,
-      processing: item.processing
-        ? item.processing
-            .split(',')
-            .map((methodName) => methodName.trim())
-            .filter(Boolean)
-        : [],
+      processing: item.processing ?? [],
     }));
     await createMaterial(data);
     navigate('/material');
@@ -117,7 +112,12 @@ export default function NewMaterialForm() {
                   name={[fields[index].name, 'processing']}
                   className="mb-0!"
                 >
-                  <Input placeholder={t('materialSpecsPlaceholder')} />
+                  <Select
+                    mode="tags"
+                    dropdownStyle={{ display: 'none' }}
+                    placeholder={t('materialSpecsPlaceholder')}
+                    className="w-full"
+                  />
                 </Form.Item>
               ),
             },

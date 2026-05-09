@@ -72,7 +72,9 @@ export default function MaterialList() {
       key: 'processing',
       render: (processing: MaterialPreviewSchema['processing']) => (
         <Space orientation="vertical" size={0}>
-          <Text>{processing?.map((method) => method.name).join(', ') ?? ''}</Text>
+          <Text>
+            {processing?.map((method) => method.name).join(', ') ?? ''}
+          </Text>
         </Space>
       ),
     },
@@ -133,10 +135,7 @@ export default function MaterialList() {
         visible={isEditModalOpen}
         record={editingRecord}
         onCancel={() => setIsEditModalOpen(false)}
-        onUpdated={() => {
-          message.success(t('materialEditSuccess'));
-          mutate();
-        }}
+        onUpdated={() => mutate()}
       />
     </div>
   );

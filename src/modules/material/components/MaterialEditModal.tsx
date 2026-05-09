@@ -21,7 +21,7 @@ type MaterialEditFormValues = Omit<
 > & {
   id?: MaterialUpsertSchema['id'];
   yield_rate: string;
-  processing?: string;
+  processing?: string[];
 };
 
 export default function MaterialEditModal({
@@ -45,8 +45,7 @@ export default function MaterialEditModal({
       name: record.name,
       category_id: record.category_id,
       yield_rate: record.yield_rate ?? '0',
-      processing:
-        record.processing?.map((method) => method.name).join(', ') ?? '',
+      processing: record.processing?.map((method) => method.name) ?? [],
     };
   }, [record]);
 
@@ -57,12 +56,7 @@ export default function MaterialEditModal({
 
     try {
       const values = await form.validateFields();
-      const processing = values.processing
-        ? values.processing
-            .split(',')
-            .map((methodName) => methodName.trim())
-            .filter(Boolean)
-        : [];
+      const processing = values.processing ?? [];
 
       const payload: Omit<MaterialUpsertSchema, 'id'> & { id: number } = {
         id: record.id,
@@ -138,7 +132,9 @@ export default function MaterialEditModal({
 
                 const numericValue = Number(value);
                 if (numericValue < 0 || numericValue > 1) {
-                  return Promise.reject(new Error(t('materialYieldRateRequired')));
+                  return Promise.reject(
+                    new Error(t('materialYieldRateRequired')),
+                  );
                 }
 
                 return Promise.resolve();
@@ -159,7 +155,11 @@ export default function MaterialEditModal({
           name="processing"
           label={t('commonSpecs')}
         >
-          <Input placeholder={t('materialSpecsPlaceholder')} />
+          <Select
+            mode="tags"
+            dropdownStyle={{ display: 'none' }}
+            placeholder={t('materialSpecsPlaceholder')}
+          />
         </Form.Item>
       </Form>
     </Modal>
