@@ -3,6 +3,7 @@ import {
   Input,
   Space,
   Table,
+  Tag,
   Typography,
   Popconfirm,
   message,
@@ -24,15 +25,17 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 const { Title } = Typography;
 const { Search } = Input;
 
-function formatIngredient(ingredient: DishIngredientSchema): string {
+function formatIngredientWeight(ingredient: DishIngredientSchema): string {
   const grams = Math.round(parseFloat(ingredient.net_quantity));
+
+  return Number.isNaN(grams) ? ingredient.net_quantity : `${grams}g`;
+}
+
+function formatIngredient(ingredient: DishIngredientSchema): string {
   const processingMethod = (ingredient.processing_method ?? '').trim();
+  const processingText = processingMethod ? ` (${processingMethod})` : '';
 
-  if (!processingMethod || processingMethod === '无') {
-    return `${ingredient.material_name} ${grams}g`;
-  }
-
-  return `${ingredient.material_name} (${processingMethod}) ${grams}g`;
+  return `${ingredient.material_name}${processingText} - ${formatIngredientWeight(ingredient)}`;
 }
 
 export default function DishList() {
@@ -171,11 +174,16 @@ export default function DishList() {
       key: 'ingredients',
       width: '19%',
       render: (ingredients: DishIngredientSchema[]) => (
-        <div style={{ whiteSpace: 'pre-wrap' }}>
-          {ingredients
-            .map((ingredient) => formatIngredient(ingredient))
-            .join('\n')}
-        </div>
+        <Space size="small" wrap>
+          {ingredients.map((ingredient, index) => (
+            <Tag
+              key={`${ingredient.material_id}-${ingredient.processing_method ?? ''}-${index}`}
+              className="m-0! max-w-full"
+            >
+              {formatIngredient(ingredient)}
+            </Tag>
+          ))}
+        </Space>
       ),
     },
     {
@@ -227,30 +235,35 @@ export default function DishList() {
 
   return (
     <div>
-      <div className="no-print mb-6 flex items-center justify-between">
-        <Title level={3} className="m-0!">
+      <div className="no-print mb-4 flex items-center justify-between">
+        <Title level={3} className="mb-0!">
           {t('dishListTitle')}
         </Title>
         <Space>
-          <Search
-            placeholder={t('dishSearchIngredient')}
-            allowClear
-            onSearch={(value) => setSearchIngredient(value)}
-            onChange={(e) => setSearchIngredient(e.target.value)}
-            style={{ width: 200 }}
-          />
-          <Search
-            placeholder={t('dishSearchName')}
-            allowClear
-            onSearch={(value) => setSearchText(value)}
-            onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 200 }}
-          />
           <Button type="primary" onClick={handleCreate}>
             {t('dishCreate')}
           </Button>
           <Button onClick={handlePrint}>{t('commonExportPdf')}</Button>
         </Space>
+      </div>
+
+      <div className="no-print mb-4 flex items-center gap-4">
+        <Search
+          placeholder={t('dishSearchName')}
+          allowClear
+          value={searchText}
+          onSearch={(value) => setSearchText(value)}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="w-60!"
+        />
+        <Search
+          placeholder={t('dishSearchIngredient')}
+          allowClear
+          value={searchIngredient}
+          onSearch={(value) => setSearchIngredient(value)}
+          onChange={(e) => setSearchIngredient(e.target.value)}
+          className="w-60!"
+        />
       </div>
 
       {/* Print Header */}

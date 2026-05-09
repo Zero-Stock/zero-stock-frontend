@@ -143,11 +143,11 @@ export const translations = {
   // ─── Dish Module ───
   dishListTitle: { zh: '菜品制作单', en: 'Dish Recipe Sheet' },
   dishSearchName: { zh: '搜索菜品名', en: 'Search dish' },
-  dishSearchIngredient: { zh: '按原料筛选', en: 'Filter ingredient' },
+  dishSearchIngredient: { zh: '搜索原料', en: 'Filter ingredient' },
   dishCreate: { zh: '新建菜品', en: 'New Dish' },
   dishColName: { zh: '品名', en: 'Dish Name' },
-  dishColIngredients: { zh: '食材 (g)', en: 'Ingredients (g)' },
-  dishColSeasonings: { zh: '调料 (g)', en: 'Seasonings (g)' },
+  dishColIngredients: { zh: '食材', en: 'Ingredients' },
+  dishColSeasonings: { zh: '调料', en: 'Seasonings' },
   dishColCookingMethod: { zh: '具体制作工艺', en: 'Cooking Method' },
   dishDeleteConfirm: {
     zh: '确定要删除这个菜品吗？',
