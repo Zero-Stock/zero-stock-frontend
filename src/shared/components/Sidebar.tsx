@@ -46,7 +46,7 @@ export default function Sidebar() {
     return getActiveKey(location);
   }, [location]);
 
-  const openKeys = ['/procurement'];
+  const openKeys = ['/procurement', '/material'];
 
   return (
     <Sider

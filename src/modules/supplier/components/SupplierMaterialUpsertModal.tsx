@@ -59,7 +59,7 @@ export default function SupplierMaterialUpsertModal({
 
     const materialId = Number(v.material_id);
 
-    // 同一供应商不能重复添加同一原料（后端规则），仅在新建时校验
+    // 同一供应商不能重复添加同一食材（后端规则），仅在新建时校验
     if (!initialValues && existingRawMaterialIds.has(materialId)) {
       form.setFields([
         {

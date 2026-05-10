@@ -36,6 +36,9 @@ const MaterialListPage = lazyPage(
 const MaterialCreatePage = lazyPage(
   () => import('./modules/material/pages/MaterialCreatePage'),
 );
+const StapleListPage = lazyPage(
+  () => import('./modules/staple/pages/StapleListPage'),
+);
 const DietListPage = lazyPage(
   () => import('./modules/diet/pages/DietListPage'),
 );
@@ -177,6 +180,20 @@ export const routes: RouteConfig[] = [
     showInMenu: true,
     component: MaterialListPage,
     children: [
+      {
+        path: '/material/raw',
+        title: 'Raw Materials',
+        titleKey: 'navRawMaterials',
+        showInMenu: true,
+        component: MaterialListPage,
+      },
+      {
+        path: '/material/staples',
+        title: 'Staples',
+        titleKey: 'navStaples',
+        showInMenu: true,
+        component: StapleListPage,
+      },
       {
         path: '/material/create',
         title: 'Create Material',

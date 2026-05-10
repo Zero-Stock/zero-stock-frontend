@@ -48,7 +48,7 @@ export const translations = {
     en: 'Review generated purchase orders and supplier assignments.',
   },
   homeQuickProcessingDesc: {
-    zh: '按加工规格检查今日需要执行的原料处理任务。',
+    zh: '按加工规格检查今日需要执行的食材处理任务。',
     en: 'Inspect today’s raw material prep tasks by processing spec.',
   },
   homeHighlightsTitle: { zh: '关键节奏', en: 'Key Cadence' },
@@ -87,15 +87,15 @@ export const translations = {
     en: 'Confirm the working date matches the date used for operational documents.',
   },
   homeChecklistTwo: {
-    zh: '检查供应商资料和原料信息是否已维护完整。',
+    zh: '检查供应商资料和食材信息是否已维护完整。',
     en: 'Make sure supplier and material records are complete before generating orders.',
   },
   homeChecklistThree: {
-    zh: '在生成采购单前，复核关键菜品的原料配比。',
+    zh: '在生成采购单前，复核关键菜品的食材配比。',
     en: 'Review ingredient ratios for key dishes before generating procurement.',
   },
   homeChecklistFour: {
-    zh: '加工执行前，核对原料的加工规格与出成率设置。',
+    zh: '加工执行前，核对食材的加工规格与出成率设置。',
     en: 'Verify processing specs and yield rates before prep execution starts.',
   },
 
@@ -109,7 +109,9 @@ export const translations = {
   navProcessing: { zh: '加工管理', en: 'Processing' },
   navDishes: { zh: '菜品管理', en: 'Dishes' },
   navMaterials: { zh: '原料管理', en: 'Materials' },
-  navCreateMaterial: { zh: '新建原料', en: 'Create Material' },
+  navRawMaterials: { zh: '食材', en: 'Raw Materials' },
+  navStaples: { zh: '主食', en: 'Staples' },
+  navCreateMaterial: { zh: '新建食材', en: 'Create Material' },
   navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },
   navSupplierDetail: { zh: '供应商详情', en: 'Supplier Detail' },
 
@@ -129,7 +131,7 @@ export const translations = {
   commonPhone: { zh: '电话', en: 'Phone' },
   commonAddress: { zh: '地址', en: 'Address' },
   commonSupplier: { zh: '供应商', en: 'Supplier' },
-  commonSelectMaterial: { zh: '选择原料', en: 'Select material' },
+  commonSelectMaterial: { zh: '选择食材', en: 'Select material' },
   commonTotal: { zh: '合计', en: 'Total' },
   commonTotalPrice: { zh: '总价', en: 'Total Price' },
   commonCurrencySymbol: { zh: '¥', en: '$' },
@@ -143,7 +145,7 @@ export const translations = {
   // ─── Dish Module ───
   dishListTitle: { zh: '菜品制作单', en: 'Dish Recipe Sheet' },
   dishSearchName: { zh: '搜索菜品名', en: 'Search dish' },
-  dishSearchIngredient: { zh: '搜索原料', en: 'Filter ingredient' },
+  dishSearchIngredient: { zh: '搜索食材', en: 'Filter ingredient' },
   dishCreate: { zh: '新建菜品', en: 'New Dish' },
   dishColName: { zh: '品名', en: 'Dish Name' },
   dishColIngredients: { zh: '食材', en: 'Ingredients' },
@@ -166,12 +168,12 @@ export const translations = {
     zh: '例如：西红柿打卤面',
     en: 'e.g. Tomato Noodle Soup',
   },
-  dishIngredientLabel: { zh: '食材物料', en: 'Ingredients' },
+  dishIngredientLabel: { zh: '食材', en: 'Ingredients' },
   dishNoMaterial: {
-    zh: '⚠ 暂无原料数据，请先在原料管理页面添加原料',
+    zh: '⚠ 暂无食材数据，请先在食材管理页面添加食材',
     en: '⚠ No materials found. Please add materials first.',
   },
-  dishNoMaterialData: { zh: '无原料数据', en: 'No materials' },
+  dishNoMaterialData: { zh: '无食材数据', en: 'No materials' },
   dishSelectProcessing: { zh: '加工方式', en: 'Processing' },
   dishNoProcessing: { zh: '无加工规格', en: 'No processing' },
   dishWeightPlaceholder: { zh: '重量(g)', en: 'Weight(g)' },
@@ -263,7 +265,7 @@ export const translations = {
     en: 'Error retrieving created supplier ID.',
   },
   supplierCreateErrorMaterial: {
-    zh: '无法添加原料',
+    zh: '无法添加食材',
     en: 'Failed to add material',
   },
   supplierCreated: { zh: '供应商已创建', en: 'Supplier created' },
@@ -276,12 +278,12 @@ export const translations = {
   supplierNamePlaceholder: { zh: '供应商名称', en: 'Supplier name' },
   supplierContactPlaceholder: { zh: '联系人名称', en: 'Contact person name' },
   supplierPhonePlaceholder: { zh: '电话号码', en: 'Phone number' },
-  supplierMaterialDetails: { zh: '原料明细', en: 'Material Details' },
+  supplierMaterialDetails: { zh: '食材明细', en: 'Material Details' },
   supplierMaterialDetailsDesc: {
-    zh: '可选。您可以在此处添加原料，或稍后在供应商详情页中进行编辑。',
+    zh: '可选。您可以在此处添加食材，或稍后在供应商详情页中进行编辑。',
     en: 'Optional. You can add materials now, or edit later in the supplier detail page.',
   },
-  supplierMaterial: { zh: '原料', en: 'Material' },
+  supplierMaterial: { zh: '食材', en: 'Material' },
   supplierPrice: { zh: '单位价格', en: 'Price per unit' },
   supplierUnitSpec: { zh: '单位（规格）', en: 'Unit (Spec)' },
   supplierKgPerUnit: { zh: '千克/单位', en: 'kg/unit' },
@@ -297,27 +299,27 @@ export const translations = {
   supplierBack: { zh: '返回', en: 'Back' },
   supplierEdit: { zh: '编辑供应商', en: 'Edit Supplier' },
 
-  supplierMaterialsTitle: { zh: '供应商原料', en: 'Supplier Materials' },
+  supplierMaterialsTitle: { zh: '供应商食材', en: 'Supplier Materials' },
   supplierSearchMaterial: {
-    zh: '按原料 ID 或名称搜索',
+    zh: '按食材 ID 或名称搜索',
     en: 'Search by Material ID or Name',
   },
-  supplierAddMaterial: { zh: '添加原料', en: 'Add Material' },
+  supplierAddMaterial: { zh: '添加食材', en: 'Add Material' },
   supplierMaterialNotes: { zh: '备注', en: 'Notes' },
   supplierMaterialActions: { zh: '操作', en: 'Actions' },
   supplierMaterialUpdated: { zh: '已更新', en: 'Updated' },
   supplierMaterialAdded: { zh: '已添加', en: 'Added' },
 
   supplierEditMaterialTitle: {
-    zh: '编辑供应商原料',
+    zh: '编辑供应商食材',
     en: 'Edit Supplier Material',
   },
   supplierAddMaterialTitle: {
-    zh: '添加供应商原料',
+    zh: '添加供应商食材',
     en: 'Add Supplier Material',
   },
   supplierMaterialDuplicateError: {
-    zh: '该供应商已存在此原料。',
+    zh: '该供应商已存在此食材。',
     en: 'This material already exists for this supplier.',
   },
 
@@ -338,7 +340,7 @@ export const translations = {
     zh: '加工单已生成',
     en: 'Processing generated successfully.',
   },
-  processingMaterialNameColumn: { zh: '原料名称', en: 'Material Name' },
+  processingMaterialNameColumn: { zh: '食材名称', en: 'Material Name' },
   processingMethodColumn: { zh: '加工方式', en: 'Processing Method' },
   processingRequirementColumn: { zh: '加工要求', en: 'Requirement' },
   processingTimeColumn: { zh: '加工时间', en: 'Processing Time' },
@@ -424,7 +426,7 @@ export const translations = {
     en: 'Edit Supplier',
   },
   procurementEditSupplierDesc: {
-    zh: '请选择该原料的供应商。',
+    zh: '请选择该食材的供应商。',
     en: 'Please select one supplier for this material.',
   },
   procurementNoAvailableSuppliers: {
@@ -494,23 +496,23 @@ export const translations = {
   },
 
   // ─── Material Module ───
-  materialCreate: { zh: '新建原料', en: 'New Material' },
-  materialSearchName: { zh: '搜索原料名', en: 'Search material name' },
+  materialCreate: { zh: '新建食材', en: 'New Material' },
+  materialSearchName: { zh: '搜索食材名', en: 'Search material name' },
   materialFilterCategory: { zh: '按类别筛选：', en: 'Filter by Category:' },
-  materialEditTitle: { zh: '编辑原料', en: 'Edit Material' },
-  materialEditSuccess: { zh: '更新原料成功', en: 'Material updated' },
-  materialEditFailed: { zh: '更新原料失败', en: 'Failed to update material' },
-  materialCreateSuccess: { zh: '创建原料成功', en: 'Material created' },
-  materialCreateFailed: { zh: '创建原料失败', en: 'Failed to create material' },
-  materialDeleted: { zh: '删除原料成功', en: 'Material deleted' },
-  materialDeleteFailed: { zh: '删除原料失败', en: 'Failed to delete material' },
+  materialEditTitle: { zh: '编辑食材', en: 'Edit Material' },
+  materialEditSuccess: { zh: '更新食材成功', en: 'Material updated' },
+  materialEditFailed: { zh: '更新食材失败', en: 'Failed to update material' },
+  materialCreateSuccess: { zh: '创建食材成功', en: 'Material created' },
+  materialCreateFailed: { zh: '创建食材失败', en: 'Failed to create material' },
+  materialDeleted: { zh: '删除食材成功', en: 'Material deleted' },
+  materialDeleteFailed: { zh: '删除食材失败', en: 'Failed to delete material' },
   materialNameRequired: { zh: '请输入名称', en: 'Please input name' },
   materialDuplicateName: {
-    zh: '原料名称重复',
+    zh: '食材名称重复',
     en: 'Material name repeated',
   },
   materialNamePlaceholder: {
-    zh: '输入原料名称',
+    zh: '输入食材名称',
     en: 'Input material name',
   },
   materialCategoryRequired: { zh: '请选择类别', en: 'Please select category' },
@@ -535,8 +537,32 @@ export const translations = {
   },
   materialAddRow: { zh: '新增一行', en: 'Add New Row' },
   materialSubmit: { zh: '提交', en: 'Submit' },
-  materialCreateTitle: { zh: '新建原料', en: 'Add New Materials' },
+  materialCreateTitle: { zh: '新建食材', en: 'Add New Materials' },
   materialBreadcrumbCreate: { zh: '新建', en: 'Create' },
+
+  // ─── Staple Module ───
+  stapleCreate: { zh: '新建主食', en: 'New Staple' },
+  stapleEditTitle: { zh: '编辑主食', en: 'Edit Staple' },
+  stapleNameRequired: { zh: '请输入主食名称', en: 'Please enter staple name' },
+  stapleNamePlaceholder: { zh: '例如：米饭', en: 'e.g. Rice' },
+  stapleUnitRequired: { zh: '请输入单位', en: 'Please enter unit' },
+  stapleUnitPlaceholder: { zh: '例如：碗、份、g', en: 'e.g. bowl, serving, g' },
+  stapleGramsPerUnit: { zh: '每单位克重', en: 'Grams per Unit' },
+  stapleGramsPerUnitRequired: {
+    zh: '请输入每单位克重',
+    en: 'Please enter grams per unit',
+  },
+  stapleGramsPerUnitPlaceholder: { zh: '例如：180', en: 'e.g. 180' },
+  stapleLoadFailed: { zh: '加载主食失败', en: 'Failed to load staples' },
+  stapleSaveFailed: { zh: '保存主食失败', en: 'Failed to save staple' },
+  stapleCreated: { zh: '主食已创建', en: 'Staple created' },
+  stapleUpdated: { zh: '主食已更新', en: 'Staple updated' },
+  stapleDeleted: { zh: '主食已删除', en: 'Staple deleted' },
+  stapleDeleteFailed: { zh: '删除主食失败', en: 'Failed to delete staple' },
+  stapleDeleteConfirm: {
+    zh: '确定要删除这个主食吗？',
+    en: 'Are you sure you want to delete this staple?',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
