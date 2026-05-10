@@ -242,7 +242,7 @@ export default function DietBoardPage() {
                         e.stopPropagation();
                         handleRenameDiet(diet);
                       }}
-                      style={{ color: '#1890ff' }}
+                      className="text-primary!"
                     />
                     <Button
                       type="text"

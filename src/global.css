@@ -8,6 +8,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  :root {
+    --ant-app-color-primary: #1677ff;
+  }
+}
+
+@theme {
+  --color-primary: var(--ant-app-color-primary);
+}
+
 @media print {
   * {
     color: #000 !important;

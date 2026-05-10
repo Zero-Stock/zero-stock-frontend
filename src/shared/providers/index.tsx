@@ -20,7 +20,10 @@ function AntdLocaleWrapper({ children }: { children: ReactNode }) {
   return (
     <ConfigProvider
       locale={locale === 'zh' ? zhCN : enUS}
-      theme={{ token: { fontSize: APP_FONT_SIZE } }}
+      theme={{
+        cssVar: { key: 'app', prefix: 'ant' },
+        token: { fontSize: APP_FONT_SIZE, colorPrimary: '#1677ff' },
+      }}
       tag={{
         style: {
           fontSize: TAG_FONT_SIZE,

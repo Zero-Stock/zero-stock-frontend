@@ -29,11 +29,7 @@ function MealSection({
 
   return (
     <div className="mb-3">
-      <Text
-        strong
-        className="print-diet-title text-primary mb-1 block"
-        style={{ color: '#1890ff' }}
-      >
+      <Text strong className="print-diet-title text-primary! mb-1 block">
         {sectionTitle}
       </Text>
       {dishes.length === 0 ? (
@@ -51,8 +47,7 @@ function MealSection({
                   <Text strong>{dish.name}</Text>
                   {dish.count && dish.count > 1 && (
                     <Text
-                      className="ml-1 font-semibold"
-                      style={{ color: '#1890ff' }}
+                      className="ml-1 font-semibold text-primary!"
                     >
                       x{dish.count}
                     </Text>
