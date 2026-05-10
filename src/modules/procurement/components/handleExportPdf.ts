@@ -1,16 +1,19 @@
 import { Modal, message } from 'antd';
 import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
 import type { TranslationKey } from '@/shared/translation/translations';
+import type { ProcurementRecordSchema } from '@/shared/types/schema';
 
 export interface HandleExportPdfParams {
   date: string;
   items: ProcurementSheetItemDto[];
   t: (key: TranslationKey) => string;
-  generateTrigger: (params: { date: string }) => Promise<any>;
+  generateTrigger: (
+    params: { date: string },
+  ) => Promise<ProcurementRecordSchema>;
   setProcurementId: (id: number) => void;
-  mutateList: () => Promise<any>;
-  mutateSheet: () => Promise<any>;
-  mutateProcurementItems: () => Promise<any>;
+  mutateList: () => Promise<unknown>;
+  mutateSheet: () => Promise<unknown>;
+  mutateProcurementItems: () => Promise<unknown>;
 }
 
 export const handleExportPdf = (params: HandleExportPdfParams) => {
@@ -153,8 +156,8 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
           params.mutateProcurementItems(),
         ]);
         message.success(t('procurementRegenerateSuccess'));
-      } catch (error: any) {
-        message.error(error?.message || 'Failed');
+      } catch (error: unknown) {
+        message.error(error instanceof Error ? error.message : 'Failed');
       }
     },
     onCancel: () => {

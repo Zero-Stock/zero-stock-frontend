@@ -15,14 +15,12 @@ export function useProcurementAssignSuppliers() {
 
   return {
     trigger: async (data: ProcurementAssignSuppliersDto) => {
-      return apiClient.post(
-        `/api/procurement/assign-suppliers/?date=${selectedDate}`,
-        {
-          body: {
-            assignments: data.assignments,
-          },
+      return apiClient.post('/api/procurement/assign-suppliers', {
+        body: {
+          date: selectedDate,
+          assignments: data.assignments,
         },
-      );
+      });
     },
   };
 }

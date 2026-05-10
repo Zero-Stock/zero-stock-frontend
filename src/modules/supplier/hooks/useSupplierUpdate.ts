@@ -5,14 +5,17 @@ import type {
   SupplierUpsertSchema,
 } from '@/shared/types/schema';
 
+type SupplierUpdatePayload = SupplierUpsertSchema &
+  Required<Pick<SupplierUpsertSchema, 'id'>>;
+
 export function useSupplierUpdate() {
   return {
-    trigger: async (
-      data: SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>,
-    ) => {
+    trigger: async (data: SupplierUpdatePayload) => {
+      const { id, ...body } = data;
+
       return apiClient.patch<ApiResponseDto<SupplierPreviewSchema>>(
-        `/api/suppliers/${data.id}`,
-        { body: data },
+        `/api/suppliers/${id}`,
+        { body },
       );
     },
   };

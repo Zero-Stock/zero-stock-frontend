@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Modal, Table, Typography, message } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
@@ -19,9 +19,10 @@ const { Title } = Typography;
 export default function ProcurementList() {
   const { t } = useTranslation();
   const date = useDateStore((state) => state.date);
-  const [procurementId, setProcurementId] = useState<number | undefined>(
-    undefined,
-  );
+  const [generatedProcurement, setGeneratedProcurement] = useState<{
+    date: string;
+    id: number;
+  } | null>(null);
   const [editingRow, setEditingRow] = useState<ProcurementSheetItemDto | null>(
     null,
   );
@@ -34,6 +35,15 @@ export default function ProcurementList() {
     isLoading: isLoadingList,
     mutate: mutateList,
   } = useProcurementList();
+
+  const currentProcurement = useMemo(() => {
+    return procurements[0];
+  }, [procurements]);
+
+  const procurementId =
+    generatedProcurement?.date === date
+      ? generatedProcurement.id
+      : currentProcurement?.id;
 
   const {
     items: sheetItems,
@@ -51,22 +61,10 @@ export default function ProcurementList() {
   const { trigger: submitTrigger } = useProcurementSubmit();
   const { trigger: assignSuppliersTrigger } = useProcurementAssignSuppliers();
 
-  const currentProcurement = useMemo(() => {
-    return procurements[0];
-  }, [procurements]);
-
-  useEffect(() => {
-    if (currentProcurement?.id) {
-      setProcurementId(currentProcurement.id);
-    } else {
-      setProcurementId(undefined);
-    }
-  }, [currentProcurement]);
-
   const handleGenerate = async () => {
     try {
       const result = await generateTrigger({ date });
-      setProcurementId(result.id);
+      setGeneratedProcurement({ date, id: result.id });
       message.success(t('procurementGenerateSuccess'));
       await mutateList();
       await mutateSheet();
@@ -85,7 +83,7 @@ export default function ProcurementList() {
       items: sheetItems,
       t,
       generateTrigger,
-      setProcurementId,
+      setProcurementId: (id) => setGeneratedProcurement({ date, id }),
       mutateList,
       mutateSheet,
       mutateProcurementItems,

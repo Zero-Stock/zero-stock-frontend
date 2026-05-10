@@ -22,9 +22,8 @@ interface MaterialEditModalProps {
 
 type MaterialEditFormValues = Omit<
   MaterialUpsertSchema,
-  'id' | 'yield_rate' | 'processing'
+  'yield_rate' | 'processing'
 > & {
-  id?: MaterialUpsertSchema['id'];
   yield_rate: string;
   processing?: string[];
 };
@@ -63,7 +62,7 @@ export default function MaterialEditModal({
       const values = await form.validateFields();
       const processing = values.processing ?? [];
 
-      const payload: Omit<MaterialUpsertSchema, 'id'> & { id: number } = {
+      const payload: MaterialUpsertSchema & { id: number } = {
         id: record.id,
         name: values.name,
         category_id: values.category_id,

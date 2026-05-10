@@ -15,11 +15,12 @@ export function useProcessingList(
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
-    url: '/api/processing/search/',
+    url: '/api/processing/list',
     method: 'POST',
     date: selectedDate,
     options: {
       body: {
+        company_id: 1,
         date: selectedDate,
         ...payload,
       },

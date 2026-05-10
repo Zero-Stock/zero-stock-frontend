@@ -74,7 +74,6 @@ export default function DishEditModal({
   const handleOk = () => {
     form.validateFields().then((values: DishUpsertSchema) => {
       const payload: DishUpsertSchema = {
-        id: record?.id,
         name: values.name,
         seasonings: values.seasonings,
         cooking_method: values.cooking_method,

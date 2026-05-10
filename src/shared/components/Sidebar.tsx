@@ -1,5 +1,6 @@
 import { useLocation } from 'wouter';
 import { Layout, Menu } from 'antd';
+import type { MenuProps } from 'antd';
 import { findRouteByPath, routes, type RouteConfig } from '@/Routes';
 import { useMemo } from 'react';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -12,7 +13,7 @@ export default function Sidebar() {
 
   // Generate Menu Items (Recursive)
   const menuItems = useMemo(() => {
-    const formatMenuItems = (configs: RouteConfig[]): any[] => {
+    const formatMenuItems = (configs: RouteConfig[]): MenuProps['items'] => {
       return configs
         .filter((r) => r.showInMenu)
         .map((r) => ({
@@ -25,7 +26,7 @@ export default function Sidebar() {
         }));
     };
     return formatMenuItems(routes);
-  }, [routes, t]);
+  }, [t]);
 
   // Find Active Key (Recursive)
   const selectedKey = useMemo(() => {

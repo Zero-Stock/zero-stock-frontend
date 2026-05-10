@@ -5,9 +5,11 @@ import type {
   SupplierMaterialUpsertSchema,
 } from '@/shared/types/schema';
 
+type SupplierMaterialCreatePayload = Omit<SupplierMaterialUpsertSchema, 'id'>;
+
 export function useSupplierMaterialCreate() {
   return {
-    trigger: async (data: SupplierMaterialUpsertSchema) => {
+    trigger: async (data: SupplierMaterialCreatePayload) => {
       return apiClient.post<ApiResponseDto<SupplierMaterialPreviewSchema>>(
         '/api/supplier-materials',
         {

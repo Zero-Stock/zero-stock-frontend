@@ -173,11 +173,6 @@ export interface components {
         };
         StapleUpsertSchema: {
             /**
-             * @description Staple id. Include to update.
-             * @example 1
-             */
-            id?: number;
-            /**
              * @description Staple name
              * @example Rice
              */
@@ -369,11 +364,6 @@ export interface components {
             processing: components["schemas"]["MaterialProcessingMethodSchema"][];
         };
         MaterialUpsertSchema: {
-            /**
-             * @description Material id. Include to update.
-             * @example 1
-             */
-            id?: number;
             /**
              * @description Material name
              * @example Rice
@@ -765,11 +755,6 @@ export interface components {
             net_quantity: string;
         };
         DishUpsertSchema: {
-            /**
-             * @description Dish id. Include to update.
-             * @example 1
-             */
-            id?: number;
             /**
              * @description Dish name
              * @example Tomato noodles

@@ -10,7 +10,10 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import type { components } from '@/shared/types/schema';
+import type {
+  CensusPreviewSchema,
+  CensusUpsertSchema,
+} from '@/shared/types/schema';
 import { useCensusList } from '../hooks/useCensusList';
 import { useCensusUpdate } from '../hooks/useCensusUpdate';
 
@@ -33,9 +36,7 @@ function getRowTotal(row: RegionRow) {
   return Object.values(row.values).reduce((sum, value) => sum + value, 0);
 }
 
-function buildTableData(
-  records: components['schemas']['CensusPreviewSchema'][],
-) {
+function buildTableData(records: CensusPreviewSchema[]) {
   const regionMap = new Map<number, string>();
   const dietMap = new Map<number, string>();
   const valueMap = new Map<string, number>();
@@ -114,7 +115,7 @@ export default function CensusTable() {
   };
 
   const handleSave = async () => {
-    const payload: components['schemas']['CensusUpsertSchema'] = {
+    const payload: CensusUpsertSchema = {
       items: draftRows.flatMap((row) =>
         dietColumns.map((diet) => ({
           region_id: row.regionId,

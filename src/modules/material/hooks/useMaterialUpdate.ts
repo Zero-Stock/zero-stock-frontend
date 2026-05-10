@@ -5,15 +5,17 @@ import type {
   MaterialUpsertSchema,
 } from '@/shared/types/schema';
 
-type MaterialUpdatePayload = Omit<MaterialUpsertSchema, 'id'> & { id: number };
+type MaterialUpdatePayload = MaterialUpsertSchema & { id: number };
 
 export function useMaterialUpdate() {
   return {
     trigger: async (data: MaterialUpdatePayload) => {
+      const { id, ...body } = data;
+
       return apiClient.put<ApiResponseDto<MaterialPreviewSchema[]>>(
-        `/api/materials/${data.id}`,
+        `/api/materials/${id}`,
         {
-          body: data,
+          body,
         },
       );
     },

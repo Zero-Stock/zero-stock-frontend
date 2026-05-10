@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import { useDateStore } from '@/shared/stores/dateStore';
+import type { ReceivingListResponseSchema } from '@/shared/types/schema';
 import type { ReceivingPreviewDto } from '../dtos/receivingPreview.dto';
 
 interface UseReceivingListParams {
@@ -12,27 +13,23 @@ interface UseReceivingListParams {
 export function useReceivingList(params?: UseReceivingListParams) {
   const selectedDate = useDateStore((state) => state.date);
 
-  const queryParams = new URLSearchParams();
-
-  if (selectedDate) {
-    queryParams.set('date', selectedDate);
-  }
-
-  if (params?.search) {
-    queryParams.set('search', params.search);
-  }
-
-  const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
-
   const key: SWRKey = {
-    url: `/api/receivings/${query}`,
+    url: '/api/receiving/list',
+    method: 'POST',
+    date: selectedDate,
+    options: {
+      body: {
+        company_id: 1,
+        name: params?.search,
+      },
+    },
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<ReceivingPreviewDto[]>>(key);
+    useSWR<ApiResponseDto<ReceivingListResponseSchema>>(key);
 
   const receivings = useMemo(() => {
-    return data?.result ?? [];
+    return (data?.result.list ?? []) as ReceivingPreviewDto[];
   }, [data]);
 
   return {

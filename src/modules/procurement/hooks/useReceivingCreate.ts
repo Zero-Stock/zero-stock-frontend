@@ -1,4 +1,6 @@
 import { apiClient } from '@/shared/api/apiClient.client';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type { DatedMutationCountResponseSchema } from '@/shared/types/schema';
 
 interface ReceivingCreateItemDto {
   material_id: number;
@@ -15,9 +17,12 @@ interface ReceivingCreateDto {
 export function useReceivingCreate() {
   return {
     trigger: async (data: ReceivingCreateDto) => {
-      return apiClient.post('/api/receiving/', {
+      return apiClient.post<ApiResponseDto<DatedMutationCountResponseSchema>>(
+        '/api/receiving',
+        {
         body: data,
-      });
+        },
+      );
     },
   };
 }

@@ -19,12 +19,12 @@ export function useProcurementList(payload?: ProcurementListPayload) {
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
-    url: '/api/procurement/search/',
+    url: '/api/procurement/list',
     method: 'POST',
     date: selectedDate,
     options: {
       body: {
-        company: 1,
+        company_id: 1,
         ...payload,
       },
     },

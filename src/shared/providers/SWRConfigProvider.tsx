@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import { apiClient } from '@/shared/api/apiClient.client';
+import type { RequestOptions } from '@/shared/api/apiClient';
 
 interface SWRConfigProviderProps {
   children: ReactNode;
@@ -9,7 +10,7 @@ interface SWRConfigProviderProps {
 export type SWRKey = {
   url: `/${string}`;
   method?: 'GET' | 'POST';
-  options?: any;
+  options?: RequestOptions;
   date?: string;
 };
 

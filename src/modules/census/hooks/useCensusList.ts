@@ -2,11 +2,13 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import { useDateStore } from '@/shared/stores/dateStore';
-import type { components } from '@/shared/types/schema';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type {
+  CensusListResponseSchema,
+  CensusQuerySchema,
+} from '@/shared/types/schema';
 
-export function useCensusList(
-  payload?: components['schemas']['CensusQuerySchema'],
-) {
+export function useCensusList(payload?: CensusQuerySchema) {
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
@@ -20,11 +22,8 @@ export function useCensusList(
     },
   };
 
-  const { data, error, isLoading, mutate } = useSWR<
-    Omit<components['schemas']['ApiResponseDto'], 'result'> & {
-      result: components['schemas']['CensusListResponseSchema'];
-    }
-  >(key);
+  const { data, error, isLoading, mutate } =
+    useSWR<ApiResponseDto<CensusListResponseSchema>>(key);
 
   const census = useMemo(() => {
     if (!data) return [];

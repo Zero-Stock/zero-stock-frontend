@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, InputNumber, Table, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -25,9 +25,6 @@ type ReceivingTableRow = ProcurementSheetItemDto & {
 
 export default function ReceivingList() {
   const { t } = useTranslation();
-  const [procurementId, setProcurementId] = useState<number | undefined>(
-    undefined,
-  );
   const [editedRows, setEditedRows] = useState<
     Record<string, EditedReceivingRow>
   >({});
@@ -37,6 +34,12 @@ export default function ReceivingList() {
     isLoading: isLoadingList,
     mutate: mutateList,
   } = useProcurementList();
+
+  const currentProcurement = useMemo(() => {
+    return procurements[0];
+  }, [procurements]);
+
+  const procurementId = currentProcurement?.id;
 
   const {
     items: sheetItems,
@@ -51,18 +54,6 @@ export default function ReceivingList() {
   } = useReceivingTemplate(procurementId);
 
   const { trigger: createReceivingTrigger } = useReceivingCreate();
-
-  const currentProcurement = useMemo(() => {
-    return procurements[0];
-  }, [procurements]);
-
-  useEffect(() => {
-    if (currentProcurement?.id) {
-      setProcurementId(currentProcurement.id);
-    } else {
-      setProcurementId(undefined);
-    }
-  }, [currentProcurement]);
 
   const tableData = useMemo<ReceivingTableRow[]>(() => {
     return sheetItems.map((sheetItem) => {
