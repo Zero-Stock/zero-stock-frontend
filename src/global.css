@@ -1,4 +1,22 @@
+@layer theme, base, antd, components, utilities;
+
+@import 'tailwindcss';
+
+/* ---- Optional: smoother font rendering ---- */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @media print {
+  * {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+      'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  }
+
   html,
   body,
   #root {
