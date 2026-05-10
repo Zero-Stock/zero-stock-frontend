@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import { apiClient } from '@/shared/api/apiClient.client';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
-import type { DishPreviewSchema } from '@/shared/types/schema';
+import type { DishDetailSchema } from '@/shared/types/schema';
 
 async function fetchDishDetail(
   dishId: number,
-): Promise<DishPreviewSchema | null> {
+): Promise<DishDetailSchema | null> {
   try {
-    const response = await apiClient.get<ApiResponseDto<DishPreviewSchema>>(
+    const response = await apiClient.get<ApiResponseDto<DishDetailSchema>>(
       `/api/dishes/${dishId}`,
     );
     return response.result;
@@ -20,9 +20,9 @@ async function fetchDishDetail(
 
 async function fetchDishDetails(
   dishIds: number[],
-): Promise<Map<number, DishPreviewSchema>> {
+): Promise<Map<number, DishDetailSchema>> {
   const uniqueIds = [...new Set(dishIds)];
-  const results = new Map<number, DishPreviewSchema>();
+  const results = new Map<number, DishDetailSchema>();
 
   const fetches = uniqueIds.map(async (id) => {
     const detail = await fetchDishDetail(id);
@@ -47,11 +47,11 @@ export function useDietDishDetails(dishIds: number[]) {
       : null;
 
   const { data, error, isLoading, mutate } = useSWR<
-    Map<number, DishPreviewSchema>
+    Map<number, DishDetailSchema>
   >(key, () => fetchDishDetails(uniqueDishIds));
 
   return {
-    dishDetails: data ?? new Map<number, DishPreviewSchema>(),
+    dishDetails: data ?? new Map<number, DishDetailSchema>(),
     isLoading,
     isError: error,
     mutate,

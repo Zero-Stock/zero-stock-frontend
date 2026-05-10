@@ -192,7 +192,7 @@ export const translations = {
 
   // ─── Diet Module ───
   dietBoardTitle: {
-    zh: '标准膳食安排',
+    zh: '标准膳食计划',
     en: 'Standard Cycle Diets',
   },
   dietPrintTitle: { zh: '标准膳食计划', en: 'Standard Diet Plan' },

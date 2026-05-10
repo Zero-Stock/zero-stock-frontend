@@ -1,38 +1,28 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { WeeklyMenuRow } from '../dtos/menu.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
+import type { DietDetailSchema } from '@/shared/types/schema';
 
 interface UseDietMenuListOptions {
-  companyId: number;
-  dietCategoryId?: number;
+  dietId?: number;
 }
 
-export function useDietMenuList({
-  companyId,
-  dietCategoryId,
-}: UseDietMenuListOptions) {
-  const key: SWRKey | null = dietCategoryId
+export function useDietMenuList({ dietId }: UseDietMenuListOptions) {
+  const key: SWRKey | null = dietId
     ? {
-        url: '/api/weekly-menus/',
-        options: {
-          query: {
-            company: companyId,
-            diet_category: dietCategoryId,
-            page_size: 200,
-          },
-        },
+        url: `/api/diet/${dietId}`,
       }
     : null;
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<WeeklyMenuRow[]>>(key);
+    useSWR<ApiResponseDto<DietDetailSchema>>(key);
 
-  const menuRows = useMemo(() => data?.result.list ?? [], [data]);
+  const menuRows = useMemo(() => data?.result.meal_slots ?? [], [data]);
 
   return {
     menuRows,
+    dietDetail: data?.result,
     isLoading,
     isError: error,
     mutate,

@@ -14,11 +14,18 @@ import {
 import type { InputRef } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { type DayPlan, type DietCategory } from '../mockdata';
-import { rowsToDayPlans, dayPlanToBatchItems } from '../apiAdapter';
-import DietDayCards from './DietDayCards';
-import DietEditModal from './DietEditModal';
-import { handleExportDietPdf, dietPrintStyles } from './handleExportDietPdf';
+import type { DietOptionSchema } from '@/shared/types/schema';
+import {
+  type DayPlan,
+  mealSlotsToDayPlans,
+  dayPlanToMealSlotUpserts,
+} from '../apiAdapter';
+import DietDayList from '../components/DietDayList';
+import DietEditModal from '../components/DietEditModal';
+import {
+  handleExportDietPdf,
+  dietPrintStyles,
+} from '../components/handleExportDietPdf';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useDietCategoryList } from '../hooks/useDietCategoryList';
 import { useDietDishDetails } from '../hooks/useDietDishDetails';
@@ -31,9 +38,7 @@ import type { TranslationKey } from '@/shared/translation/translations';
 
 const { Title, Text } = Typography;
 
-const COMPANY_ID = 1; // TODO: get from auth context
-
-export default function DietBoard() {
+export default function DietBoardPage() {
   const { t } = useTranslation();
   const [newCategoryName, setNewCategoryName] = useState('');
   const inputRef = useRef<InputRef>(null);
@@ -55,8 +60,7 @@ export default function DietBoard() {
     isError: menuError,
     mutate: mutateMenus,
   } = useDietMenuList({
-    companyId: COMPANY_ID,
-    dietCategoryId: activeCategoryId || undefined,
+    dietId: activeCategoryId || undefined,
   });
   const { trigger: createDiet } = useDietCategoryCreate();
   const { trigger: updateDiet } = useDietCategoryUpdate();
@@ -77,13 +81,9 @@ export default function DietBoard() {
     }
   }, [menuError, t]);
 
-  // Convert flat rows → grouped day plans for the selected diet category
   const dayPlans = useMemo(() => {
-    const filtered = menuRows.filter(
-      (r) => r.diet_category === activeCategoryId,
-    );
-    return rowsToDayPlans(filtered, (d) => t(`day${d}` as TranslationKey));
-  }, [menuRows, activeCategoryId, t]);
+    return mealSlotsToDayPlans(menuRows, (d) => t(`day${d}` as TranslationKey));
+  }, [menuRows, t]);
 
   const dishIds = useMemo(
     () =>
@@ -126,7 +126,7 @@ export default function DietBoard() {
   };
 
   // ─── Rename diet category ───
-  const handleRenameDiet = (diet: DietCategory) => {
+  const handleRenameDiet = (diet: DietOptionSchema) => {
     let newName = diet.name;
     Modal.confirm({
       title: t('dietRenameTitle'),
@@ -194,15 +194,10 @@ export default function DietBoard() {
   };
 
   const handleSave = async (updatedDay: DayPlan) => {
-    // Build the batch payload for POST /api/weekly-menus/batch/
-    const batchItems = dayPlanToBatchItems(
-      updatedDay,
-      COMPANY_ID,
-      activeCategoryId,
-    );
+    const mealSlots = dayPlanToMealSlotUpserts(updatedDay);
 
     try {
-      await saveWeeklyMenu(batchItems);
+      await saveWeeklyMenu(activeCategoryId, mealSlots);
       message.success(t('dietSaved'));
       setIsModalVisible(false);
       await mutateMenus();
@@ -356,7 +351,7 @@ export default function DietBoard() {
         </Card>
       ) : (
         <Spin spinning={loadingMenus || loadingDiets}>
-          <DietDayCards
+          <DietDayList
             days={dayPlans}
             dishDetails={dishDetails}
             loadingDishDetails={loadingDishDetails}

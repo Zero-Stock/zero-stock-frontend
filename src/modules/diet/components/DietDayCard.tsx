@@ -1,30 +1,37 @@
-import { Skeleton, Typography } from 'antd';
-import type { DishItem } from '../mockdata';
-import type { DishPreviewSchema } from '@/shared/types/schema';
+import { Button, Card, Divider, Skeleton, Typography } from 'antd';
+import type { DayPlan, DishItem } from '../apiAdapter';
+import type { DishDetailSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Text } = Typography;
 
-interface DietSectionProps {
+interface DietDayCardProps {
+  day: DayPlan;
+  dishDetails: Map<number, DishDetailSchema>;
+  loadingDishDetails: boolean;
+  onEdit: (day: DayPlan) => void;
+}
+
+interface MealSectionProps {
   sectionTitle: string;
   dishes: DishItem[];
-  dishDetails: Map<number, DishPreviewSchema>;
+  dishDetails: Map<number, DishDetailSchema>;
   loadingDishDetails: boolean;
 }
 
-export default function DietSection({
+function MealSection({
   sectionTitle,
   dishes,
   dishDetails,
   loadingDishDetails,
-}: DietSectionProps) {
+}: MealSectionProps) {
   const { t } = useTranslation();
 
   return (
     <div className="mb-3">
       <Text
         strong
-        className="print-diet-title mb-1 block"
+        className="print-diet-title text-primary mb-1 block"
         style={{ color: '#1890ff' }}
       >
         {sectionTitle}
@@ -37,8 +44,9 @@ export default function DietSection({
         <ul className="m-0 list-disc pl-4">
           {dishes.map((dish, idx) => {
             const detail = dishDetails.get(dish.id);
+
             return (
-              <li key={idx} className="mb-2">
+              <li key={`${dish.id}-${idx}`} className="mb-2">
                 <span>
                   <Text strong>{dish.name}</Text>
                   {dish.count && dish.count > 1 && (
@@ -71,5 +79,48 @@ export default function DietSection({
         </ul>
       )}
     </div>
+  );
+}
+
+export default function DietDayCard({
+  day,
+  dishDetails,
+  loadingDishDetails,
+  onEdit,
+}: DietDayCardProps) {
+  const { t } = useTranslation();
+
+  return (
+    <Card
+      title={day.dayOfWeek}
+      extra={
+        <Button type="link" onClick={() => onEdit(day)} className="no-print">
+          {t('edit')}
+        </Button>
+      }
+      className="print-card h-full"
+      styles={{ body: { padding: '12px' } }}
+    >
+      <MealSection
+        sectionTitle={t('dietBreakfast')}
+        dishes={day.breakfast}
+        dishDetails={dishDetails}
+        loadingDishDetails={loadingDishDetails}
+      />
+      <Divider className="print-divider my-2!" />
+      <MealSection
+        sectionTitle={t('dietLunch')}
+        dishes={day.lunch}
+        dishDetails={dishDetails}
+        loadingDishDetails={loadingDishDetails}
+      />
+      <Divider className="print-divider my-2!" />
+      <MealSection
+        sectionTitle={t('dietDinner')}
+        dishes={day.dinner}
+        dishDetails={dishDetails}
+        loadingDishDetails={loadingDishDetails}
+      />
+    </Card>
   );
 }

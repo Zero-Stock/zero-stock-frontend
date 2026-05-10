@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Modal, Form, Button, InputNumber, Select, message } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { DayPlan, DishItem } from '../mockdata';
+import type { DayPlan, DishItem } from '../apiAdapter';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useDietDishList } from '../hooks/useDietDishList';
 
@@ -20,7 +20,11 @@ export default function DietEditModal({
 }: DietEditModalProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const { dishes: availableDishes, isLoading, isError } = useDietDishList();
+  const {
+    dishes: availableDishes,
+    isLoading,
+    isError,
+  } = useDietDishList(visible);
 
   useEffect(() => {
     if (isError) {

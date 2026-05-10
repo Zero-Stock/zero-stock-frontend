@@ -39,8 +39,8 @@ const MaterialCreatePage = lazyPage(
 const StapleListPage = lazyPage(
   () => import('./modules/staple/pages/StapleListPage'),
 );
-const DietListPage = lazyPage(
-  () => import('./modules/diet/pages/DietListPage'),
+const DietBoardPage = lazyPage(
+  () => import('./modules/diet/pages/DietBoardPage'),
 );
 const DishListPage = lazyPage(
   () => import('./modules/dish/pages/DishListPage'),
@@ -93,7 +93,7 @@ export const routes: RouteConfig[] = [
     titleKey: 'navDiet',
     icon: <ReadOutlined />,
     showInMenu: true,
-    component: DietListPage,
+    component: DietBoardPage,
   },
 
   {
