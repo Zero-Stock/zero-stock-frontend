@@ -234,6 +234,21 @@ export interface components {
              */
             yield_rate: string;
             /**
+             * @description Default supplier-material offering id
+             * @example 3
+             */
+            default_supplier_material_id: number | null;
+            /**
+             * @description Default supplier id
+             * @example 1
+             */
+            default_supplier_id: number | null;
+            /**
+             * @description Default supplier name
+             * @example Fresh Market
+             */
+            default_supplier_name: string | null;
+            /**
              * @description Processing methods
              * @example [
              *       {
@@ -348,6 +363,21 @@ export interface components {
              * @example 1.00
              */
             yield_rate: string;
+            /**
+             * @description Default supplier-material offering id
+             * @example 3
+             */
+            default_supplier_material_id: number | null;
+            /**
+             * @description Default supplier id
+             * @example 1
+             */
+            default_supplier_id: number | null;
+            /**
+             * @description Default supplier name
+             * @example Fresh Market
+             */
+            default_supplier_name: string | null;
             /**
              * @description Processing methods
              * @example [
@@ -819,6 +849,11 @@ export interface components {
              * @example
              */
             notes: string;
+            /**
+             * @description Whether this is the default supplier for the material
+             * @example true
+             */
+            isDefaultSupplierMaterial: boolean;
         };
         SupplierPreviewSchema: {
             /**
@@ -1031,6 +1066,11 @@ export interface components {
              */
             page_size?: number;
             /**
+             * @description Supplier-material offering id
+             * @example 1
+             */
+            id?: number;
+            /**
              * @description Supplier id
              * @example 1
              */
@@ -1099,6 +1139,11 @@ export interface components {
              * @example
              */
             notes: string;
+            /**
+             * @description Whether this is the default supplier for the material
+             * @example true
+             */
+            isDefaultSupplierMaterial: boolean;
         };
         SupplierMaterialUpsertSchema: {
             /**
@@ -1136,6 +1181,11 @@ export interface components {
              * @example
              */
             notes?: string;
+            /**
+             * @description Set to true to mark this offering as the default for its material. Set to false to clear the default. Omit to leave unchanged.
+             * @example true
+             */
+            is_default?: boolean | null;
         };
         CensusPreviewSchema: {
             /**

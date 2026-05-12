@@ -1,4 +1,4 @@
-import { Button, Input, Space, Table, Typography, message } from 'antd';
+import { Button, Checkbox, Input, Space, Table, Typography, message } from 'antd';
 import { useMemo, useState } from 'react';
 
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
@@ -66,6 +66,33 @@ export default function SupplierMaterialTable(
       dataIndex: 'price_per_unit',
       key: 'price_per_unit',
       width: 120,
+    },
+    {
+      title: '默认供货商',
+      key: 'isDefaultSupplierMaterial',
+      width: 120,
+      render: (_, record: SupplierMaterialPreviewSchema) => (
+        <Checkbox
+          checked={record.isDefaultSupplierMaterial}
+          onChange={async (e) => {
+            const checked = e.target.checked;
+            try {
+              await updateTrigger({
+                id: record.id,
+                supplier_id: supplierId,
+                material_id: record.material_id,
+                is_default: checked,
+              });
+              message.success('默认供货商设置成功');
+              mutate();
+            } catch (error) {
+              if (error instanceof Error) {
+                message.error(error.message);
+              }
+            }
+          }}
+        />
+      ),
     },
     { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
     {

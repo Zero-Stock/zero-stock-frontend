@@ -74,8 +74,15 @@ export default function MaterialList() {
       title: t('commonYieldRate'),
       dataIndex: 'yield_rate',
       key: 'yield_rate',
-      width: 150,
+      width: 120,
       render: (yieldRate: string) => Number(yieldRate) * 100 + '%',
+    },
+    {
+      title: '默认供货商',
+      dataIndex: 'default_supplier_name',
+      key: 'default_supplier_name',
+      width: 250,
+      render: (name: string | null) => name || '-',
     },
     {
       title: t('commonSpecs'),
