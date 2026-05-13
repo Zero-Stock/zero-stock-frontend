@@ -6,17 +6,15 @@ import type { CompanyRegionOptionSchema } from '@/shared/types/schema';
 import type { Query } from '@/shared/api/apiClient';
 
 export default function useCompanyRegionOptions(
-  companyId?: number,
+  companyId: number,
   query?: Query,
 ) {
-  const key: SWRKey | null = companyId
-    ? {
-        url: `/api/companies/${companyId}/regions`,
-        options: {
-          query,
-        },
-      }
-    : null;
+  const key: SWRKey = {
+    url: `/api/companies/${companyId}/regions`,
+    options: {
+      query,
+    },
+  };
 
   const { data, error, isLoading, mutate } =
     useSWR<ApiResponseDto<CompanyRegionOptionSchema[]>>(key);

@@ -2,6 +2,7 @@ import {
   App,
   Button,
   InputNumber,
+  Select,
   Space,
   Table,
   Typography,
@@ -14,6 +15,7 @@ import type {
   CensusPreviewSchema,
   CensusUpsertSchema,
 } from '@/shared/types/schema';
+import useCompanyRegionOptions from '@/modules/company/hooks/useCompanyRegionOptions';
 import { useCensusList } from '../hooks/useCensusList';
 import { useCensusUpdate } from '../hooks/useCensusUpdate';
 
@@ -83,11 +85,16 @@ export default function CensusTable() {
   const { token } = theme.useToken();
   const [rows, setRows] = useState<RegionRow[]>([]);
   const [draftRows, setDraftRows] = useState<RegionRow[]>([]);
+  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { census, isLoading, mutate } = useCensusList();
+  const { census, isLoading, mutate } = useCensusList({
+    region_id: selectedRegionId ?? undefined,
+  });
   const { trigger: saveCensus } = useCensusUpdate();
+  const { regionOptions, isLoading: isLoadingRegions } =
+    useCompanyRegionOptions(1);
 
   const { rows: fetchedRows, dietColumns } = useMemo(
     () => buildTableData(census),
@@ -271,6 +278,21 @@ export default function CensusTable() {
             </Button>
           )}
         </Space>
+      </div>
+
+      <div className="mb-4 flex items-center gap-4">
+        <Select
+          allowClear
+          placeholder={t('censusFilterRegion')}
+          className="w-60"
+          value={selectedRegionId}
+          onChange={(value: number | undefined) =>
+            setSelectedRegionId(value ?? null)
+          }
+          options={regionOptions}
+          loading={isLoadingRegions}
+          disabled={regionOptions.length === 0}
+        />
       </div>
 
       <Table

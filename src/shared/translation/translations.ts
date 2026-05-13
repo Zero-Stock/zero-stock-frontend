@@ -372,6 +372,7 @@ export const translations = {
     en: 'Review headcounts by region and meal, then switch into full-table edit mode.',
   },
   censusRegionColumn: { zh: '区域', en: 'Region' },
+  censusFilterRegion: { zh: '按区域筛选', en: 'Filter by Region' },
   censusSaved: { zh: '人数统计已保存', en: 'Census updated' },
   censusSaveFailed: { zh: '保存人数统计失败', en: 'Failed to save census' },
 
