@@ -13,7 +13,7 @@ export function useStapleList(payload?: StapleQuerySchema) {
     method: 'POST',
     options: {
       body: {
-        page_size: 500,
+        page_size: 10000,
         ...payload,
       },
     },

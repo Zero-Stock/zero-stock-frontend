@@ -11,7 +11,7 @@ export function useDietDishList(enabled = true) {
         method: 'POST',
         options: {
           body: {
-            page_size: 500,
+            page_size: 10000,
           },
         },
       }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Form,
   Input,
@@ -13,9 +13,10 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type {
   DishPreviewSchema,
   DishUpsertSchema,
+  MaterialPreviewSchema,
 } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
+import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 
 const { TextArea } = Input;
 
@@ -34,8 +35,28 @@ export default function DishEditModal({
 }: DishEditModalProps) {
   const [form] = Form.useForm<DishUpsertSchema>();
   const { t } = useTranslation();
-  const { materialOptions, isLoading: isLoadingMaterials } =
-    useMaterialOptions();
+  const { materials, isLoading: isLoadingMaterials } = useMaterialList({
+    page_size: 10000,
+  });
+
+  const materialOptions = useMemo(() => {
+    return materials.map((material) => ({
+      label: material.name,
+      value: material.id,
+    }));
+  }, [materials]);
+
+  const processingOptionsByMaterialId = useMemo(() => {
+    return new Map(
+      materials.map((material: MaterialPreviewSchema) => [
+        material.id,
+        material.processing.map((method) => ({
+          label: method.name,
+          value: method.id,
+        })),
+      ]),
+    );
+  }, [materials]);
 
   useEffect(() => {
     if (!visible) {
@@ -101,11 +122,6 @@ export default function DishEditModal({
         </Form.Item>
 
         <div className="mb-2 font-semibold">{t('dishIngredientLabel')}</div>
-        {/* materials.length === 0 && (
-                    <div className="mb-2 text-amber-500 text-sm">
-                        {t('dishNoMaterial')}
-                    </div>
-                ) */}
         <Form.List name="ingredients">
           {(fields, { add, remove }) => (
             <>
@@ -129,38 +145,47 @@ export default function DishEditModal({
                         options={materialOptions}
                         loading={isLoadingMaterials}
                         onChange={() => {
-                          // Clear processing when material changes
-                          const ingredients = form.getFieldValue('ingredients');
-                          if (ingredients?.[name]) {
-                            ingredients[name].processing_method_id = undefined;
-                            form.setFieldsValue({ ingredients });
-                          }
+                          form.setFieldValue(
+                            ['ingredients', name, 'processing_method_id'],
+                            undefined,
+                          );
                         }}
-                        notFoundContent={
-                          <div className="p-2 text-center text-gray-400">
-                            {t('dishNoMaterialData')}
-                          </div>
-                        }
                       />
                     </Form.Item>
                   </Col>
                   <Col span={6}>
                     <Form.Item
-                      {...restField}
-                      name={[name, 'processing_method_id']}
-                      className="m-0!"
+                      noStyle
+                      shouldUpdate={(prev, next) =>
+                        prev.ingredients?.[name]?.material_id !==
+                        next.ingredients?.[name]?.material_id
+                      }
                     >
-                      <Select
-                        showSearch={{ optionFilterProp: 'label' }}
-                        allowClear
-                        placeholder={t('dishSelectProcessing')}
-                        options={[]}
-                        notFoundContent={
-                          <div className="p-2 text-center text-gray-400">
-                            {t('dishNoProcessing')}
-                          </div>
-                        }
-                      />
+                      {({ getFieldValue }) => {
+                        const materialId = getFieldValue([
+                          'ingredients',
+                          name,
+                          'material_id',
+                        ]);
+                        const processingOptions =
+                          processingOptionsByMaterialId.get(materialId) ?? [];
+
+                        return (
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'processing_method_id']}
+                            className="m-0!"
+                          >
+                            <Select
+                              showSearch={{ optionFilterProp: 'label' }}
+                              allowClear
+                              placeholder={t('dishSelectProcessing')}
+                              options={processingOptions}
+                              disabled={!materialId}
+                            />
+                          </Form.Item>
+                        );
+                      }}
                     </Form.Item>
                   </Col>
                   <Col span={5}>

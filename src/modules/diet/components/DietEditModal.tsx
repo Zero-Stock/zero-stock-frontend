@@ -89,15 +89,13 @@ export default function DietEditModal({
                   className="m-0! min-w-0 flex-1"
                 >
                   <Select
-                    showSearch
+                    showSearch={{ optionFilterProp: 'label' }}
                     placeholder={t('dietSelectDish')}
-                    optionFilterProp="label"
                     loading={isLoading}
                     options={availableDishes.map((dish) => ({
                       label: dish.name,
                       value: dish.id,
                     }))}
-                    notFoundContent={t('dietNoDishes')}
                   />
                 </Form.Item>
 
