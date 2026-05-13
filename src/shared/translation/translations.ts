@@ -152,6 +152,11 @@ export const translations = {
   companySearchCode: { zh: '搜索公司编码', en: 'Search company code' },
   companyCode: { zh: '公司编码', en: 'Company Code' },
   companyDetail: { zh: '详情', en: 'Detail' },
+  companyDeleteConfirm: {
+    zh: '确定删除该公司吗？',
+    en: 'Are you sure to delete this company?',
+  },
+  companyDeleted: { zh: '公司已删除', en: 'Company deleted' },
   companyRequired: { zh: '必填', en: 'Required' },
   companyNamePlaceholder: { zh: '公司名称', en: 'Company name' },
   companyCodePlaceholder: { zh: '公司编码', en: 'Company code' },
@@ -541,6 +546,10 @@ export const translations = {
   materialEditFailed: { zh: '更新食材失败', en: 'Failed to update material' },
   materialCreateSuccess: { zh: '创建食材成功', en: 'Material created' },
   materialCreateFailed: { zh: '创建食材失败', en: 'Failed to create material' },
+  materialDeleteConfirm: {
+    zh: '确定删除该食材吗？',
+    en: 'Are you sure to delete this material?',
+  },
   materialDeleted: { zh: '删除食材成功', en: 'Material deleted' },
   materialDeleteFailed: { zh: '删除食材失败', en: 'Failed to delete material' },
   materialNameRequired: { zh: '请输入名称', en: 'Please input name' },

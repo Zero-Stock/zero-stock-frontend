@@ -2,6 +2,7 @@ import {
   App,
   Button,
   Input,
+  Popconfirm,
   Select,
   Space,
   Table,
@@ -110,14 +111,17 @@ export default function MaterialList() {
           <Typography.Link onClick={() => handleEdit(record)}>
             {t('edit')}
           </Typography.Link>
-          <Button
-            type="link"
-            danger
-            onClick={() => handleDelete(record.id)}
-            className="p-0"
+          <Popconfirm
+            title={t('materialDeleteConfirm')}
+            okText={t('delete')}
+            okButtonProps={{ danger: true }}
+            cancelText={t('cancel')}
+            onConfirm={() => handleDelete(record.id)}
           >
-            {t('delete')}
-          </Button>
+            <Button type="link" danger className="p-0">
+              {t('delete')}
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },

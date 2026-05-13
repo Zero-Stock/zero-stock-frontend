@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Button, Input, Space, Table, Typography } from 'antd';
+import { App, Button, Input, Popconfirm, Space, Table, Typography } from 'antd';
 import { useLocation } from 'wouter';
 import type { ColumnsType } from 'antd/es/table';
 
 import { useCompanyList } from '../hooks/useCompanyList';
+import { useCompanyDelete } from '../hooks/useCompanyDelete';
 import type { CompanyPreviewSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
@@ -11,6 +12,7 @@ const { Title } = Typography;
 
 export default function CompanyList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [, navigate] = useLocation();
 
   const [keyword, setKeyword] = useState('');
@@ -27,7 +29,8 @@ export default function CompanyList() {
     };
   }, [code, keyword, page, pageSize]);
 
-  const { companies, total, isLoading } = useCompanyList(payload);
+  const { companies, total, isLoading, mutate } = useCompanyList(payload);
+  const { trigger: deleteTrigger } = useCompanyDelete();
 
   const columns: ColumnsType<CompanyPreviewSchema> = [
     { title: t('commonName'), dataIndex: 'name', key: 'name' },
@@ -42,7 +45,7 @@ export default function CompanyList() {
     {
       title: t('commonOperation'),
       key: 'operation',
-      width: 120,
+      width: 160,
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -52,6 +55,21 @@ export default function CompanyList() {
           >
             {t('companyDetail')}
           </Button>
+          <Popconfirm
+            title={t('companyDeleteConfirm')}
+            okText={t('delete')}
+            okButtonProps={{ danger: true }}
+            cancelText={t('cancel')}
+            onConfirm={async () => {
+              await deleteTrigger(record.id);
+              message.success(t('companyDeleted'));
+              mutate();
+            }}
+          >
+            <Button type="link" danger className="p-0!">
+              {t('delete')}
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
