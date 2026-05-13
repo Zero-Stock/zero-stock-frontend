@@ -8,6 +8,7 @@ import {
 
 import {
   HomeOutlined,
+  BankOutlined,
   DatabaseOutlined,
   ReadOutlined,
   TeamOutlined,
@@ -30,6 +31,12 @@ const lazyPage = <T extends ComponentType<any>>(
 ): LazyExoticComponent<T> => lazy(load);
 
 const HomePage = lazyPage(() => import('./modules/home/pages/HomePage'));
+const CompanyListPage = lazyPage(
+  () => import('./modules/company/pages/CompanyListPage'),
+);
+const CompanyDetailPage = lazyPage(
+  () => import('./modules/company/pages/CompanyDetailPage'),
+);
 const MaterialListPage = lazyPage(
   () => import('./modules/material/pages/MaterialListPage'),
 );
@@ -85,6 +92,24 @@ export const routes: RouteConfig[] = [
     icon: <HomeOutlined />,
     showInMenu: true,
     component: HomePage,
+  },
+
+  {
+    path: '/company',
+    title: 'Company',
+    titleKey: 'commonCompany',
+    icon: <BankOutlined />,
+    showInMenu: true,
+    component: CompanyListPage,
+    children: [
+      {
+        path: '/company/:companyId',
+        title: 'Company Detail',
+        titleKey: 'navCompanyDetail',
+        showInMenu: false,
+        component: CompanyDetailPage,
+      },
+    ],
   },
 
   {

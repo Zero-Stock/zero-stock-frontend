@@ -114,6 +114,7 @@ export const translations = {
   navCreateMaterial: { zh: '新建食材', en: 'Create Material' },
   navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },
   navSupplierDetail: { zh: '供应商详情', en: 'Supplier Detail' },
+  navCompanyDetail: { zh: '公司详情', en: 'Company Detail' },
 
   // ─── Common ───
   save: { zh: '保存', en: 'Save' },
@@ -131,6 +132,7 @@ export const translations = {
   commonPhone: { zh: '电话', en: 'Phone' },
   commonAddress: { zh: '地址', en: 'Address' },
   commonSupplier: { zh: '供应商', en: 'Supplier' },
+  commonCompany: { zh: '公司', en: 'Company' },
   commonSelectMaterial: { zh: '选择食材', en: 'Select material' },
   commonTotal: { zh: '合计', en: 'Total' },
   commonTotalPrice: { zh: '总价', en: 'Total Price' },
@@ -141,6 +143,18 @@ export const translations = {
   commonAction: { zh: '操作', en: 'Action' },
   commonOperation: { zh: '操作', en: 'Operation' },
   commonExportPdf: { zh: '导出 PDF / 打印', en: 'Export PDF / Print' },
+
+  // ─── Company Module ───
+  companyListTitle: { zh: '公司列表', en: 'Company List' },
+  companySearchName: { zh: '搜索公司名', en: 'Search company name' },
+  companySearchCode: { zh: '搜索公司编码', en: 'Search company code' },
+  companyCode: { zh: '公司编码', en: 'Company Code' },
+  companyDetail: { zh: '详情', en: 'Detail' },
+  companyNotFound: { zh: '未找到公司', en: 'Company not found' },
+  companyBack: { zh: '返回', en: 'Back' },
+  companyDescription: { zh: '描述', en: 'Description' },
+  companyRegionsTitle: { zh: '公司区域', en: 'Company Regions' },
+  companyRegionName: { zh: '区域名称', en: 'Region Name' },
 
   // ─── Dish Module ───
   dishListTitle: { zh: '菜品制作单', en: 'Dish Recipe Sheet' },

@@ -58,6 +58,212 @@ export interface components {
             /** @description Current page records */
             list: unknown[][];
         };
+        CompanyPreviewSchema: {
+            /**
+             * @description Company id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Company name
+             * @example Acme Foods
+             */
+            name: string;
+            /**
+             * @description Company code
+             * @example ACME
+             */
+            code: string;
+            /**
+             * @description Contact person
+             * @example Alice
+             */
+            contact_person: string;
+            /**
+             * @description Phone number
+             * @example 555-0100
+             */
+            phone: string;
+            /**
+             * @description Address
+             * @example 123 Main St
+             */
+            address: string;
+        };
+        CompanyListResponseSchema: {
+            /**
+             * @description Current page
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size: number;
+            /**
+             * @description Total records matching the query
+             * @example 100
+             */
+            total: number;
+            /** @description Companies matching the query */
+            list: components["schemas"]["CompanyPreviewSchema"][];
+        };
+        CompanyQuerySchema: {
+            /**
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
+             * @example name
+             */
+            sort_by?: string;
+            /**
+             * @description Sort order
+             * @example desc
+             * @enum {string}
+             */
+            sort_order?: "asc" | "desc";
+            /**
+             * @description Page number
+             * @example 1
+             */
+            page?: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size?: number;
+            /**
+             * @description Company code filter
+             * @example ACME
+             */
+            code?: string;
+        };
+        CompanyOptionSchema: {
+            /**
+             * @description Company id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Company name
+             * @example Acme Foods
+             */
+            name: string;
+            /**
+             * @description Company code
+             * @example ACME
+             */
+            code: string;
+        };
+        CompanyRegionOptionSchema: {
+            /**
+             * @description Region id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id: number;
+            /**
+             * @description Region name
+             * @example North
+             */
+            name: string;
+        };
+        CompanyDetailSchema: {
+            /**
+             * @description Company id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Company name
+             * @example Acme Foods
+             */
+            name: string;
+            /**
+             * @description Company code
+             * @example ACME
+             */
+            code: string;
+            /**
+             * @description Contact person
+             * @example Alice
+             */
+            contact_person: string;
+            /**
+             * @description Phone number
+             * @example 555-0100
+             */
+            phone: string;
+            /**
+             * @description Address
+             * @example 123 Main St
+             */
+            address: string;
+            /**
+             * @description Description
+             * @example Primary client company
+             */
+            description: string;
+            /** @description Company regions */
+            regions: components["schemas"]["CompanyRegionOptionSchema"][];
+        };
+        CompanyUpsertSchema: {
+            /**
+             * @description Company name
+             * @example Acme Foods
+             */
+            name: string;
+            /**
+             * @description Company code
+             * @example ACME
+             */
+            code: string;
+            /**
+             * @description Contact person
+             * @example Alice
+             */
+            contact_person?: string;
+            /**
+             * @description Phone number
+             * @example 555-0100
+             */
+            phone?: string;
+            /**
+             * @description Address
+             * @example 123 Main St
+             */
+            address?: string;
+            /**
+             * @description Description
+             * @example Primary client company
+             */
+            description?: string;
+        };
+        IdResponseSchema: {
+            /**
+             * @description Resource id
+             * @example 1
+             */
+            id: number;
+        };
         StaplePreviewSchema: {
             /**
              * @description Staple id
@@ -187,13 +393,6 @@ export interface components {
              * @example 180
              */
             g_per_unit?: string;
-        };
-        IdResponseSchema: {
-            /**
-             * @description Resource id
-             * @example 1
-             */
-            id: number;
         };
         MaterialProcessingMethodSchema: {
             /**
@@ -2302,13 +2501,20 @@ export interface components {
 export type ApiErrorDto = components['schemas']['ApiErrorDto'];
 export type ApiResponseDto = components['schemas']['ApiResponseDto'];
 export type ApiListResultDto = components['schemas']['ApiListResultDto'];
+export type CompanyPreviewSchema = components['schemas']['CompanyPreviewSchema'];
+export type CompanyListResponseSchema = components['schemas']['CompanyListResponseSchema'];
+export type CompanyQuerySchema = components['schemas']['CompanyQuerySchema'];
+export type CompanyOptionSchema = components['schemas']['CompanyOptionSchema'];
+export type CompanyRegionOptionSchema = components['schemas']['CompanyRegionOptionSchema'];
+export type CompanyDetailSchema = components['schemas']['CompanyDetailSchema'];
+export type CompanyUpsertSchema = components['schemas']['CompanyUpsertSchema'];
+export type IdResponseSchema = components['schemas']['IdResponseSchema'];
 export type StaplePreviewSchema = components['schemas']['StaplePreviewSchema'];
 export type StapleListResponseSchema = components['schemas']['StapleListResponseSchema'];
 export type StapleQuerySchema = components['schemas']['StapleQuerySchema'];
 export type StapleOptionSchema = components['schemas']['StapleOptionSchema'];
 export type StapleDetailSchema = components['schemas']['StapleDetailSchema'];
 export type StapleUpsertSchema = components['schemas']['StapleUpsertSchema'];
-export type IdResponseSchema = components['schemas']['IdResponseSchema'];
 export type MaterialProcessingMethodSchema = components['schemas']['MaterialProcessingMethodSchema'];
 export type MaterialPreviewSchema = components['schemas']['MaterialPreviewSchema'];
 export type MaterialListResponseSchema = components['schemas']['MaterialListResponseSchema'];
