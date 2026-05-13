@@ -26,6 +26,8 @@ export default function MaterialList() {
   const [, navigate] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [keyword, setKeyword] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] =
     useState<MaterialPreviewSchema | null>(null);
@@ -37,9 +39,11 @@ export default function MaterialList() {
     return {
       category_id: selectedCategory ?? undefined,
       name: keyword.trim() || undefined,
+      page,
+      page_size: pageSize,
     };
-  }, [keyword, selectedCategory]);
-  const { materials, isLoading, mutate } = useMaterialList(payload);
+  }, [keyword, page, pageSize, selectedCategory]);
+  const { materials, total, isLoading, mutate } = useMaterialList(payload);
 
   const handleEdit = (record: MaterialPreviewSchema) => {
     setEditingRecord(record);
@@ -134,14 +138,20 @@ export default function MaterialList() {
           allowClear
           placeholder={t('materialSearchName')}
           value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
+          onChange={(event) => {
+            setKeyword(event.target.value);
+            setPage(1);
+          }}
           className="w-60!"
         />
         <Select
           allowClear
           placeholder={t('materialFilterCategory')}
           className="w-60"
-          onChange={(value) => setSelectedCategory(value)}
+          onChange={(value) => {
+            setSelectedCategory(value);
+            setPage(1);
+          }}
           options={categoryOptions}
           loading={isLoadingCategories}
         />
@@ -152,7 +162,16 @@ export default function MaterialList() {
         dataSource={materials}
         rowKey="id"
         tableLayout="fixed"
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          current: page,
+          pageSize,
+          total,
+          showSizeChanger: true,
+        }}
+        onChange={(pagination) => {
+          setPage(pagination.current ?? 1);
+          setPageSize(pagination.pageSize ?? 10);
+        }}
         loading={isLoading}
       />
 

@@ -13,10 +13,9 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type {
   DishPreviewSchema,
   DishUpsertSchema,
-  MaterialPreviewSchema,
 } from '@/shared/types/schema';
-import { useDishMaterials } from '../hooks/useDishMaterials';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 
 const { TextArea } = Input;
 
@@ -35,7 +34,8 @@ export default function DishEditModal({
 }: DishEditModalProps) {
   const [form] = Form.useForm<DishUpsertSchema>();
   const { t } = useTranslation();
-  const { materials } = useDishMaterials(visible);
+  const { materialOptions, isLoading: isLoadingMaterials } =
+    useMaterialOptions();
 
   useEffect(() => {
     if (!visible) {
@@ -56,20 +56,7 @@ export default function DishEditModal({
     } else {
       form.resetFields();
     }
-  }, [visible, record, materials, form]);
-
-  // Get processing options for a selected material
-  const getProcessingOptions = (materialId: number | undefined) => {
-    if (!materialId) return [];
-    const mat = materials.find(
-      (m: MaterialPreviewSchema) => m.id === materialId,
-    );
-    if (!mat) return [];
-    return mat.processing.map((method) => ({
-      label: method.name,
-      value: method.id,
-    }));
-  };
+  }, [visible, record, form]);
 
   const handleOk = () => {
     form.validateFields().then((values: DishUpsertSchema) => {
@@ -137,13 +124,10 @@ export default function DishEditModal({
                       className="m-0!"
                     >
                       <Select
-                        showSearch
+                        showSearch={{ optionFilterProp: 'label' }}
                         placeholder={t('commonSelectMaterial')}
-                        optionFilterProp="label"
-                        options={materials.map((m) => ({
-                          label: `${m.name}${m.category_name ? ` (${m.category_name})` : ''}`,
-                          value: m.id,
-                        }))}
+                        options={materialOptions}
+                        loading={isLoadingMaterials}
                         onChange={() => {
                           // Clear processing when material changes
                           const ingredients = form.getFieldValue('ingredients');
@@ -167,17 +151,10 @@ export default function DishEditModal({
                       className="m-0!"
                     >
                       <Select
-                        showSearch
+                        showSearch={{ optionFilterProp: 'label' }}
                         allowClear
                         placeholder={t('dishSelectProcessing')}
-                        optionFilterProp="label"
-                        options={getProcessingOptions(
-                          form.getFieldValue([
-                            'ingredients',
-                            name,
-                            'material_id',
-                          ]),
-                        )}
+                        options={[]}
                         notFoundContent={
                           <div className="p-2 text-center text-gray-400">
                             {t('dishNoProcessing')}

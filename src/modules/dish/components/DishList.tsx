@@ -1,11 +1,12 @@
 import {
   Button,
   Input,
+  Popconfirm,
+  Select,
   Space,
   Table,
   Tag,
   Typography,
-  Popconfirm,
   message,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -21,9 +22,9 @@ import { useDishList } from '../hooks/useDishList';
 import { useDishUpdate } from '../hooks/useDishUpdate';
 import DishEditModal from './DishEditModal';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 
 const { Title } = Typography;
-const { Search } = Input;
 
 function formatIngredientWeight(ingredient: DishIngredientSchema): string {
   const grams = Math.round(parseFloat(ingredient.net_quantity));
@@ -41,12 +42,33 @@ function formatIngredient(ingredient: DishIngredientSchema): string {
 export default function DishList() {
   const { t } = useTranslation();
   const [searchText, setSearchText] = useState('');
-  const [searchIngredient, setSearchIngredient] = useState('');
+  const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingDish, setEditingDish] = useState<DishPreviewSchema | null>(
     null,
   );
-  const { dishes, isLoading: loading, isError, mutate } = useDishList();
+  const { materialOptions, isLoading: isLoadingMaterials } =
+    useMaterialOptions();
+
+  const payload = useMemo(() => {
+    return {
+      name: searchText.trim() || undefined,
+      material_id: selectedMaterialId,
+      page,
+      page_size: pageSize,
+    };
+  }, [page, pageSize, searchText, selectedMaterialId]);
+
+  const {
+    dishes,
+    total,
+    isLoading: loading,
+    isError,
+    mutate,
+  } = useDishList(payload);
+
   const { trigger: createDish } = useDishCreate();
   const { trigger: updateDish } = useDishUpdate();
   const { trigger: deleteDish } = useDishDelete();
@@ -76,26 +98,6 @@ export default function DishList() {
       message.error(t('dishLoadFailed'));
     }
   }, [isError, t]);
-
-  // ─── Filter locally ───
-  const filteredData = useMemo(() => {
-    let data = dishes;
-    if (searchText) {
-      data = data.filter((dish) =>
-        dish.name.toLowerCase().includes(searchText.toLowerCase()),
-      );
-    }
-    if (searchIngredient) {
-      data = data.filter((dish) =>
-        dish.ingredients.some((ing) =>
-          ing.material_name
-            .toLowerCase()
-            .includes(searchIngredient.toLowerCase()),
-        ),
-      );
-    }
-    return data;
-  }, [searchText, searchIngredient, dishes]);
 
   const handlePrint = () => {
     window.requestAnimationFrame(() => {
@@ -248,21 +250,32 @@ export default function DishList() {
       </div>
 
       <div className="no-print mb-4 flex items-center gap-4">
-        <Search
+        <Input.Search
           placeholder={t('dishSearchName')}
           allowClear
           value={searchText}
-          onSearch={(value) => setSearchText(value)}
-          onChange={(e) => setSearchText(e.target.value)}
+          onSearch={(value) => {
+            setSearchText(value);
+            setPage(1);
+          }}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setPage(1);
+          }}
           className="w-60!"
         />
-        <Search
-          placeholder={t('dishSearchIngredient')}
+        <Select
           allowClear
-          value={searchIngredient}
-          onSearch={(value) => setSearchIngredient(value)}
-          onChange={(e) => setSearchIngredient(e.target.value)}
-          className="w-60!"
+          showSearch={{ optionFilterProp: 'label' }}
+          placeholder={t('commonSelectMaterial')}
+          value={selectedMaterialId}
+          onChange={(value) => {
+            setSelectedMaterialId(value);
+            setPage(1);
+          }}
+          options={materialOptions}
+          loading={isLoadingMaterials}
+          className="w-60"
         />
       </div>
 
@@ -273,12 +286,19 @@ export default function DishList() {
 
       <Table
         columns={columns}
-        dataSource={filteredData}
+        dataSource={dishes}
         rowKey="id"
         tableLayout="fixed"
         pagination={{
-          pageSize: 10,
+          current: page,
+          pageSize,
+          total,
+          showSizeChanger: true,
           className: 'no-print-pagination',
+        }}
+        onChange={(pagination) => {
+          setPage(pagination.current ?? 1);
+          setPageSize(pagination.pageSize ?? 10);
         }}
         loading={loading}
       />

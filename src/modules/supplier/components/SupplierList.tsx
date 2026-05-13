@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button,
   Input,
@@ -31,6 +31,8 @@ export default function SupplierList() {
 
   const [keyword, setKeyword] = useState('');
   const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<
     (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>) | null
@@ -39,10 +41,16 @@ export default function SupplierList() {
   const { materialOptions, isLoading: isLoadingMaterials } =
     useMaterialOptions();
 
-  const { suppliers, isLoading, mutate } = useSupplierList({
-    name: keyword.trim() || undefined,
-    material_id: selectedMaterialId,
-  });
+  const payload = useMemo(() => {
+    return {
+      name: keyword.trim() || undefined,
+      material_id: selectedMaterialId,
+      page,
+      page_size: pageSize,
+    };
+  }, [keyword, page, pageSize, selectedMaterialId]);
+
+  const { suppliers, total, isLoading, mutate } = useSupplierList(payload);
 
   const { trigger: updateTrigger } = useSupplierUpdate();
   const { trigger: deleteTrigger } = useSupplierDelete();
@@ -122,7 +130,10 @@ export default function SupplierList() {
         <Input.Search
           placeholder={t('supplierSearchName')}
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={(e) => {
+            setKeyword(e.target.value);
+            setPage(1);
+          }}
           className="w-60!"
           allowClear
         />
@@ -131,7 +142,10 @@ export default function SupplierList() {
           showSearch={{ optionFilterProp: 'label' }}
           placeholder={t('commonSelectMaterial')}
           value={selectedMaterialId}
-          onChange={(value) => setSelectedMaterialId(value)}
+          onChange={(value) => {
+            setSelectedMaterialId(value);
+            setPage(1);
+          }}
           options={materialOptions}
           loading={isLoadingMaterials}
           className="w-60"
@@ -143,7 +157,16 @@ export default function SupplierList() {
         columns={columns}
         dataSource={suppliers}
         loading={isLoading}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          current: page,
+          pageSize,
+          total,
+          showSizeChanger: true,
+        }}
+        onChange={(pagination) => {
+          setPage(pagination.current ?? 1);
+          setPageSize(pagination.pageSize ?? 10);
+        }}
         tableLayout="fixed"
       />
 

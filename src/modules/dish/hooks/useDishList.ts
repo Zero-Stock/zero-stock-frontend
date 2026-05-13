@@ -11,12 +11,11 @@ export function useDishList(payload?: DishQuerySchema) {
   const key: SWRKey = {
     url: '/api/dishes/list',
     method: 'POST',
-    options: {
-      body: {
-        page_size: 200,
-        ...payload,
-      },
-    },
+    options: payload
+      ? {
+          body: payload,
+        }
+      : {},
   };
 
   const { data, error, isLoading, mutate } =
@@ -28,6 +27,7 @@ export function useDishList(payload?: DishQuerySchema) {
 
   return {
     dishes,
+    total: data?.result?.total ?? 0,
     isLoading,
     isError: error,
     mutate,

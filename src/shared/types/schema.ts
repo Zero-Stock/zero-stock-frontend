@@ -730,6 +730,11 @@ export interface components {
              * @example 50
              */
             page_size?: number;
+            /**
+             * @description Material id to filter dishes by ingredient
+             * @example 1
+             */
+            material_id?: number;
         };
         DishOptionSchema: {
             /**

@@ -28,6 +28,7 @@ export function useMaterialList(payload?: MaterialQuerySchema) {
 
   return {
     materials,
+    total: data?.result?.total ?? 0,
     isLoading,
     isError: error,
     mutate,
