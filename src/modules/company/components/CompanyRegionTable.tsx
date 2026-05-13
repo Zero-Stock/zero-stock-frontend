@@ -1,13 +1,13 @@
 import { Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
-import type { CompanyRegionOptionSchema } from '@/shared/types/schema';
+import type { CompanyRegionSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 interface CompanyRegionTableProps {
-  regions: CompanyRegionOptionSchema[];
+  regions: CompanyRegionSchema[];
 }
 
 export default function CompanyRegionTable({
@@ -15,7 +15,7 @@ export default function CompanyRegionTable({
 }: CompanyRegionTableProps) {
   const { t } = useTranslation();
 
-  const columns: ColumnsType<CompanyRegionOptionSchema> = [
+  const columns: ColumnsType<CompanyRegionSchema> = [
     {
       title: t('commonId'),
       dataIndex: 'id',

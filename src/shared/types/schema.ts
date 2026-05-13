@@ -169,22 +169,22 @@ export interface components {
              */
             code: string;
         };
-        CompanyRegionOptionSchema: {
+        CompanyRegionSchema: {
             /**
              * @description Region id
              * @example 1
              */
             id: number;
             /**
-             * @description Company id
-             * @example 1
-             */
-            company_id: number;
-            /**
              * @description Region name
              * @example North
              */
             name: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id: number;
         };
         CompanyDetailSchema: {
             /**
@@ -223,7 +223,19 @@ export interface components {
              */
             description: string;
             /** @description Company regions */
-            regions: components["schemas"]["CompanyRegionOptionSchema"][];
+            regions: components["schemas"]["CompanyRegionSchema"][];
+        };
+        CompanyRegionUpsertSchema: {
+            /**
+             * @description Region id. Include to update an existing region.
+             * @example 1
+             */
+            id?: number;
+            /**
+             * @description Region name
+             * @example North
+             */
+            name: string;
         };
         CompanyUpsertSchema: {
             /**
@@ -256,6 +268,8 @@ export interface components {
              * @example Primary client company
              */
             description?: string;
+            /** @description Company regions to create or update */
+            regions?: components["schemas"]["CompanyRegionUpsertSchema"][];
         };
         IdResponseSchema: {
             /**
@@ -263,6 +277,18 @@ export interface components {
              * @example 1
              */
             id: number;
+        };
+        CompanyRegionOptionSchema: {
+            /**
+             * @description Region id
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Region name
+             * @example North
+             */
+            name: string;
         };
         StaplePreviewSchema: {
             /**
@@ -2505,10 +2531,12 @@ export type CompanyPreviewSchema = components['schemas']['CompanyPreviewSchema']
 export type CompanyListResponseSchema = components['schemas']['CompanyListResponseSchema'];
 export type CompanyQuerySchema = components['schemas']['CompanyQuerySchema'];
 export type CompanyOptionSchema = components['schemas']['CompanyOptionSchema'];
-export type CompanyRegionOptionSchema = components['schemas']['CompanyRegionOptionSchema'];
+export type CompanyRegionSchema = components['schemas']['CompanyRegionSchema'];
 export type CompanyDetailSchema = components['schemas']['CompanyDetailSchema'];
+export type CompanyRegionUpsertSchema = components['schemas']['CompanyRegionUpsertSchema'];
 export type CompanyUpsertSchema = components['schemas']['CompanyUpsertSchema'];
 export type IdResponseSchema = components['schemas']['IdResponseSchema'];
+export type CompanyRegionOptionSchema = components['schemas']['CompanyRegionOptionSchema'];
 export type StaplePreviewSchema = components['schemas']['StaplePreviewSchema'];
 export type StapleListResponseSchema = components['schemas']['StapleListResponseSchema'];
 export type StapleQuerySchema = components['schemas']['StapleQuerySchema'];

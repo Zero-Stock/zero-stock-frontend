@@ -63,6 +63,9 @@ export default function CompanyList() {
         <Title level={3} className="mb-0!">
           {t('companyListTitle')}
         </Title>
+        <Button type="primary" onClick={() => navigate('/company/create')}>
+          {t('navCreateCompany')}
+        </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-4">

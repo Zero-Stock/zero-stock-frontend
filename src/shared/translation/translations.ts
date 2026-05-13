@@ -113,6 +113,7 @@ export const translations = {
   navStaples: { zh: '主食', en: 'Staples' },
   navCreateMaterial: { zh: '新建食材', en: 'Create Material' },
   navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },
+  navCreateCompany: { zh: '新建公司', en: 'Create Company' },
   navSupplierDetail: { zh: '供应商详情', en: 'Supplier Detail' },
   navCompanyDetail: { zh: '公司详情', en: 'Company Detail' },
 
@@ -146,10 +147,32 @@ export const translations = {
 
   // ─── Company Module ───
   companyListTitle: { zh: '公司列表', en: 'Company List' },
+  companyBasicInfo: { zh: '基础信息', en: 'Basic Information' },
   companySearchName: { zh: '搜索公司名', en: 'Search company name' },
   companySearchCode: { zh: '搜索公司编码', en: 'Search company code' },
   companyCode: { zh: '公司编码', en: 'Company Code' },
   companyDetail: { zh: '详情', en: 'Detail' },
+  companyRequired: { zh: '必填', en: 'Required' },
+  companyNamePlaceholder: { zh: '公司名称', en: 'Company name' },
+  companyCodePlaceholder: { zh: '公司编码', en: 'Company code' },
+  companyContactPlaceholder: { zh: '联系人名称', en: 'Contact person name' },
+  companyPhonePlaceholder: { zh: '电话号码', en: 'Phone number' },
+  companyDescriptionPlaceholder: {
+    zh: '公司描述',
+    en: 'Company description',
+  },
+  companyRegionDetails: { zh: '区域明细', en: 'Region Details' },
+  companyRegionDetailsDesc: {
+    zh: '可选。您可以在此处添加区域，或稍后在公司详情页中进行编辑。',
+    en: 'Optional. You can add regions now, or edit later in the company detail page.',
+  },
+  companyRegionNamePlaceholder: { zh: '区域名称', en: 'Region name' },
+  companyCreateErrorId: {
+    zh: '获取创建的公司 ID 失败。',
+    en: 'Error retrieving created company ID.',
+  },
+  companyCreated: { zh: '公司已创建', en: 'Company created' },
+  companyCreateFailed: { zh: '创建公司失败', en: 'Failed to create company' },
   companyNotFound: { zh: '未找到公司', en: 'Company not found' },
   companyBack: { zh: '返回', en: 'Back' },
   companyDescription: { zh: '描述', en: 'Description' },

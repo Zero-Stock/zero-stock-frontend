@@ -34,6 +34,9 @@ const HomePage = lazyPage(() => import('./modules/home/pages/HomePage'));
 const CompanyListPage = lazyPage(
   () => import('./modules/company/pages/CompanyListPage'),
 );
+const CompanyCreatePage = lazyPage(
+  () => import('./modules/company/pages/CompanyCreatePage'),
+);
 const CompanyDetailPage = lazyPage(
   () => import('./modules/company/pages/CompanyDetailPage'),
 );
@@ -102,6 +105,13 @@ export const routes: RouteConfig[] = [
     showInMenu: true,
     component: CompanyListPage,
     children: [
+      {
+        path: '/company/create',
+        title: 'Create Company',
+        titleKey: 'navCreateCompany',
+        showInMenu: false,
+        component: CompanyCreatePage,
+      },
       {
         path: '/company/:companyId',
         title: 'Company Detail',
