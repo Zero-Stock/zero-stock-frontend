@@ -940,6 +940,11 @@ export interface components {
              * @example 50
              */
             page_size?: number;
+            /**
+             * @description Material id. Include to list suppliers that supply this material.
+             * @example 1
+             */
+            material_id?: number;
         };
         SupplierOptionSchema: {
             /**

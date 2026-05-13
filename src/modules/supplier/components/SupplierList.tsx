@@ -3,6 +3,7 @@ import {
   Button,
   Input,
   Popconfirm,
+  Select,
   Space,
   Table,
   Typography,
@@ -11,6 +12,7 @@ import {
 import { useLocation } from 'wouter';
 
 import SupplierEditModal from './SupplierEditModal';
+import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 import { useSupplierList } from '../hooks/useSupplierList';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
@@ -28,13 +30,18 @@ export default function SupplierList() {
   const [, navigate] = useLocation();
 
   const [keyword, setKeyword] = useState('');
+  const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<
     (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>) | null
   >(null);
 
+  const { materialOptions, isLoading: isLoadingMaterials } =
+    useMaterialOptions();
+
   const { suppliers, isLoading, mutate } = useSupplierList({
     name: keyword.trim() || undefined,
+    material_id: selectedMaterialId,
   });
 
   const { trigger: updateTrigger } = useSupplierUpdate();
@@ -116,8 +123,18 @@ export default function SupplierList() {
           placeholder={t('supplierSearchName')}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="w-80!"
+          className="w-60!"
           allowClear
+        />
+        <Select
+          allowClear
+          showSearch={{ optionFilterProp: 'label' }}
+          placeholder={t('commonSelectMaterial')}
+          value={selectedMaterialId}
+          onChange={(value) => setSelectedMaterialId(value)}
+          options={materialOptions}
+          loading={isLoadingMaterials}
+          className="w-60"
         />
       </div>
 
