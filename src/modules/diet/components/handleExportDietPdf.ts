@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import type { TranslationKey } from '@/shared/translation/translations';
 import type { DayPlan, DishItem } from '../apiAdapter';
 import type { DishDetailSchema } from '@/shared/types/schema';
@@ -6,6 +5,9 @@ import type { DishDetailSchema } from '@/shared/types/schema';
 // 定义传入参数的接口，确保与组件内的数据结构一致
 export interface ExportDietPdfParams {
   t: (key: TranslationKey) => string;
+  message: {
+    warning: (content: string) => unknown;
+  };
   categoryName: string;
   dayPlans: DayPlan[];
   dishDetails: Map<number, DishDetailSchema>;
@@ -13,6 +15,7 @@ export interface ExportDietPdfParams {
 
 export function handleExportDietPdf({
   t,
+  message,
   categoryName,
   dayPlans,
   dishDetails,

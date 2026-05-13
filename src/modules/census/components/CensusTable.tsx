@@ -1,10 +1,10 @@
 import {
+  App,
   Button,
   InputNumber,
   Space,
   Table,
   Typography,
-  message,
   theme,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -79,6 +79,7 @@ function buildTableData(records: CensusPreviewSchema[]) {
 
 export default function CensusTable() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const { token } = theme.useToken();
   const [rows, setRows] = useState<RegionRow[]>([]);
   const [draftRows, setDraftRows] = useState<RegionRow[]>([]);

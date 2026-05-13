@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Modal, Select, message } from 'antd';
+import { App, Form, Input, InputNumber, Modal, Select } from 'antd';
 import { useMemo, useState } from 'react';
 import useMaterialCategories from '../hooks/useMaterialCategories';
 import { useMaterialUpdate } from '../hooks/useMaterialUpdate';
@@ -34,6 +34,7 @@ export default function MaterialEditModal({
   onCancel,
   onUpdated,
 }: MaterialEditModalProps) {
+  const { message } = App.useApp();
   const { t } = useTranslation();
   const [form] = Form.useForm<MaterialEditFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);

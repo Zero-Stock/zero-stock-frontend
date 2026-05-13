@@ -1,4 +1,5 @@
 import {
+  App,
   Button,
   Input,
   Popconfirm,
@@ -7,7 +8,6 @@ import {
   Table,
   Tag,
   Typography,
-  message,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
@@ -41,6 +41,7 @@ function formatIngredient(ingredient: DishIngredientSchema): string {
 
 export default function DishList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
   const [page, setPage] = useState(1);
@@ -97,7 +98,7 @@ export default function DishList() {
       console.error('Failed to fetch dishes:', isError);
       message.error(t('dishLoadFailed'));
     }
-  }, [isError, t]);
+  }, [isError, message, t]);
 
   const handlePrint = () => {
     window.requestAnimationFrame(() => {

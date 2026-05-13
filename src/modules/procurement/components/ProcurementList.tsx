@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Modal, Table, Typography, message } from 'antd';
+import { App, Button, Modal, Table, Typography } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -18,6 +18,7 @@ const { Title } = Typography;
 
 export default function ProcurementList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const date = useDateStore((state) => state.date);
   const [generatedProcurement, setGeneratedProcurement] = useState<{
     date: string;
@@ -82,6 +83,7 @@ export default function ProcurementList() {
       date,
       items: sheetItems,
       t,
+      message,
       generateTrigger,
       setProcurementId: (id) => setGeneratedProcurement({ date, id }),
       mutateList,

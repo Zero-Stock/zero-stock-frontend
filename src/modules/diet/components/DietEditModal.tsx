@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Modal, Form, Button, InputNumber, Select, message } from 'antd';
+import { App, Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../apiAdapter';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -20,6 +20,7 @@ export default function DietEditModal({
 }: DietEditModalProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const {
     dishes: availableDishes,
     isLoading,
@@ -31,7 +32,7 @@ export default function DietEditModal({
       console.error('Failed to fetch dishes:', isError);
       message.error(t('dietLoadDishesFailed'));
     }
-  }, [isError, t]);
+  }, [isError, message, t]);
 
   useEffect(() => {
     if (visible && dayData) {

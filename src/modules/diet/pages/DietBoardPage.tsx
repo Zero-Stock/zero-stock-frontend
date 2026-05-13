@@ -1,4 +1,5 @@
 import {
+  App,
   Button,
   Card,
   Divider,
@@ -8,7 +9,6 @@ import {
   Select,
   Space,
   Typography,
-  message,
   Spin,
 } from 'antd';
 import type { InputRef } from 'antd';
@@ -40,6 +40,7 @@ const { Title, Text } = Typography;
 
 export default function DietBoardPage() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [newCategoryName, setNewCategoryName] = useState('');
   const inputRef = useRef<InputRef>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
@@ -72,14 +73,14 @@ export default function DietBoardPage() {
       console.error('Failed to fetch diets:', dietError);
       message.error(t('dietLoadDietsFailed'));
     }
-  }, [dietError, t]);
+  }, [dietError, message, t]);
 
   useEffect(() => {
     if (menuError) {
       console.error('Failed to fetch weekly menus:', menuError);
       message.error(t('dietLoadMenuFailed'));
     }
-  }, [menuError, t]);
+  }, [menuError, message, t]);
 
   const dayPlans = useMemo(() => {
     return mealSlotsToDayPlans(menuRows, (d) => t(`day${d}` as TranslationKey));
@@ -290,6 +291,7 @@ export default function DietBoardPage() {
             onClick={() =>
               handleExportDietPdf({
                 t,
+                message,
                 categoryName:
                   dietCategories.find((c) => c.id === activeCategoryId)?.name ??
                   t('dietUnknownDiet'),

@@ -1,4 +1,4 @@
-import { Button, Form, Input, Typography, message } from 'antd';
+import { App, Button, Form, Input, Typography } from 'antd';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 
@@ -19,6 +19,7 @@ type CompanyCreateFormValues = CompanyUpsertSchema & {
 
 export default function CompanyCreateForm() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [, navigate] = useLocation();
   const [form] = Form.useForm<CompanyCreateFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);

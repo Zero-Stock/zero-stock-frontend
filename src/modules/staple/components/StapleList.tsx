@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Popconfirm, Space, Table, Typography, message } from 'antd';
+import { App, Button, Popconfirm, Space, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type {
   StaplePreviewSchema,
@@ -16,6 +16,7 @@ const { Title } = Typography;
 
 export default function StapleList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingStaple, setEditingStaple] =
@@ -30,7 +31,7 @@ export default function StapleList() {
     if (isError) {
       message.error(t('stapleLoadFailed'));
     }
-  }, [isError, t]);
+  }, [isError, message, t]);
 
   const handleCreate = () => {
     setEditingStaple(null);

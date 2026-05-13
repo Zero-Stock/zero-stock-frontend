@@ -1,4 +1,4 @@
-import { Button, Form, Input, Typography, message } from 'antd';
+import { App, Button, Form, Input, Typography } from 'antd';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
@@ -26,6 +26,7 @@ type SupplierCreateFormValues = SupplierUpsertSchema & {
 
 export default function SupplierCreateForm() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [, navigate] = useLocation();
   const [form] = Form.useForm<SupplierCreateFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);

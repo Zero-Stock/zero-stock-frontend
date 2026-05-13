@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, InputNumber, Table, Typography, message } from 'antd';
+import { App, Button, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useProcurementList } from '../hooks/useProcurementList';
@@ -25,6 +25,7 @@ type ReceivingTableRow = ProcurementSheetItemDto & {
 
 export default function ReceivingList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [editedRows, setEditedRows] = useState<
     Record<string, EditedReceivingRow>
   >({});

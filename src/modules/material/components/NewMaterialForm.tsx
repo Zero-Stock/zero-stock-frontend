@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Table, message } from 'antd';
+import { App, Button, Form, Input, InputNumber, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useLocation } from 'wouter';
 import { useMaterialCreate } from '../hooks/useMaterialCreate';
@@ -24,6 +24,7 @@ function normalizeMaterialName(name: string) {
 
 export default function NewMaterialForm() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [, navigate] = useLocation();
   const { trigger: createMaterial } = useMaterialCreate();
   const { categoryOptions, isLoading: isLoadingCategories } =

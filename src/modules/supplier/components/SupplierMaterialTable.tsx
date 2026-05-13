@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, Space, Table, Typography, message } from 'antd';
+import { App, Button, Checkbox, Input, Space, Table, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
@@ -22,6 +22,7 @@ export default function SupplierMaterialTable(
 ) {
   const { supplierId } = props;
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [keyword, setKeyword] = useState('');
 
   const { materials, isLoading, mutate } = useSupplierMaterials({

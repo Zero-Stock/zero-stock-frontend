@@ -1,4 +1,4 @@
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
 import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
 import type { TranslationKey } from '@/shared/translation/translations';
 import type { ProcurementRecordSchema } from '@/shared/types/schema';
@@ -7,6 +7,11 @@ export interface HandleExportPdfParams {
   date: string;
   items: ProcurementSheetItemDto[];
   t: (key: TranslationKey) => string;
+  message: {
+    warning: (content: string) => unknown;
+    success: (content: string) => unknown;
+    error: (content: string) => unknown;
+  };
   generateTrigger: (
     params: { date: string },
   ) => Promise<ProcurementRecordSchema>;
@@ -17,7 +22,7 @@ export interface HandleExportPdfParams {
 }
 
 export const handleExportPdf = (params: HandleExportPdfParams) => {
-  const { t, items, date } = params;
+  const { t, items, date, message } = params;
 
   const printProcurementSheet = () => {
     if (!items || items.length === 0) {

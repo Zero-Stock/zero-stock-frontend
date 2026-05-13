@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  App,
   Button,
   Input,
   Popconfirm,
@@ -7,7 +8,6 @@ import {
   Space,
   Table,
   Typography,
-  message,
 } from 'antd';
 import { useLocation } from 'wouter';
 
@@ -27,6 +27,7 @@ const { Title } = Typography;
 
 export default function SupplierList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [, navigate] = useLocation();
 
   const [keyword, setKeyword] = useState('');

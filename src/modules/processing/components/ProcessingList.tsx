@@ -1,4 +1,4 @@
-import { Button, Table, Typography, message } from 'antd';
+import { App, Button, Table, Typography } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
 import { useProcessingList } from '../hooks/useProcessingList';
@@ -11,6 +11,7 @@ const { Title } = Typography;
 
 export default function ProcessingList() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const date = useDateStore((state) => state.date);
 
   const { items, isLoading, mutate } = useProcessingList();
