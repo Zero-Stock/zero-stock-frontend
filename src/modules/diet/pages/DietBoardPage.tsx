@@ -104,7 +104,7 @@ export default function DietBoardPage() {
       !dietCategories.some((c) => c.name === newCategoryName)
     ) {
       try {
-        const response = await createDiet(newCategoryName);
+        const response = await createDiet({ name: newCategoryName });
         const newCategory = response.result;
         await mutateDiets();
         setSelectedCategoryId(newCategory.id);
@@ -145,7 +145,7 @@ export default function DietBoardPage() {
       onOk: async () => {
         if (!newName || newName === diet.name) return;
         try {
-          await updateDiet(diet.id, newName);
+          await updateDiet(diet.id, { name: newName });
           await mutateDiets();
           message.success(t('dietCategoryRenamed'));
         } catch (err) {

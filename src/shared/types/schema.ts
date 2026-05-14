@@ -792,19 +792,12 @@ export interface components {
             /** @description Meal slots */
             meal_slots: components["schemas"]["DietMealSlotSchema"][];
         };
-        DietCreateSchema: {
+        DietUpsertSchema: {
             /**
              * @description Diet name
              * @example Regular
              */
             name: string;
-        };
-        DietUpdateSchema: {
-            /**
-             * @description Diet name
-             * @example Regular
-             */
-            name?: string;
             /**
              * @description Staple id. New diets default to Rice.
              * @example 1
@@ -1218,11 +1211,6 @@ export interface components {
             materials: components["schemas"]["SupplierMaterialPreviewSchema"][];
         };
         SupplierUpsertSchema: {
-            /**
-             * @description Supplier id. Include to update.
-             * @example 1
-             */
-            id?: number;
             /**
              * @description Supplier name
              * @example Fresh Market
@@ -2557,8 +2545,7 @@ export type DietOptionSchema = components['schemas']['DietOptionSchema'];
 export type DietQuantitySchema = components['schemas']['DietQuantitySchema'];
 export type DietMealSlotSchema = components['schemas']['DietMealSlotSchema'];
 export type DietDetailSchema = components['schemas']['DietDetailSchema'];
-export type DietCreateSchema = components['schemas']['DietCreateSchema'];
-export type DietUpdateSchema = components['schemas']['DietUpdateSchema'];
+export type DietUpsertSchema = components['schemas']['DietUpsertSchema'];
 export type DietMealSlotDishSchema = components['schemas']['DietMealSlotDishSchema'];
 export type DietMealSlotUpsertSchema = components['schemas']['DietMealSlotUpsertSchema'];
 export type DishIngredientSchema = components['schemas']['DishIngredientSchema'];

@@ -74,8 +74,8 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
           address: supplier.address,
         }}
         onCancel={() => setEditOpen(false)}
-        onSave={async (next) => {
-          await updateTrigger(next);
+        onSave={async (id, payload) => {
+          await updateTrigger(id, payload);
           mutate();
           setEditOpen(false);
         }}

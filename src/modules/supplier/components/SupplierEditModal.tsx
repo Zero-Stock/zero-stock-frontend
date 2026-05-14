@@ -3,15 +3,13 @@ import { useEffect } from 'react';
 import type { SupplierUpsertSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
+export type SupplierEditFormValue = SupplierUpsertSchema & { id: number };
+
 interface SupplierEditModalProps {
   open: boolean;
-  supplier:
-    | (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>)
-    | null;
+  supplier: SupplierEditFormValue | null;
   onCancel: () => void;
-  onSave: (
-    updated: SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>,
-  ) => void;
+  onSave: (id: number, payload: SupplierUpsertSchema) => void;
 }
 
 export default function SupplierEditModal({
@@ -33,16 +31,14 @@ export default function SupplierEditModal({
 
   const handleOk = async () => {
     const values = await form.validateFields();
-    const updated: SupplierUpsertSchema &
-      Required<Pick<SupplierUpsertSchema, 'id'>> = {
-      id: Number(values.id),
+    const payload: SupplierUpsertSchema = {
       name: values.name,
       contact_person: values.contact_person,
       phone: values.phone,
       address: values.address,
     };
 
-    onSave(updated);
+    onSave(Number(values.id), payload);
   };
 
   return (

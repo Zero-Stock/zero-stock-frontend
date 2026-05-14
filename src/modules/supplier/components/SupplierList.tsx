@@ -12,14 +12,12 @@ import {
 import { useLocation } from 'wouter';
 
 import SupplierEditModal from './SupplierEditModal';
+import type { SupplierEditFormValue } from './SupplierEditModal';
 import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 import { useSupplierList } from '../hooks/useSupplierList';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
-import type {
-  SupplierPreviewSchema,
-  SupplierUpsertSchema,
-} from '@/shared/types/schema';
+import type { SupplierPreviewSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -35,9 +33,7 @@ export default function SupplierList() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<
-    (SupplierUpsertSchema & Required<Pick<SupplierUpsertSchema, 'id'>>) | null
-  >(null);
+  const [editing, setEditing] = useState<SupplierEditFormValue | null>(null);
 
   const { materialOptions, isLoading: isLoadingMaterials } =
     useMaterialOptions();
@@ -178,8 +174,8 @@ export default function SupplierList() {
           setEditOpen(false);
           setEditing(null);
         }}
-        onSave={async (next) => {
-          await updateTrigger(next);
+        onSave={async (id, payload) => {
+          await updateTrigger(id, payload);
           message.success(t('supplierUpdated'));
           mutate();
           setEditOpen(false);
