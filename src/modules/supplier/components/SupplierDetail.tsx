@@ -1,9 +1,6 @@
 import { Button, Space, Typography, Spin } from 'antd';
 import { useLocation } from 'wouter';
-import { useState } from 'react';
 import { useSupplierDetail } from '../hooks/useSupplierDetail';
-import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
-import SupplierEditModal from './SupplierEditModal';
 import SupplierMaterialTable from './SupplierMaterialTable';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
@@ -14,10 +11,7 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
   const [, navigate] = useLocation();
 
   const idNum = Number(supplierId);
-  const { supplier, isLoading, mutate } = useSupplierDetail(idNum);
-  const { trigger: updateTrigger } = useSupplierUpdate();
-
-  const [editOpen, setEditOpen] = useState(false);
+  const { supplier, isLoading } = useSupplierDetail(idNum);
 
   if (isLoading) {
     return (
@@ -50,36 +44,17 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
           </Text>
         </div>
 
-        <Space>
-          <Button onClick={() => navigate('/supplier')}>
-            {t('supplierBack')}
-          </Button>
-          <Button type="primary" onClick={() => setEditOpen(true)}>
-            {t('supplierEdit')}
-          </Button>
-        </Space>
+        <Button
+          type="primary"
+          onClick={() => navigate(`/supplier/update/${supplier.id}`)}
+        >
+          {t('supplierEdit')}
+        </Button>
       </Space>
 
       <div className="mt-6">
         <SupplierMaterialTable supplierId={supplier.id} />
       </div>
-
-      <SupplierEditModal
-        open={editOpen}
-        supplier={{
-          id: supplier.id,
-          name: supplier.name,
-          contact_person: supplier.contact_person,
-          phone: supplier.phone,
-          address: supplier.address,
-        }}
-        onCancel={() => setEditOpen(false)}
-        onSave={async (id, payload) => {
-          await updateTrigger(id, payload);
-          mutate();
-          setEditOpen(false);
-        }}
-      />
     </div>
   );
 }

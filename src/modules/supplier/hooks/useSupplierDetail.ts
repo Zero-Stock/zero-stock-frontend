@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { SupplierPreviewSchema } from '@/shared/types/schema';
+import type { SupplierDetailSchema } from '@/shared/types/schema';
 
 export function useSupplierDetail(supplierId?: number) {
   const key: SWRKey | null = supplierId
@@ -11,7 +11,7 @@ export function useSupplierDetail(supplierId?: number) {
     : null;
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<SupplierPreviewSchema>>(key);
+    useSWR<ApiResponseDto<SupplierDetailSchema>>(key);
 
   return {
     supplier: data?.result,

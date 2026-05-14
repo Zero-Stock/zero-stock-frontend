@@ -1,8 +1,8 @@
 import { App, Button, Form, Input, Typography } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
-import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
+import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import SupplierCreateMaterialTable from './SupplierCreateMaterialTable';
 import type {
@@ -13,28 +13,51 @@ import { kgToGrams } from '../utils/supplierMaterialUnit';
 
 const { Title, Text } = Typography;
 
-type SupplierCreateMaterialFormRow = {
-  rawMaterialId?: SupplierMaterialUpsertSchema['material_id'];
-  price_per_unit?: string;
-  unit?: SupplierMaterialUpsertSchema['unit_name'];
-  g_per_unit?: string;
+type SupplierUpsertFormValues = Omit<SupplierUpsertSchema, 'materials'> & {
+  materials?: Partial<SupplierMaterialUpsertSchema>[];
 };
 
-type SupplierCreateFormValues = SupplierUpsertSchema & {
-  materials?: SupplierCreateMaterialFormRow[];
+interface SupplierUpsertFormProps {
+  supplierId?: number;
+  initValues?: SupplierUpsertSchema;
+}
+
+const emptyMaterialRow: Partial<SupplierMaterialUpsertSchema> = {
+  price_per_unit: undefined,
+  unit_name: '',
+  g_per_unit: undefined,
 };
 
-export default function SupplierCreateForm() {
+export default function SupplierUpsertForm({
+  supplierId,
+  initValues,
+}: SupplierUpsertFormProps) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
-  const [form] = Form.useForm<SupplierCreateFormValues>();
+  const [form] = Form.useForm<SupplierUpsertFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { trigger: createSupplier } = useSupplierCreate();
-  const { trigger: createMaterial } = useSupplierMaterialCreate();
+  const { trigger: updateSupplier } = useSupplierUpdate();
 
-  const onFinish = async (values: SupplierCreateFormValues) => {
+  useEffect(() => {
+    if (initValues) {
+      form.setFieldsValue({
+        ...initValues,
+        materials: initValues.materials?.length
+          ? initValues.materials.map((material) => ({
+              ...material,
+              g_per_unit: material.g_per_unit
+                ? String(Number(material.g_per_unit) / 1000)
+                : undefined,
+            }))
+          : [emptyMaterialRow],
+      });
+    }
+  }, [form, initValues]);
+
+  const onFinish = async (values: SupplierUpsertFormValues) => {
     setIsSubmitting(true);
     try {
       const payload: SupplierUpsertSchema = {
@@ -42,61 +65,49 @@ export default function SupplierCreateForm() {
         contact_person: values.contact_person,
         phone: values.phone,
         address: values.address,
+        materials: values.materials?.map((row) => ({
+          material_id: row.material_id!,
+          unit_name: row.unit_name || 'kg',
+          g_per_unit: kgToGrams(row.g_per_unit) ?? '1000',
+          price_per_unit: row.price_per_unit ?? '0',
+          notes: row.notes,
+          is_default: row.is_default,
+        })),
       };
 
-      const createdSupplier = await createSupplier(payload);
-      const supplierId = createdSupplier.result.id;
-
-      if (!supplierId) {
-        message.error(t('supplierCreateErrorId'));
+      if (supplierId) {
+        await updateSupplier(supplierId, payload);
+        message.success(t('supplierUpdated'));
+        navigate(`/supplier/${supplierId}`);
         return;
       }
 
-      // Create materials if any
-      const mRows = values.materials || [];
-      for (const row of mRows) {
-        if (row.rawMaterialId) {
-          try {
-            await createMaterial({
-              supplier_id: supplierId,
-              material_id: row.rawMaterialId,
-              unit_name: row.unit || 'kg',
-              g_per_unit: kgToGrams(row.g_per_unit) ?? '1000',
-              price_per_unit: row.price_per_unit ?? '0',
-            });
-          } catch (err) {
-            console.error(err);
-            message.warning(
-              `${t('supplierCreateErrorMaterial')} ${row.rawMaterialId}`,
-            );
-          }
-        }
-      }
+      const createdSupplier = await createSupplier(payload);
+      const nextSupplierId = createdSupplier.result.id;
 
+      if (!nextSupplierId) {
+        message.error(t('supplierCreateErrorId'));
+        return;
+      }
       message.success(t('supplierCreated'));
-      navigate(`/supplier/${supplierId}`);
+      navigate(`/supplier/${nextSupplierId}`);
     } catch (err) {
       console.error(err);
-      message.error(t('supplierCreateFailed'));
+      message.error(
+        supplierId ? t('supplierUpdateFailed') : t('supplierCreateFailed'),
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Form<SupplierCreateFormValues>
+    <Form<SupplierUpsertFormValues>
       form={form}
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
-        materials: [
-          {
-            rawMaterialId: undefined,
-            price_per_unit: undefined,
-            unit: '',
-            g_per_unit: undefined,
-          },
-        ],
+        materials: [emptyMaterialRow],
       }}
     >
       <Title level={4}>{t('supplierBasicInfo')}</Title>

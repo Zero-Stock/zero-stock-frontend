@@ -315,6 +315,10 @@ export const translations = {
     zh: '创建供应商失败',
     en: 'Failed to create supplier',
   },
+  supplierUpdateFailed: {
+    zh: '更新供应商失败',
+    en: 'Failed to update supplier',
+  },
   supplierBasicInfo: { zh: '基础信息', en: 'Basic Information' },
   supplierRequired: { zh: '必填', en: 'Required' },
   supplierNamePlaceholder: { zh: '供应商名称', en: 'Supplier name' },
@@ -322,8 +326,8 @@ export const translations = {
   supplierPhonePlaceholder: { zh: '电话号码', en: 'Phone number' },
   supplierMaterialDetails: { zh: '食材明细', en: 'Material Details' },
   supplierMaterialDetailsDesc: {
-    zh: '可选。您可以在此处添加食材，或稍后在供应商详情页中进行编辑。',
-    en: 'Optional. You can add materials now, or edit later in the supplier detail page.',
+    zh: '可选。您可以在此处维护该供应商提供的食材。',
+    en: 'Optional. Maintain the materials this supplier provides here.',
   },
   supplierMaterial: { zh: '食材', en: 'Material' },
   supplierPrice: { zh: '单位价格', en: 'Price per unit' },

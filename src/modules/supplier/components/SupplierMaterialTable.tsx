@@ -1,10 +1,8 @@
 import { App, Button, Checkbox, Input, Space, Table, Typography } from 'antd';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
-import { useSupplierMaterialCreate } from '../hooks/useSupplierMaterialCreate';
 import { useSupplierMaterialUpdate } from '../hooks/useSupplierMaterialUpdate';
-import SupplierMaterialUpsertModal from './SupplierMaterialUpsertModal';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
@@ -28,37 +26,27 @@ export default function SupplierMaterialTable(
   const { materials, isLoading, mutate } = useSupplierMaterials({
     supplier_id: supplierId,
   });
-  const { trigger: createTrigger } = useSupplierMaterialCreate();
   const { trigger: updateTrigger } = useSupplierMaterialUpdate();
   const { trigger: deleteTrigger } = useSupplierMaterialDelete();
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] =
-    useState<SupplierMaterialPreviewSchema | null>(null);
-
-  const existingRawMaterialIds = useMemo(
-    () => new Set(materials.map((m) => m.material_id)),
-    [materials],
-  );
 
   const columns: ColumnsType<SupplierMaterialPreviewSchema> = [
     {
       title: t('commonName'),
       dataIndex: 'material_name',
       key: 'material_name',
-      width: 120,
+      width: '15%',
     },
     {
       title: t('commonUnit'),
       dataIndex: 'unit_name',
       key: 'unit_name',
-      width: 120,
+      width: '10%',
     },
     {
       title: t('supplierKgPerUnit'),
       dataIndex: 'g_per_unit',
       key: 'g_per_unit',
-      width: 120,
+      width: '15%',
       render: (value: SupplierMaterialPreviewSchema['g_per_unit']) =>
         `${gramsToKg(value)} kg`,
     },
@@ -66,21 +54,21 @@ export default function SupplierMaterialTable(
       title: t('supplierPrice'),
       dataIndex: 'price_per_unit',
       key: 'price_per_unit',
-      width: 120,
+      width: '15%',
     },
+    { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
     {
       title: '默认供应商',
       key: 'isDefaultSupplierMaterial',
-      width: 120,
+      width: '10%',
+      align: 'center',
       render: (_, record: SupplierMaterialPreviewSchema) => (
         <Checkbox
           checked={record.isDefaultSupplierMaterial}
           onChange={async (e) => {
             const checked = e.target.checked;
             try {
-              await updateTrigger({
-                id: record.id,
-                supplier_id: supplierId,
+              await updateTrigger(record.id, {
                 material_id: record.material_id,
                 is_default: checked,
               });
@@ -97,23 +85,12 @@ export default function SupplierMaterialTable(
         />
       ),
     },
-    { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
     {
       title: t('supplierMaterialActions'),
       key: 'actions',
-      width: 200,
+      width: '10%',
       render: (_, record: SupplierMaterialPreviewSchema) => (
         <Space size="small">
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingMaterial(record);
-              setModalOpen(true);
-            }}
-            className="p-0!"
-          >
-            {t('edit')}
-          </Button>
           <Button
             type="link"
             danger
@@ -152,15 +129,6 @@ export default function SupplierMaterialTable(
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
-          <Button
-            type="primary"
-            onClick={() => {
-              setEditingMaterial(null);
-              setModalOpen(true);
-            }}
-          >
-            {t('supplierAddMaterial')}
-          </Button>
         </Space>
       </Space>
 
@@ -170,32 +138,6 @@ export default function SupplierMaterialTable(
         dataSource={materials}
         loading={isLoading}
         pagination={{ pageSize: 8 }}
-      />
-
-      <SupplierMaterialUpsertModal
-        open={modalOpen}
-        initialValues={editingMaterial}
-        existingRawMaterialIds={existingRawMaterialIds}
-        onCancel={() => {
-          setModalOpen(false);
-          setEditingMaterial(null);
-        }}
-        onSave={async (payload) => {
-          if (editingMaterial) {
-            await updateTrigger({
-              ...payload,
-              id: editingMaterial.id,
-              supplier_id: supplierId,
-            });
-            message.success(t('supplierMaterialUpdated'));
-          } else {
-            await createTrigger({ ...payload, supplier_id: supplierId });
-            message.success(t('supplierMaterialAdded'));
-          }
-          setModalOpen(false);
-          setEditingMaterial(null);
-          mutate();
-        }}
       />
     </div>
   );

@@ -61,6 +61,9 @@ const SupplierListPage = lazyPage(
 const SupplierCreatePage = lazyPage(
   () => import('./modules/supplier/pages/SupplierCreatePage'),
 );
+const SupplierUpdatePage = lazyPage(
+  () => import('./modules/supplier/pages/SupplierUpdatePage'),
+);
 const SupplierDetailPage = lazyPage(
   () => import('./modules/supplier/pages/SupplierDetailPage'),
 );
@@ -196,6 +199,13 @@ export const routes: RouteConfig[] = [
         titleKey: 'navCreateSupplier',
         showInMenu: false,
         component: SupplierCreatePage,
+      },
+      {
+        path: '/supplier/update/:supplierId',
+        title: 'Update Supplier',
+        titleKey: 'supplierEdit',
+        showInMenu: false,
+        component: SupplierUpdatePage,
       },
       {
         path: '/supplier/:supplierId',

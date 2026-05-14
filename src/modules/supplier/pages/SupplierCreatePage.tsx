@@ -1,4 +1,4 @@
-import SupplierCreateForm from '@/modules/supplier/components/SupplierCreateForm';
+import SupplierUpsertForm from '@/modules/supplier/components/SupplierUpsertForm';
 import { Typography } from 'antd';
 
 const { Title } = Typography;
@@ -9,7 +9,7 @@ export default function SupplierCreatePage() {
       <Title level={3}>Add New Supplier</Title>
 
       <div style={{ marginTop: '24px' }}>
-        <SupplierCreateForm />
+        <SupplierUpsertForm />
       </div>
     </div>
   );

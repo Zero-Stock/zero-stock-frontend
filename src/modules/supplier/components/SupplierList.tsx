@@ -11,11 +11,8 @@ import {
 } from 'antd';
 import { useLocation } from 'wouter';
 
-import SupplierEditModal from './SupplierEditModal';
-import type { SupplierEditFormValue } from './SupplierEditModal';
 import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 import { useSupplierList } from '../hooks/useSupplierList';
-import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
 import type { SupplierPreviewSchema } from '@/shared/types/schema';
 import { useTranslation } from '@/shared/translation/LanguageContext';
@@ -32,8 +29,6 @@ export default function SupplierList() {
   const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<SupplierEditFormValue | null>(null);
 
   const { materialOptions, isLoading: isLoadingMaterials } =
     useMaterialOptions();
@@ -49,7 +44,6 @@ export default function SupplierList() {
 
   const { suppliers, total, isLoading, mutate } = useSupplierList(payload);
 
-  const { trigger: updateTrigger } = useSupplierUpdate();
   const { trigger: deleteTrigger } = useSupplierDelete();
 
   const columns: ColumnsType<SupplierPreviewSchema> = [
@@ -77,16 +71,7 @@ export default function SupplierList() {
 
           <Button
             type="link"
-            onClick={() => {
-              setEditing({
-                id: record.id,
-                name: record.name,
-                contact_person: record.contact_person,
-                phone: record.phone,
-                address: record.address,
-              });
-              setEditOpen(true);
-            }}
+            onClick={() => navigate(`/supplier/update/${record.id}`)}
             className="p-0!"
           >
             {t('edit')}
@@ -167,21 +152,6 @@ export default function SupplierList() {
         tableLayout="fixed"
       />
 
-      <SupplierEditModal
-        open={editOpen}
-        supplier={editing}
-        onCancel={() => {
-          setEditOpen(false);
-          setEditing(null);
-        }}
-        onSave={async (id, payload) => {
-          await updateTrigger(id, payload);
-          message.success(t('supplierUpdated'));
-          mutate();
-          setEditOpen(false);
-          setEditing(null);
-        }}
-      />
     </div>
   );
 }

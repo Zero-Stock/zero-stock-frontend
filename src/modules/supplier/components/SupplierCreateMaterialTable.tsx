@@ -14,12 +14,13 @@ export default function SupplierCreateMaterialTable() {
         const columns: ColumnsType<(typeof fields)[number]> = [
           {
             title: t('supplierMaterial'),
-            dataIndex: 'rawMaterialId',
-            key: 'rawMaterialId',
-            width: '30%',
+            dataIndex: 'material_id',
+            key: 'material_id',
+            width: '15%',
             render: (_, _record, index) => (
               <Form.Item
-                name={[fields[index].name, 'rawMaterialId']}
+                name={[fields[index].name, 'material_id']}
+                rules={[{ required: true, message: t('supplierRequired') }]}
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
@@ -35,7 +36,7 @@ export default function SupplierCreateMaterialTable() {
             title: t('supplierPrice'),
             dataIndex: 'price_per_unit',
             key: 'price_per_unit',
-            width: '20%',
+            width: '15%',
             render: (_, _record, index) => (
               <Form.Item
                 name={[fields[index].name, 'price_per_unit']}
@@ -55,12 +56,12 @@ export default function SupplierCreateMaterialTable() {
           },
           {
             title: t('supplierUnitSpec'),
-            dataIndex: 'unit',
-            key: 'unit',
-            width: '20%',
+            dataIndex: 'unit_name',
+            key: 'unit_name',
+            width: '15%',
             render: (_, _record, index) => (
               <Form.Item
-                name={[fields[index].name, 'unit']}
+                name={[fields[index].name, 'unit_name']}
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
@@ -72,7 +73,7 @@ export default function SupplierCreateMaterialTable() {
             title: t('supplierKgPerUnit'),
             dataIndex: 'g_per_unit',
             key: 'g_per_unit',
-            width: '20%',
+            width: '15%',
             render: (_, _record, index) => (
               <Form.Item
                 name={[fields[index].name, 'g_per_unit']}
@@ -91,10 +92,23 @@ export default function SupplierCreateMaterialTable() {
             ),
           },
           {
+            title: t('supplierMaterialNotes'),
+            dataIndex: 'notes',
+            key: 'notes',
+            render: (_, _record, index) => (
+              <Form.Item
+                name={[fields[index].name, 'notes']}
+                className="mb-0!"
+                style={{ marginBottom: 0 }}
+              >
+                <Input placeholder={t('supplierMaterialNotes')} />
+              </Form.Item>
+            ),
+          },
+          {
             title: '',
             key: 'action',
             width: '10%',
-            align: 'right',
             render: (_, _record, index) => (
               <Button
                 danger
@@ -118,10 +132,11 @@ export default function SupplierCreateMaterialTable() {
                 type="dashed"
                 onClick={() =>
                   add({
-                    rawMaterialId: undefined,
+                    material_id: undefined,
                     price_per_unit: undefined,
-                    unit: '',
+                    unit_name: '',
                     g_per_unit: undefined,
+                    notes: '',
                   })
                 }
                 block

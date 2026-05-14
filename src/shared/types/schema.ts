@@ -1210,6 +1210,38 @@ export interface components {
             /** @description Supplier material offerings */
             materials: components["schemas"]["SupplierMaterialPreviewSchema"][];
         };
+        SupplierMaterialUpsertSchema: {
+            /**
+             * @description Material id
+             * @example 1
+             */
+            material_id: number;
+            /**
+             * @description Supplier unit name
+             * @example bag
+             */
+            unit_name?: string;
+            /**
+             * @description Grams per supplier unit
+             * @example 25000
+             */
+            g_per_unit?: string;
+            /**
+             * @description Supplier price
+             * @example 50.00
+             */
+            price_per_unit?: string | null;
+            /**
+             * @description Notes
+             * @example
+             */
+            notes?: string;
+            /**
+             * @description Set to true to mark this offering as the default for its material. Set to false to clear the default. Omit to leave unchanged.
+             * @example true
+             */
+            is_default?: boolean | null;
+        };
         SupplierUpsertSchema: {
             /**
              * @description Supplier name
@@ -1231,6 +1263,8 @@ export interface components {
              * @example 123 Main St
              */
             address?: string;
+            /** @description Supplier-material offerings to create or update for this supplier */
+            materials?: components["schemas"]["SupplierMaterialUpsertSchema"][];
         };
         SupplierMaterialListResponseSchema: {
             /**
@@ -1315,100 +1349,6 @@ export interface components {
              * @example Fresh Market - Rice
              */
             name: string;
-        };
-        SupplierMaterialDetailSchema: {
-            /**
-             * @description Supplier material id
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description Supplier id
-             * @example 1
-             */
-            supplier_id: number;
-            /**
-             * @description Supplier name
-             * @example Fresh Market
-             */
-            supplier_name: string;
-            /**
-             * @description Material id
-             * @example 1
-             */
-            material_id: number;
-            /**
-             * @description Material name
-             * @example Rice
-             */
-            material_name: string;
-            /**
-             * @description Supplier unit name
-             * @example bag
-             */
-            unit_name: string;
-            /**
-             * @description Grams per supplier unit
-             * @example 25000
-             */
-            g_per_unit: string;
-            /**
-             * @description Supplier price
-             * @example 50.00
-             */
-            price_per_unit: string | null;
-            /**
-             * @description Notes
-             * @example
-             */
-            notes: string;
-            /**
-             * @description Whether this is the default supplier for the material
-             * @example true
-             */
-            isDefaultSupplierMaterial: boolean;
-        };
-        SupplierMaterialUpsertSchema: {
-            /**
-             * @description Supplier material id. Include to update.
-             * @example 1
-             */
-            id?: number;
-            /**
-             * @description Supplier id
-             * @example 1
-             */
-            supplier_id: number;
-            /**
-             * @description Material id
-             * @example 1
-             */
-            material_id: number;
-            /**
-             * @description Supplier unit name
-             * @example bag
-             */
-            unit_name?: string;
-            /**
-             * @description Grams per supplier unit
-             * @example 25000
-             */
-            g_per_unit?: string;
-            /**
-             * @description Supplier price
-             * @example 50.00
-             */
-            price_per_unit?: string | null;
-            /**
-             * @description Notes
-             * @example
-             */
-            notes?: string;
-            /**
-             * @description Set to true to mark this offering as the default for its material. Set to false to clear the default. Omit to leave unchanged.
-             * @example true
-             */
-            is_default?: boolean | null;
         };
         CensusPreviewSchema: {
             /**
@@ -2562,12 +2502,11 @@ export type SupplierListResponseSchema = components['schemas']['SupplierListResp
 export type SupplierQuerySchema = components['schemas']['SupplierQuerySchema'];
 export type SupplierOptionSchema = components['schemas']['SupplierOptionSchema'];
 export type SupplierDetailSchema = components['schemas']['SupplierDetailSchema'];
+export type SupplierMaterialUpsertSchema = components['schemas']['SupplierMaterialUpsertSchema'];
 export type SupplierUpsertSchema = components['schemas']['SupplierUpsertSchema'];
 export type SupplierMaterialListResponseSchema = components['schemas']['SupplierMaterialListResponseSchema'];
 export type SupplierMaterialQuerySchema = components['schemas']['SupplierMaterialQuerySchema'];
 export type SupplierMaterialOptionSchema = components['schemas']['SupplierMaterialOptionSchema'];
-export type SupplierMaterialDetailSchema = components['schemas']['SupplierMaterialDetailSchema'];
-export type SupplierMaterialUpsertSchema = components['schemas']['SupplierMaterialUpsertSchema'];
 export type CensusPreviewSchema = components['schemas']['CensusPreviewSchema'];
 export type CensusListResponseSchema = components['schemas']['CensusListResponseSchema'];
 export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
