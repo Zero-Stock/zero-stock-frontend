@@ -1,11 +1,11 @@
-import { Button, Space, Spin, Typography } from 'antd';
+import { Button, Descriptions, Space, Spin, Typography } from 'antd';
 import { useLocation } from 'wouter';
 
 import { useCompanyDetail } from '../hooks/useCompanyDetail';
 import CompanyRegionTable from './CompanyRegionTable';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function CompanyDetail({ companyId }: { companyId: string }) {
   const { t } = useTranslation();
@@ -38,16 +38,42 @@ export default function CompanyDetail({ companyId }: { companyId: string }) {
           <Title level={3} style={{ marginBottom: 4 }}>
             {company.name}
           </Title>
-          <Text type="secondary">
-            {company.code} · {company.contact_person} · {company.phone} ·{' '}
-            {company.address}
-          </Text>
+          <Descriptions
+            column={3}
+            className="my-5!"
+            items={[
+              {
+                key: 'code',
+                label: t('companyCode'),
+                children: company.code || '-',
+              },
+              {
+                key: 'contact_person',
+                label: t('commonContactPerson'),
+                children: company.contact_person || '-',
+              },
+              {
+                key: 'phone',
+                label: t('commonPhone'),
+                children: company.phone || '-',
+              },
+              {
+                key: 'address',
+                label: t('commonAddress'),
+                children: company.address || '-',
+              },
+              {
+                key: 'description',
+                label: t('companyDescription'),
+                children: company.description || t('none'),
+                span: 2,
+              },
+            ]}
+          />
         </div>
 
         <Button onClick={() => navigate('/company')}>{t('companyBack')}</Button>
       </Space>
-
-      <Text className="mt-6 block">{company.description || t('none')}</Text>
 
       <div className="mt-6">
         <CompanyRegionTable regions={company.regions} />

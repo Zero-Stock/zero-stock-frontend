@@ -1,10 +1,10 @@
-import { Button, Space, Typography, Spin } from 'antd';
+import { Button, Descriptions, Space, Typography, Spin } from 'antd';
 import { useLocation } from 'wouter';
 import { useSupplierDetail } from '../hooks/useSupplierDetail';
 import SupplierMaterialTable from './SupplierMaterialTable';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function SupplierDetail({ supplierId }: { supplierId: string }) {
   const { t } = useTranslation();
@@ -39,17 +39,40 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
           <Title level={3} style={{ marginBottom: 4 }}>
             {supplier.name}
           </Title>
-          <Text type="secondary">
-            {supplier.contact_person} · {supplier.phone} · {supplier.address}
-          </Text>
+          <Descriptions
+            column={3}
+            className="my-5!"
+            items={[
+              {
+                key: 'contact_person',
+                label: t('commonContactPerson'),
+                children: supplier.contact_person || '-',
+              },
+              {
+                key: 'phone',
+                label: t('commonPhone'),
+                children: supplier.phone || '-',
+              },
+              {
+                key: 'address',
+                label: t('commonAddress'),
+                children: supplier.address || '-',
+              },
+            ]}
+          />
         </div>
 
-        <Button
-          type="primary"
-          onClick={() => navigate(`/supplier/update/${supplier.id}`)}
-        >
-          {t('supplierEdit')}
-        </Button>
+        <Space>
+          <Button onClick={() => navigate('/supplier')}>
+            {t('supplierBack')}
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => navigate(`/supplier/update/${supplier.id}`)}
+          >
+            {t('supplierEdit')}
+          </Button>
+        </Space>
       </Space>
 
       <div className="mt-6">
