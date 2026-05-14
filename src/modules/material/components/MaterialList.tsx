@@ -84,7 +84,7 @@ export default function MaterialList() {
       render: (yieldRate: string) => Number(yieldRate) * 100 + '%',
     },
     {
-      title: '默认供货商',
+      title: '默认供应商',
       dataIndex: 'default_supplier_name',
       key: 'default_supplier_name',
       width: 250,

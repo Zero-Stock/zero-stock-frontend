@@ -69,7 +69,7 @@ export default function SupplierMaterialTable(
       width: 120,
     },
     {
-      title: '默认供货商',
+      title: '默认供应商',
       key: 'isDefaultSupplierMaterial',
       width: 120,
       render: (_, record: SupplierMaterialPreviewSchema) => (
@@ -84,7 +84,9 @@ export default function SupplierMaterialTable(
                 material_id: record.material_id,
                 is_default: checked,
               });
-              message.success('默认供货商设置成功');
+              message.success(
+                checked ? '默认供应商设置成功' : '默认供应商取消成功',
+              );
               mutate();
             } catch (error) {
               if (error instanceof Error) {
