@@ -250,13 +250,10 @@ export default function CensusTable() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <Title level={3} className="mb-0!">
-            {t('censusListTitle')}
-          </Title>
-          <Text type="secondary">{t('censusListSubtitle')}</Text>
-        </div>
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <Title level={3} className="mb-0!">
+          {t('censusListTitle')}
+        </Title>
 
         <Space>
           {isEditing ? (

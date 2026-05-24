@@ -372,10 +372,6 @@ export const translations = {
 
   // ─── Census Module ───
   censusListTitle: { zh: '人数统计表', en: 'Census Table' },
-  censusListSubtitle: {
-    zh: '按区域查看各餐次人数，可切换为整表编辑模式。',
-    en: 'Review headcounts by region and meal, then switch into full-table edit mode.',
-  },
   censusRegionColumn: { zh: '区域', en: 'Region' },
   censusFilterRegion: { zh: '按区域筛选', en: 'Filter by Region' },
   censusSaved: { zh: '人数统计已保存', en: 'Census updated' },
