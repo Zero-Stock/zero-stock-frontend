@@ -7,7 +7,7 @@ import type { ReceivingTemplateDto } from '@/modules/procurement/dtos/receivingT
 export function useReceivingTemplate(procurementId?: number) {
   const key: SWRKey | null = procurementId
     ? {
-        url: `/api/receiving/${procurementId}/template/`,
+        url: `/api/receiving/${procurementId}/template`,
       }
     : null;
 

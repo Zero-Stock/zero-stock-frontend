@@ -68,8 +68,12 @@ export default function SupplierMaterialTable(
           onChange={async (e) => {
             const checked = e.target.checked;
             try {
-              await updateTrigger(record.id, {
+              await updateTrigger(record.supplier_id, {
                 material_id: record.material_id,
+                unit_name: record.unit_name,
+                g_per_unit: record.g_per_unit,
+                price_per_unit: record.price_per_unit,
+                notes: record.notes,
                 is_default: checked,
               });
               message.success(

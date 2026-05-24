@@ -7,7 +7,7 @@ import type { ProcurementSheetDto } from '@/modules/procurement/dtos/procurement
 export function useProcurementSheet(procurementId?: number) {
   const key: SWRKey | null = procurementId
     ? {
-        url: `/api/procurement/${procurementId}/sheet/`,
+        url: `/api/procurement/${procurementId}/sheet`,
       }
     : null;
 

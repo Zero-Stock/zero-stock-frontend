@@ -84,6 +84,13 @@ export default function MaterialList() {
       render: (yieldRate: string) => Number(yieldRate) * 100 + '%',
     },
     {
+      title: t('commonStockG'),
+      dataIndex: 'currentStockG',
+      key: 'currentStockG',
+      width: 140,
+      render: (stock: string) => `${(Number(stock) / 1000).toLocaleString()} kg`,
+    },
+    {
       title: '默认供应商',
       dataIndex: 'default_supplier_name',
       key: 'default_supplier_name',

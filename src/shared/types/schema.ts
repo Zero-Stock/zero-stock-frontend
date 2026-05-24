@@ -459,6 +459,11 @@ export interface components {
              */
             yield_rate: string;
             /**
+             * @description Current stock in grams
+             * @example 85000.000
+             */
+            currentStockG: string;
+            /**
              * @description Default supplier-material offering id
              * @example 3
              */
@@ -588,6 +593,11 @@ export interface components {
              * @example 1.00
              */
             yield_rate: string;
+            /**
+             * @description Current stock in grams
+             * @example 85000.000
+             */
+            currentStockG: string;
             /**
              * @description Default supplier-material offering id
              * @example 3

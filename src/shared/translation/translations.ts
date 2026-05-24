@@ -140,6 +140,7 @@ export const translations = {
   commonCurrencySymbol: { zh: '¥', en: '$' },
   commonRegenerate: { zh: '重新生成加工单', en: 'Regenerate' },
   commonYieldRate: { zh: '出成率', en: 'Yield Rate' },
+  commonStockG: { zh: '库存(kg)', en: 'Stock (kg)' },
   commonSpecs: { zh: '加工规格', en: 'Specs' },
   commonAction: { zh: '操作', en: 'Action' },
   commonOperation: { zh: '操作', en: 'Operation' },

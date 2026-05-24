@@ -7,7 +7,7 @@ import type { ProcurementItemDto } from '../dtos/procurementItem.dto';
 export function useProcurementItems(procurementId?: number) {
   const key: SWRKey | null = procurementId
     ? {
-        url: `/api/procurement/${procurementId}/items/`,
+        url: `/api/procurement/${procurementId}/items`,
       }
     : null;
 
