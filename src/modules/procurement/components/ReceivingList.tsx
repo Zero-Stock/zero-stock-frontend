@@ -6,17 +6,22 @@ import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementSheet } from '../hooks/useProcurementSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
 import { useReceivingCreate } from '../hooks/useReceivingCreate';
-import type { ProcurementSheetItemDto } from '../dtos/procurementSheetItem.dto';
-import type { ReceivingTemplateItemDto } from '../dtos/receivingTemplate.dto';
+import type {
+  ProcurementSheetItemSchema,
+  ReceivingTemplateItemSchema,
+} from '@/shared/types/schema';
 
 const { Title } = Typography;
+
+const formatKg = (value: number | null | undefined) =>
+  value == null ? '-' : (value / 1000).toFixed(2);
 
 type EditedReceivingRow = {
   actual_quantity: number;
   actual_unit_qty: number;
 };
 
-type ReceivingTableRow = ProcurementSheetItemDto & {
+type ReceivingTableRow = ProcurementSheetItemSchema & {
   expected_quantity: number;
   expected_unit_qty: number;
   actual_quantity: number;
@@ -77,13 +82,15 @@ export default function ReceivingList() {
     record: ReceivingTableRow,
     value: number | null,
   ) => {
-    const nextValue = value == null ? 0 : Number(value);
+    const nextValue = value == null ? 0 : Number(value) * 1000;
 
     setEditedRows((prev) => {
       let nextUnitQty =
         prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty;
       if (record.supplier_g_per_unit) {
-        nextUnitQty = Number((nextValue / record.supplier_g_per_unit).toFixed(2));
+        nextUnitQty = Number(
+          (nextValue / record.supplier_g_per_unit).toFixed(2),
+        );
       }
       return {
         ...prev,
@@ -126,16 +133,18 @@ export default function ReceivingList() {
     try {
       await createReceivingTrigger({
         procurement_id: template.procurement_id,
-        items: (template.items ?? []).map((item: ReceivingTemplateItemDto) => ({
-          material_id: item.material_id,
-          actual_quantity:
-            editedRows[item.material_name]?.actual_quantity ??
-            Number(
-              sheetItems.find(
-                (sheetItem) => sheetItem.name === item.material_name,
-              )?.purchase_g ?? 0,
-            ),
-        })),
+        items: (template.items ?? []).map(
+          (item: ReceivingTemplateItemSchema) => ({
+            material_id: item.material_id,
+            actual_quantity:
+              editedRows[item.material_name]?.actual_quantity ??
+              Number(
+                sheetItems.find(
+                  (sheetItem) => sheetItem.name === item.material_name,
+                )?.purchase_g ?? 0,
+              ),
+          }),
+        ),
       });
 
       message.success(t('receivingSubmitSuccess'));
@@ -163,27 +172,23 @@ export default function ReceivingList() {
       width: 140,
     },
     {
+      title: t('procurementColStockKg'),
+      dataIndex: 'stock_g',
+      key: 'stock_g',
+      width: 120,
+      render: (value: number) => formatKg(value),
+    },
+    {
       title: t('procurementColDemandKg'),
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 120,
+      render: (value: number) => formatKg(value),
     },
     {
       title: t('procurementColDemandUnit'),
       dataIndex: 'demand_unit_qty',
       key: 'demand_unit_qty',
-      width: 140,
-    },
-    {
-      title: t('procurementColStockKg'),
-      dataIndex: 'stock_g',
-      key: 'stock_g',
-      width: 120,
-    },
-    {
-      title: t('procurementColStockUnit'),
-      dataIndex: 'stock_unit_qty',
-      key: 'stock_unit_qty',
       width: 140,
     },
     {
@@ -205,6 +210,7 @@ export default function ReceivingList() {
       dataIndex: 'expected_quantity',
       key: 'expected_quantity',
       width: 140,
+      render: (value: number) => formatKg(value),
     },
     {
       title: t('receivingColExpectedUnit'),
@@ -218,8 +224,10 @@ export default function ReceivingList() {
       width: 160,
       render: (_, record) => (
         <InputNumber
-          value={record.actual_quantity}
+          value={Number((record.actual_quantity / 1000).toFixed(2))}
           min={0}
+          step={0.01}
+          precision={2}
           onChange={(value) => handleActualGChange(record, value)}
           className="w-full"
         />

@@ -3,14 +3,12 @@ import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import { useDateStore } from '@/shared/stores/dateStore';
-import type { ReceivingListResponseSchema } from '@/shared/types/schema';
-import type { ReceivingPreviewDto } from '../dtos/receivingPreview.dto';
+import type {
+  ReceivingListResponseSchema,
+  ReceivingQuerySchema,
+} from '@/shared/types/schema';
 
-interface UseReceivingListParams {
-  search?: string;
-}
-
-export function useReceivingList(params?: UseReceivingListParams) {
+export function useReceivingList(params?: Pick<ReceivingQuerySchema, 'name'>) {
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
@@ -20,7 +18,7 @@ export function useReceivingList(params?: UseReceivingListParams) {
     options: {
       body: {
         company_id: 1,
-        name: params?.search,
+        name: params?.name,
       },
     },
   };
@@ -29,7 +27,7 @@ export function useReceivingList(params?: UseReceivingListParams) {
     useSWR<ApiResponseDto<ReceivingListResponseSchema>>(key);
 
   const receivings = useMemo(() => {
-    return (data?.result.list ?? []) as ReceivingPreviewDto[];
+    return data?.result.list ?? [];
   }, [data]);
 
   return {

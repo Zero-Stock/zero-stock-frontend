@@ -1553,6 +1553,23 @@ export interface components {
             /** @description Census rows */
             items: components["schemas"]["CensusItemSchema"][];
         };
+        ProcurementAvailableSupplierSchema: {
+            /**
+             * @description Supplier-material offering id
+             * @example 1
+             */
+            supplier_material_id: number;
+            /**
+             * @description Supplier id
+             * @example 1
+             */
+            supplier_id: number;
+            /**
+             * @description Supplier name
+             * @example Fresh Market
+             */
+            supplier_name: string;
+        };
         ProcurementPreviewSchema: {
             /**
              * @description Procurement item id
@@ -1630,7 +1647,7 @@ export interface components {
              */
             supplier_unit: string | null;
             /** @description Available suppliers */
-            available_suppliers: components["schemas"]["SupplierOptionSchema"][];
+            available_suppliers: components["schemas"]["ProcurementAvailableSupplierSchema"][];
             /**
              * @description Procurement status
              * @example pending
@@ -1704,11 +1721,6 @@ export interface components {
              */
             start?: string;
             /**
-             * @description End date
-             * @example 2026-04-30
-             */
-            end?: string;
-            /**
              * @description Procurement status
              * @example PENDING
              */
@@ -1769,58 +1781,6 @@ export interface components {
              */
             page_size?: number;
         };
-        ProcurementUpdateItemSchema: {
-            /**
-             * @description Procurement item id
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description Supplier material id
-             * @example 1
-             */
-            supplier_id?: number | null;
-        };
-        ProcurementUpdateSchema: {
-            /**
-             * @description Date for the request
-             * @example 2026-04-28
-             */
-            date?: string;
-            /**
-             * @description Company id
-             * @example 1
-             */
-            company_id?: number;
-            /**
-             * @description Name filter
-             * @example rice
-             */
-            name?: string;
-            /**
-             * @description Column name to sort by
-             * @example name
-             */
-            sort_by?: string;
-            /**
-             * @description Sort order
-             * @example desc
-             * @enum {string}
-             */
-            sort_order?: "asc" | "desc";
-            /**
-             * @description Page number
-             * @example 1
-             */
-            page?: number;
-            /**
-             * @description Page size
-             * @example 50
-             */
-            page_size?: number;
-            /** @description Item supplier updates */
-            items: components["schemas"]["ProcurementUpdateItemSchema"][];
-        };
         UpdatedCountResponseSchema: {
             /**
              * @description Number of updated rows
@@ -1879,88 +1839,6 @@ export interface components {
             page_size?: number;
             /** @description Supplier assignments */
             assignments: components["schemas"]["ProcurementSupplierAssignmentSchema"][];
-        };
-        ProcurementItemSchema: {
-            /**
-             * @description Procurement item id
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description Material id
-             * @example 1
-             */
-            material_id: number;
-            /**
-             * @description Material name
-             * @example Rice
-             */
-            material_name: string;
-            /**
-             * @description Material category
-             * @example Grains
-             */
-            category: string;
-            /**
-             * @description Demand quantity in grams
-             * @example 20000
-             */
-            demand_quantity: string;
-            /**
-             * @description Stock quantity in grams
-             * @example 5000
-             */
-            stock_quantity: string;
-            /**
-             * @description Purchase quantity in grams
-             * @example 15000
-             */
-            purchase_quantity: string;
-            /**
-             * @description Demand quantity in supplier units
-             * @example 1
-             */
-            demand_unit_qty: number | null;
-            /**
-             * @description Stock quantity in supplier units
-             * @example 0.2
-             */
-            stock_unit_qty: number | null;
-            /**
-             * @description Purchase quantity in supplier units
-             * @example 0.6
-             */
-            purchase_unit_qty: number | null;
-            /**
-             * @description Supplier id
-             * @example 1
-             */
-            supplier_id: number | null;
-            /**
-             * @description Supplier name
-             * @example Fresh Market
-             */
-            supplier_name: string | null;
-            /**
-             * @description Supplier unit name
-             * @example bag
-             */
-            supplier_unit_name: string | null;
-            /**
-             * @description Grams per supplier unit
-             * @example 25000
-             */
-            supplier_g_per_unit: string | null;
-            /**
-             * @description Supplier price
-             * @example 50.00
-             */
-            supplier_price: string | null;
-            /**
-             * @description Notes
-             * @example
-             */
-            notes: string;
         };
         ProcurementSheetItemSchema: {
             /**
@@ -2523,17 +2401,15 @@ export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
 export type DatedMutationCountResponseSchema = components['schemas']['DatedMutationCountResponseSchema'];
 export type CensusItemSchema = components['schemas']['CensusItemSchema'];
 export type CensusUpsertSchema = components['schemas']['CensusUpsertSchema'];
+export type ProcurementAvailableSupplierSchema = components['schemas']['ProcurementAvailableSupplierSchema'];
 export type ProcurementPreviewSchema = components['schemas']['ProcurementPreviewSchema'];
 export type ProcurementListResponseSchema = components['schemas']['ProcurementListResponseSchema'];
 export type ProcurementQuerySchema = components['schemas']['ProcurementQuerySchema'];
 export type ProcurementRecordSchema = components['schemas']['ProcurementRecordSchema'];
 export type DateCompanySchema = components['schemas']['DateCompanySchema'];
-export type ProcurementUpdateItemSchema = components['schemas']['ProcurementUpdateItemSchema'];
-export type ProcurementUpdateSchema = components['schemas']['ProcurementUpdateSchema'];
 export type UpdatedCountResponseSchema = components['schemas']['UpdatedCountResponseSchema'];
 export type ProcurementSupplierAssignmentSchema = components['schemas']['ProcurementSupplierAssignmentSchema'];
 export type ProcurementAssignSuppliersSchema = components['schemas']['ProcurementAssignSuppliersSchema'];
-export type ProcurementItemSchema = components['schemas']['ProcurementItemSchema'];
 export type ProcurementSheetItemSchema = components['schemas']['ProcurementSheetItemSchema'];
 export type ProcurementSheetSchema = components['schemas']['ProcurementSheetSchema'];
 export type ReceivingPreviewSchema = components['schemas']['ReceivingPreviewSchema'];

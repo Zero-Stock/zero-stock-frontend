@@ -1,20 +1,14 @@
 import { apiClient } from '@/shared/api/apiClient.client';
 import { useDateStore } from '@/shared/stores/dateStore';
-
-interface ProcurementAssignSupplierItemDto {
-  item_id: number;
-  supplier_material_id: number | null;
-}
-
-interface ProcurementAssignSuppliersDto {
-  assignments: ProcurementAssignSupplierItemDto[];
-}
+import type { ProcurementAssignSuppliersSchema } from '@/shared/types/schema';
 
 export function useProcurementAssignSuppliers() {
   const selectedDate = useDateStore((state) => state.date);
 
   return {
-    trigger: async (data: ProcurementAssignSuppliersDto) => {
+    trigger: async (
+      data: Pick<ProcurementAssignSuppliersSchema, 'assignments'>,
+    ) => {
       return apiClient.post('/api/procurement/assign-suppliers', {
         body: {
           date: selectedDate,

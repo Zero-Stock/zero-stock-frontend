@@ -437,23 +437,27 @@ export const translations = {
 
   procurementColName: { zh: '品名', en: 'Name' },
   procurementColCategory: { zh: '规格/类别', en: 'Category' },
-  procurementColDemandKg: { zh: '需求(g)', en: 'Demand (g)' },
-  procurementColDemandUnit: {
-    zh: '需求(特殊单位)',
-    en: 'Demand (Unit)',
+  procurementFilterCategory: {
+    zh: '按规格/类别筛选',
+    en: 'Filter by category',
   },
-  procurementColStockKg: { zh: '库存(g)', en: 'Stock (g)' },
+  procurementColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
+  procurementColDemandUnit: {
+    zh: '需求(采购单位)',
+    en: 'Demand (Purchase Unit)',
+  },
+  procurementColStockKg: { zh: '库存(kg)', en: 'Stock (kg)' },
   procurementColStockUnit: {
-    zh: '库存(特殊单位)',
-    en: 'Stock (Unit)',
+    zh: '库存(采购单位)',
+    en: 'Stock (Purchase Unit)',
   },
   procurementColPurchaseKg: {
-    zh: '采购需求(g)',
-    en: 'Purchase (g)',
+    zh: '采购需求(kg)',
+    en: 'Purchase (kg)',
   },
   procurementColPurchaseUnit: {
-    zh: '采购需求(特殊单位)',
-    en: 'Purchase (Unit)',
+    zh: '采购需求(采购单位)',
+    en: 'Purchase (Purchase Unit)',
   },
   procurementColSupplierUnit: {
     zh: '供应商单位',
@@ -508,15 +512,15 @@ export const translations = {
     en: 'Failed to regenerate procurement order',
   },
 
-  receivingColExpectedKg: { zh: '应收(g)', en: 'Expected (g)' },
+  receivingColExpectedKg: { zh: '应收(kg)', en: 'Expected (kg)' },
   receivingColExpectedUnit: {
-    zh: '应收(特殊单位)',
-    en: 'Expected (Unit)',
+    zh: '应收(采购单位)',
+    en: 'Expected (Purchase Unit)',
   },
-  receivingColActualKg: { zh: '实收(g)', en: 'Actual (g)' },
+  receivingColActualKg: { zh: '实收(kg)', en: 'Actual (kg)' },
   receivingColActualUnit: {
-    zh: '实收(特殊单位)',
-    en: 'Actual (Unit)',
+    zh: '实收(采购单位)',
+    en: 'Actual (Purchase Unit)',
   },
   receivingSubmitSuccess: {
     zh: '收货单已提交',

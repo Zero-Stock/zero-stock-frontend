@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
-import type { ReceivingTemplateDto } from '@/modules/procurement/dtos/receivingTemplate.dto';
+import type { ReceivingTemplateSchema } from '@/shared/types/schema';
 
 export function useReceivingTemplate(procurementId?: number) {
   const key: SWRKey | null = procurementId
@@ -12,7 +12,7 @@ export function useReceivingTemplate(procurementId?: number) {
     : null;
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<ReceivingTemplateDto>>(key);
+    useSWR<ApiResponseDto<ReceivingTemplateSchema>>(key);
 
   const template = useMemo(() => {
     return data?.result;

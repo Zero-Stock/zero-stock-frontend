@@ -1,21 +1,14 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
-import type { ApiListResponseDto } from '@/shared/types/apiResponse.dto';
+import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import { useDateStore } from '@/shared/stores/dateStore';
-import type { ProcurementPreviewDto } from '../dtos/procurementPreview.dto';
+import type {
+  ProcurementListResponseSchema,
+  ProcurementQuerySchema,
+} from '@/shared/types/schema';
 
-export interface ProcurementListPayload {
-  date?: string;
-  start?: string;
-  end?: string;
-  status?: string;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export function useProcurementList(payload?: ProcurementListPayload) {
+export function useProcurementList(payload?: ProcurementQuerySchema) {
   const selectedDate = useDateStore((state) => state.date);
 
   const key: SWRKey = {
@@ -31,7 +24,7 @@ export function useProcurementList(payload?: ProcurementListPayload) {
   };
 
   const { data, error, isLoading, mutate } =
-    useSWR<ApiListResponseDto<ProcurementPreviewDto[]>>(key);
+    useSWR<ApiResponseDto<ProcurementListResponseSchema>>(key);
 
   const procurements = useMemo(() => {
     if (!data) return [];
