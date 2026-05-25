@@ -2,28 +2,24 @@ import { useMemo, useState } from 'react';
 import { App, Button, Modal, Select, Table, Typography } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
+import type { SorterResult } from 'antd/es/table/interface';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import { formatKg } from '@/shared/utils/format';
+import useMaterialCategories from '@/modules/material/hooks/useMaterialCategories';
 import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementGenerate } from '../hooks/useProcurementGenerate';
-import { useProcurementSheet } from '../hooks/useProcurementSheet';
 import { useProcurementSubmit } from '../hooks/useProcurementSubmit';
 import { useProcurementAssignSuppliers } from '../hooks/useProcurementAssignSuppliers';
-import type {
-  ProcurementPreviewSchema,
-  ProcurementSheetItemSchema,
-} from '@/shared/types/schema';
+import type { ProcurementPreviewSchema } from '@/shared/types/schema';
 import ProcurementSupplierEditModal from './ProcurementSupplierEditModal';
 import { handleExportPdf } from './handleExportPdf';
 
 const { Title } = Typography;
 
-const formatKg = (value: number | null | undefined) =>
-  value == null ? '-' : (value / 1000).toFixed(2);
-
-const getTotalPrice = (record: ProcurementSheetItemSchema) => {
+const getTotalPrice = (record: ProcurementPreviewSchema) => {
   if (record.supplier_price == null) return null;
 
-  const qty = record.demand_unit_qty || record.demand_g || 0;
+  const qty = record.demand_special_unit || record.demand_g || 0;
   return record.supplier_price * Math.ceil(qty);
 };
 
@@ -36,73 +32,46 @@ export default function ProcurementList() {
     id: number;
   } | null>(null);
   const [editingRow, setEditingRow] =
-    useState<ProcurementSheetItemSchema | null>(null);
+    useState<ProcurementPreviewSchema | null>(null);
   const [editingProcurementItem, setEditingProcurementItem] =
     useState<ProcurementPreviewSchema | null>(null);
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedCategory, setSelectedCategory] = useState<number>();
+  const [sortBy, setSortBy] = useState<string>();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>();
+
+  const procurementQuery = useMemo(
+    () => ({
+      date,
+      category_id: selectedCategory,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+    }),
+    [date, selectedCategory, sortBy, sortOrder],
+  );
 
   const {
     procurements,
     isLoading: isLoadingList,
     mutate: mutateList,
-  } = useProcurementList({ date });
+  } = useProcurementList(procurementQuery);
 
   const procurementId =
     generatedProcurement?.date === date ? generatedProcurement.id : undefined;
-
-  const {
-    items: sheetItems,
-    isLoading: isLoadingSheet,
-    mutate: mutateSheet,
-  } = useProcurementSheet(procurementId);
 
   const { trigger: generateTrigger } = useProcurementGenerate();
   const { trigger: submitTrigger } = useProcurementSubmit();
   const { trigger: assignSuppliersTrigger } = useProcurementAssignSuppliers();
 
-  const procurementRows = useMemo<ProcurementSheetItemSchema[]>(() => {
-    if (sheetItems.length) return sheetItems;
-
-    return procurements.map((item) => ({
-      material_id: item.material_id,
-      name: item.material_name,
-      category: item.material_category ?? '',
-      demand_g: item.demand_g,
-      demand_unit_qty: item.demand_special_unit,
-      stock_g: item.stock_g,
-      stock_unit_qty: item.stock_special_unit,
-      purchase_g: item.required_g,
-      purchase_unit_qty: item.required_special_unit,
-      supplier: item.supplier_name,
-      supplier_unit_name: item.supplier_unit,
-      supplier_g_per_unit: null,
-      supplier_price: item.supplier_price,
-    }));
-  }, [procurements, sheetItems]);
-
-  const categoryOptions = useMemo(() => {
-    return Array.from(
-      new Set(procurementRows.map((item) => item.category).filter(Boolean)),
-    )
-      .sort((a, b) => a.localeCompare(b))
-      .map((category) => ({
-        label: category,
-        value: category,
-      }));
-  }, [procurementRows]);
-
-  const filteredProcurementRows = useMemo(() => {
-    if (!selectedCategory) return procurementRows;
-    return procurementRows.filter((item) => item.category === selectedCategory);
-  }, [procurementRows, selectedCategory]);
+  const { categoryOptions, isLoading: isLoadingCategories } =
+    useMaterialCategories();
 
   const handleGenerate = async () => {
     try {
       const result = await generateTrigger({ date });
-      setGeneratedProcurement({ date, id: result.id });
+      setGeneratedProcurement({ date, id: result.procurement_record_id });
       message.success(t('procurementGenerateSuccess'));
-      await Promise.all([mutateList(), mutateSheet()]);
+      await mutateList();
     } catch (error: Error | unknown) {
       message.error(
         error instanceof Error ? error.message : t('procurementGenerateFailed'),
@@ -113,13 +82,12 @@ export default function ProcurementList() {
   const onExportPdf = () => {
     handleExportPdf({
       date,
-      items: sheetItems.length ? sheetItems : procurementRows,
+      items: procurements,
       t,
       message,
       generateTrigger,
       setProcurementId: (id) => setGeneratedProcurement({ date, id }),
       mutateList,
-      mutateSheet,
     });
   };
 
@@ -139,7 +107,6 @@ export default function ProcurementList() {
           await submitTrigger(procurementId);
           message.success(t('procurementSubmitSuccess'));
           await mutateList();
-          await mutateSheet();
         } catch (error) {
           if (!(error instanceof Error)) return;
           message.error(error.message);
@@ -148,10 +115,12 @@ export default function ProcurementList() {
     });
   };
 
-  const handleOpenSupplierModal = (record: ProcurementSheetItemSchema) => {
+  const handleOpenSupplierModal = (record: ProcurementPreviewSchema) => {
     const matchedProcurementItem =
+      procurements.find(
+        (item) => item.procurement_item_id === record.procurement_item_id,
+      ) ??
       procurements.find((item) => item.material_id === record.material_id) ??
-      procurements.find((item) => item.material_name === record.name) ??
       null;
 
     if (!matchedProcurementItem) {
@@ -165,7 +134,7 @@ export default function ProcurementList() {
   };
 
   const handleSaveSupplier = async (supplierMaterialId: number | null) => {
-    if (!editingProcurementItem?.id) {
+    if (!editingProcurementItem?.procurement_item_id) {
       message.error(t('procurementMissingItemId'));
       return;
     }
@@ -174,7 +143,7 @@ export default function ProcurementList() {
       await assignSuppliersTrigger({
         assignments: [
           {
-            item_id: editingProcurementItem.id,
+            procurement_item_id: editingProcurementItem.procurement_item_id,
             supplier_material_id: supplierMaterialId,
           },
         ],
@@ -186,24 +155,24 @@ export default function ProcurementList() {
       setEditingRow(null);
       setEditingProcurementItem(null);
 
-      await Promise.all([mutateList(), mutateSheet()]);
+      await mutateList();
     } catch (error) {
       if (!(error instanceof Error)) return;
       message.error(error.message);
     }
   };
 
-  const columns: ColumnsType<ProcurementSheetItemSchema> = [
+  const columns: ColumnsType<ProcurementPreviewSchema> = [
     {
       title: t('procurementColName'),
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'material_name',
+      key: 'material_name',
       width: 100,
     },
     {
       title: t('procurementColCategory'),
-      dataIndex: 'category',
-      key: 'category',
+      dataIndex: 'material_category',
+      key: 'material_category',
       width: 100,
     },
     {
@@ -211,7 +180,7 @@ export default function ProcurementList() {
       dataIndex: 'stock_g',
       key: 'stock_g',
       width: 100,
-      sorter: (a, b) => a.stock_g - b.stock_g,
+      sorter: true,
       render: (value: number) => formatKg(value),
     },
     {
@@ -223,35 +192,35 @@ export default function ProcurementList() {
     },
     {
       title: t('procurementColDemandUnit'),
-      dataIndex: 'demand_unit_qty',
-      key: 'demand_unit_qty',
+      dataIndex: 'demand_special_unit',
+      key: 'demand_special_unit',
       width: 120,
     },
     {
       title: t('procurementColPurchaseKg'),
-      dataIndex: 'purchase_g',
-      key: 'purchase_g',
+      dataIndex: 'required_g',
+      key: 'required_g',
       width: 120,
-      sorter: (a, b) => a.purchase_g - b.purchase_g,
+      sorter: true,
       render: (value: number) => formatKg(value),
     },
     {
       title: t('procurementColPurchaseUnit'),
-      dataIndex: 'purchase_unit_qty',
-      key: 'purchase_unit_qty',
+      dataIndex: 'required_special_unit',
+      key: 'required_special_unit',
       width: 120,
     },
     {
       title: t('commonSupplier'),
-      dataIndex: 'supplier',
-      key: 'supplier',
+      dataIndex: 'supplier_name',
+      key: 'supplier_name',
       width: 160,
       render: (value: string | null) => value ?? '-',
     },
     {
       title: t('procurementColSupplierUnit'),
-      dataIndex: 'supplier_unit_name',
-      key: 'supplier_unit_name',
+      dataIndex: 'supplier_unit',
+      key: 'supplier_unit',
       width: 80,
       render: (value: string | null) => value ?? '-',
     },
@@ -267,7 +236,7 @@ export default function ProcurementList() {
       title: t('commonTotalPrice'),
       key: 'total_price',
       width: 100,
-      sorter: (a, b) => (getTotalPrice(a) ?? 0) - (getTotalPrice(b) ?? 0),
+      sorter: true,
       render: (_, record) => {
         const total = getTotalPrice(record);
         if (total == null) return '-';
@@ -293,8 +262,27 @@ export default function ProcurementList() {
     },
   ];
 
-  const hasProcurement = procurementRows.length > 0;
-  const loading = isLoadingList || isLoadingSheet;
+  const hasProcurement = procurements.length > 0;
+  const loading = isLoadingList;
+
+  const handleTableChange = (
+    _: unknown,
+    __: unknown,
+    sorter:
+      | SorterResult<ProcurementPreviewSchema>
+      | SorterResult<ProcurementPreviewSchema>[],
+  ) => {
+    const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
+
+    setSortBy(activeSorter?.order ? String(activeSorter.columnKey) : undefined);
+    setSortOrder(
+      activeSorter?.order === 'ascend'
+        ? 'asc'
+        : activeSorter?.order === 'descend'
+          ? 'desc'
+          : undefined,
+    );
+  };
 
   return (
     <div>
@@ -329,6 +317,7 @@ export default function ProcurementList() {
           value={selectedCategory}
           onChange={setSelectedCategory}
           options={categoryOptions}
+          loading={isLoadingCategories}
           className="w-60"
         />
       </div>
@@ -336,12 +325,13 @@ export default function ProcurementList() {
       <div id="procurement-print-area">
         <Table
           rowKey={(record, index) =>
-            String(record.material_id ?? record.name ?? index)
+            String(record.procurement_item_id ?? record.material_id ?? index)
           }
           columns={columns}
-          dataSource={filteredProcurementRows}
+          dataSource={procurements}
           loading={loading}
           pagination={{ pageSize: 10 }}
+          onChange={handleTableChange}
           tableLayout="fixed"
           locale={{
             emptyText: hasProcurement
@@ -354,8 +344,8 @@ export default function ProcurementList() {
 
       <ProcurementSupplierEditModal
         open={supplierModalOpen}
-        materialName={editingRow?.name ?? ''}
-        rawMaterialId={editingProcurementItem?.material_id}
+        materialName={editingRow?.material_name ?? ''}
+        materialId={editingProcurementItem?.material_id}
         selectedSupplierMaterialId={null}
         onCancel={() => {
           setSupplierModalOpen(false);

@@ -9,7 +9,7 @@ export function useProcurementAssignSuppliers() {
     trigger: async (
       data: Pick<ProcurementAssignSuppliersSchema, 'assignments'>,
     ) => {
-      return apiClient.post('/api/procurement/assign-suppliers', {
+      return apiClient.post('/api/procurement', {
         body: {
           date: selectedDate,
           assignments: data.assignments,

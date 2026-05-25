@@ -1,13 +1,13 @@
-export type RawMaterialUnit = Record<string, string>;
+export type MaterialUnit = Record<string, string>;
 
-export interface RawMaterial {
+export interface Material {
   id: string;
   name: string;
   category: string;
-  unit: RawMaterialUnit;
+  unit: MaterialUnit;
 }
 
-export const mockRawMaterials: RawMaterial[] = [
+export const mockMaterials: Material[] = [
   {
     id: '1',
     name: '带鱼',

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { App, Button, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
+import { formatKg } from '@/shared/utils/format';
 import { useProcurementList } from '../hooks/useProcurementList';
 import { useProcurementSheet } from '../hooks/useProcurementSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
@@ -12,9 +13,6 @@ import type {
 } from '@/shared/types/schema';
 
 const { Title } = Typography;
-
-const formatKg = (value: number | null | undefined) =>
-  value == null ? '-' : (value / 1000).toFixed(2);
 
 type EditedReceivingRow = {
   actual_quantity: number;
@@ -45,7 +43,7 @@ export default function ReceivingList() {
     return procurements[0];
   }, [procurements]);
 
-  const procurementId = currentProcurement?.id;
+  const procurementId = currentProcurement?.procurement_item_id;
 
   const {
     items: sheetItems,

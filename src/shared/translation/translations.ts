@@ -109,7 +109,7 @@ export const translations = {
   navProcessing: { zh: '加工管理', en: 'Processing' },
   navDishes: { zh: '菜品管理', en: 'Dishes' },
   navMaterials: { zh: '原料管理', en: 'Materials' },
-  navRawMaterials: { zh: '食材', en: 'Raw Materials' },
+  navMaterialList: { zh: '食材', en: 'Materials' },
   navStaples: { zh: '主食', en: 'Staples' },
   navCreateMaterial: { zh: '新建食材', en: 'Create Material' },
   navCreateSupplier: { zh: '新建供应商', en: 'Create Supplier' },

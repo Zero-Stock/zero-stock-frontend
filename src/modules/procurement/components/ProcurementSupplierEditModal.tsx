@@ -10,7 +10,7 @@ const { Text } = Typography;
 interface ProcurementSupplierEditModalProps {
   open: boolean;
   materialName: string;
-  rawMaterialId?: number;
+  materialId?: number;
   selectedSupplierMaterialId: number | null;
   onCancel: () => void;
   onSave: (supplierMaterialId: number | null) => void;
@@ -19,7 +19,7 @@ interface ProcurementSupplierEditModalProps {
 export default function ProcurementSupplierEditModal({
   open,
   materialName,
-  rawMaterialId,
+  materialId,
   selectedSupplierMaterialId,
   onCancel,
   onSave,
@@ -30,7 +30,7 @@ export default function ProcurementSupplierEditModal({
   );
 
   const { materials, isLoading } = useSupplierMaterials(
-    rawMaterialId ? { material_id: rawMaterialId } : undefined,
+    materialId ? { material_id: materialId } : undefined,
   );
 
   const columns: ColumnsType<SupplierMaterialPreviewSchema> = [

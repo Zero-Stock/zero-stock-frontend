@@ -227,8 +227,8 @@ export const routes: RouteConfig[] = [
     children: [
       {
         path: '/material/raw',
-        title: 'Raw Materials',
-        titleKey: 'navRawMaterials',
+        title: 'Materials',
+        titleKey: 'navMaterialList',
         showInMenu: true,
         component: MaterialListPage,
       },

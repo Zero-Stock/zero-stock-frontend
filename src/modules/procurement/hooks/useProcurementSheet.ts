@@ -2,12 +2,24 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
-import type { ProcurementSheetSchema } from '@/shared/types/schema';
+import type {
+  ProcurementQuerySchema,
+  ProcurementSheetSchema,
+} from '@/shared/types/schema';
 
-export function useProcurementSheet(procurementId?: number) {
+export function useProcurementSheet(
+  procurementId?: number,
+  payload?: Pick<
+    ProcurementQuerySchema,
+    'category_id' | 'sort_by' | 'sort_order'
+  >,
+) {
   const key: SWRKey | null = procurementId
     ? {
         url: `/api/procurement/${procurementId}/sheet`,
+        options: {
+          query: payload,
+        },
       }
     : null;
 

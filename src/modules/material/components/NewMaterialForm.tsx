@@ -11,7 +11,7 @@ import {
 } from '../utils/yieldRate';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 
-interface RawMaterialFields {
+interface MaterialFields {
   name: string;
   category_id: number;
   yield_rate: string;
@@ -34,7 +34,7 @@ export default function NewMaterialForm() {
 
   const [form] = Form.useForm();
 
-  const onFinish = async (values: { items: RawMaterialFields[] }) => {
+  const onFinish = async (values: { items: MaterialFields[] }) => {
     const existingNames = new Set(
       existingMaterials.map((material) => normalizeMaterialName(material.name)),
     );

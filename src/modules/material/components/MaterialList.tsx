@@ -138,7 +138,7 @@ export default function MaterialList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navRawMaterials')}
+          {t('navMaterialList')}
         </Title>
         <Button type="primary" onClick={() => navigate('/material/create')}>
           {t('materialCreate')}

@@ -1575,7 +1575,7 @@ export interface components {
              * @description Procurement item id
              * @example 1
              */
-            id: number;
+            procurement_item_id: number;
             /**
              * @description Procurement date
              * @example 2026-04-28
@@ -1716,6 +1716,11 @@ export interface components {
              */
             page_size?: number;
             /**
+             * @description Material category id filter
+             * @example 1
+             */
+            category_id?: number;
+            /**
              * @description Start date
              * @example 2026-04-01
              */
@@ -1731,7 +1736,7 @@ export interface components {
              * @description Procurement record id
              * @example 1
              */
-            id: number;
+            procurement_record_id: number;
             /**
              * @description Target date
              * @example 2026-04-28
@@ -1793,7 +1798,7 @@ export interface components {
              * @description Procurement item id
              * @example 1
              */
-            item_id: number;
+            procurement_item_id: number;
             /**
              * @description Supplier material id
              * @example 1
@@ -1841,6 +1846,11 @@ export interface components {
             assignments: components["schemas"]["ProcurementSupplierAssignmentSchema"][];
         };
         ProcurementSheetItemSchema: {
+            /**
+             * @description Procurement item id
+             * @example 1
+             */
+            procurement_item_id: number;
             /**
              * @description Material id
              * @example 1
@@ -1912,7 +1922,7 @@ export interface components {
              * @description Procurement record id
              * @example 1
              */
-            id: number;
+            procurement_record_id: number;
             /**
              * @description Target date
              * @example 2026-04-28

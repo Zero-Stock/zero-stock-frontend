@@ -1,13 +1,14 @@
 import { Modal } from 'antd';
 import type { TranslationKey } from '@/shared/translation/translations';
+import { formatKg } from '@/shared/utils/format';
 import type {
+  ProcurementPreviewSchema,
   ProcurementRecordSchema,
-  ProcurementSheetItemSchema,
 } from '@/shared/types/schema';
 
 export interface HandleExportPdfParams {
   date: string;
-  items: ProcurementSheetItemSchema[];
+  items: ProcurementPreviewSchema[];
   t: (key: TranslationKey) => string;
   message: {
     warning: (content: string) => unknown;
@@ -19,11 +20,7 @@ export interface HandleExportPdfParams {
   }) => Promise<ProcurementRecordSchema>;
   setProcurementId: (id: number) => void;
   mutateList: () => Promise<unknown>;
-  mutateSheet: () => Promise<unknown>;
 }
-
-const formatKg = (value: number | null | undefined) =>
-  value == null ? '-' : (value / 1000).toFixed(2);
 
 export const handleExportPdf = (params: HandleExportPdfParams) => {
   const { t, items, date, message } = params;
@@ -67,16 +64,15 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
       .map(
         (item) => `
         <tr>
-          <td style="${tdStyle}">${item.name ?? '-'}</td>
-          <td style="${tdStyle}">${item.category ?? '-'}</td>
+          <td style="${tdStyle}">${item.material_name ?? '-'}</td>
+          <td style="${tdStyle}">${item.material_category ?? '-'}</td>
           <td style="${tdStyle}">${formatKg(item.stock_g)}</td>
           <td style="${tdStyle}">${formatKg(item.demand_g)}</td>
-          <td style="${tdStyle}">${item.demand_unit_qty ?? '-'}</td>
-          <td style="${tdStyle}">${formatKg(item.purchase_g)}</td>
-          <td style="${tdStyle}">${item.purchase_unit_qty ?? '-'}</td>
-          <td style="${tdStyle}">${item.supplier ?? '-'}</td>
-          <td style="${tdStyle}">${item.supplier_unit_name ?? '-'}</td>
-          <td style="${tdStyle}">${item.supplier_g_per_unit ?? '-'}</td>
+          <td style="${tdStyle}">${item.demand_special_unit ?? '-'}</td>
+          <td style="${tdStyle}">${formatKg(item.required_g)}</td>
+          <td style="${tdStyle}">${item.required_special_unit ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_name ?? '-'}</td>
+          <td style="${tdStyle}">${item.supplier_unit ?? '-'}</td>
           <td style="${tdStyle}">${item.supplier_price ?? '-'}</td>
         </tr>
       `,
@@ -111,7 +107,6 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
                 <th style="${thStyle}">${t('procurementColPurchaseUnit')}</th>
                 <th style="${thStyle} width:12%">${t('commonSupplier')}</th>
                 <th style="${thStyle}">${t('procurementColSupplierUnit')}</th>
-                <th style="${thStyle}">${t('procurementColSupplierKgPerUnit')}</th>
                 <th style="${thStyle}">${t('procurementColSupplierPrice')}</th>
               </tr>
             </thead>
@@ -156,8 +151,8 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
     onOk: async () => {
       try {
         const result = await params.generateTrigger({ date: params.date });
-        params.setProcurementId(result.id);
-        await Promise.all([params.mutateList(), params.mutateSheet()]);
+        params.setProcurementId(result.procurement_record_id);
+        await params.mutateList();
         message.success(t('procurementRegenerateSuccess'));
       } catch (error: unknown) {
         message.error(error instanceof Error ? error.message : 'Failed');
