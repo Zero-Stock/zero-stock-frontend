@@ -88,7 +88,7 @@ export default function MaterialList() {
       dataIndex: 'currentStockG',
       key: 'currentStockG',
       width: 140,
-      render: (stock: string) => `${(Number(stock) / 1000).toLocaleString()} kg`,
+      render: (stock: string) => `${(Number(stock) / 1000).toLocaleString()}`,
     },
     {
       title: '默认供应商',
