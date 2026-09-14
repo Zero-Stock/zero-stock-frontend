@@ -1,13 +1,13 @@
 import { apiClient } from '@/shared/api/apiClient.client';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type {
-  ProcurementQuerySchema,
+  ProcurementGenerateSchema,
   ProcurementRecordSchema,
 } from '@/shared/types/schema';
 
 export function useProcurementGenerate() {
   return {
-    trigger: async (data: Pick<ProcurementQuerySchema, 'date'>) => {
+    trigger: async (data: Pick<ProcurementGenerateSchema, 'needed_date'>) => {
       const response = await apiClient.post<
         ApiResponseDto<ProcurementRecordSchema>
       >('/api/procurement/generate', {

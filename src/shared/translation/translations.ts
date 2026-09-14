@@ -435,10 +435,13 @@ export const translations = {
     en: 'No receiving items',
   },
 
+  procurementNeededDate: { zh: '需求日期', en: 'Needed date' },
+  procurementOrderDate: { zh: '下单日期', en: 'Order date' },
+  procurementOrderDateKeep: { zh: '不修改下单日期', en: 'Keep order date' },
   procurementColName: { zh: '品名', en: 'Name' },
   procurementColCategory: { zh: '规格/类别', en: 'Category' },
   procurementFilterCategory: {
-    zh: '按规格/类别筛选',
+    zh: '按类别筛选',
     en: 'Filter by category',
   },
   procurementColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
@@ -546,7 +549,7 @@ export const translations = {
   // ─── Material Module ───
   materialCreate: { zh: '新建食材', en: 'New Material' },
   materialSearchName: { zh: '搜索食材名', en: 'Search material name' },
-  materialFilterCategory: { zh: '按类别筛选：', en: 'Filter by Category:' },
+  materialFilterCategory: { zh: '按类别筛选', en: 'Filter by Category:' },
   materialEditTitle: { zh: '编辑食材', en: 'Edit Material' },
   materialEditSuccess: { zh: '更新食材成功', en: 'Material updated' },
   materialEditFailed: { zh: '更新食材失败', en: 'Failed to update material' },

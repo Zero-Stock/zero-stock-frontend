@@ -16,7 +16,7 @@ export interface HandleExportPdfParams {
     error: (content: string) => unknown;
   };
   generateTrigger: (params: {
-    date: string;
+    needed_date: string;
   }) => Promise<ProcurementRecordSchema>;
   setProcurementId: (id: number) => void;
   mutateList: () => Promise<unknown>;
@@ -64,6 +64,7 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
       .map(
         (item) => `
         <tr>
+          <td style="${tdStyle}">${item.order_date ?? '-'}</td>
           <td style="${tdStyle}">${item.material_name ?? '-'}</td>
           <td style="${tdStyle}">${item.material_category ?? '-'}</td>
           <td style="${tdStyle}">${formatKg(item.stock_g)}</td>
@@ -98,6 +99,7 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
           <table>
             <thead>
               <tr>
+                <th style="${thStyle}">${t('procurementOrderDate')}</th>
                 <th style="${thStyle} width:12%">${t('procurementColName')}</th>
                 <th style="${thStyle}">${t('procurementColCategory')}</th>
                 <th style="${thStyle}">${t('procurementColStockKg')}</th>
@@ -150,7 +152,9 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
     },
     onOk: async () => {
       try {
-        const result = await params.generateTrigger({ date: params.date });
+        const result = await params.generateTrigger({
+          needed_date: params.date,
+        });
         params.setProcurementId(result.procurement_record_id);
         await params.mutateList();
         message.success(t('procurementRegenerateSuccess'));

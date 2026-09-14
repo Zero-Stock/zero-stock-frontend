@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { App, Button, Modal, Select, Table, Typography } from 'antd';
+import { App, Button, Input, Modal, Select, Table, Typography } from 'antd';
 import { useDateStore } from '@/shared/stores/dateStore';
 import type { ColumnsType } from 'antd/es/table';
 import type { SorterResult } from 'antd/es/table/interface';
@@ -31,33 +31,60 @@ export default function ProcurementList() {
     date: string;
     id: number;
   } | null>(null);
-  const [editingRow, setEditingRow] =
-    useState<ProcurementPreviewSchema | null>(null);
   const [editingProcurementItem, setEditingProcurementItem] =
     useState<ProcurementPreviewSchema | null>(null);
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number>();
+  const [materialName, setMaterialName] = useState('');
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+    key: '',
+  });
   const [sortBy, setSortBy] = useState<string>();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>();
 
+  const pageKey = JSON.stringify([
+    date,
+    materialName,
+    selectedCategory,
+    sortBy,
+    sortOrder,
+  ]);
+  const currentPage = pagination.key === pageKey ? pagination.page : 1;
+
   const procurementQuery = useMemo(
     () => ({
-      date,
+      needed_date: date,
+      page: currentPage,
+      page_size: pagination.pageSize,
+      material_name: materialName.trim() || undefined,
       category_id: selectedCategory,
       sort_by: sortBy,
       sort_order: sortOrder,
     }),
-    [date, selectedCategory, sortBy, sortOrder],
+    [
+      date,
+      materialName,
+      selectedCategory,
+      sortBy,
+      sortOrder,
+      pagination,
+      currentPage,
+    ],
   );
 
   const {
     procurements,
+    total,
+    fetchAll,
     isLoading: isLoadingList,
     mutate: mutateList,
   } = useProcurementList(procurementQuery);
 
   const procurementId =
-    generatedProcurement?.date === date ? generatedProcurement.id : undefined;
+    procurements[0]?.procurement_record_id ??
+    (generatedProcurement?.date === date ? generatedProcurement.id : undefined);
 
   const { trigger: generateTrigger } = useProcurementGenerate();
   const { trigger: submitTrigger } = useProcurementSubmit();
@@ -68,8 +95,13 @@ export default function ProcurementList() {
 
   const handleGenerate = async () => {
     try {
-      const result = await generateTrigger({ date });
-      setGeneratedProcurement({ date, id: result.procurement_record_id });
+      const result = await generateTrigger({
+        needed_date: date,
+      });
+      setGeneratedProcurement({
+        date: result.needed_date,
+        id: result.procurement_record_id,
+      });
       message.success(t('procurementGenerateSuccess'));
       await mutateList();
     } catch (error: Error | unknown) {
@@ -79,16 +111,23 @@ export default function ProcurementList() {
     }
   };
 
-  const onExportPdf = () => {
-    handleExportPdf({
-      date,
-      items: procurements,
-      t,
-      message,
-      generateTrigger,
-      setProcurementId: (id) => setGeneratedProcurement({ date, id }),
-      mutateList,
-    });
+  const onExportPdf = async () => {
+    try {
+      const items = await fetchAll();
+      handleExportPdf({
+        date,
+        items,
+        t,
+        message,
+        generateTrigger,
+        setProcurementId: (id) => setGeneratedProcurement({ date, id }),
+        mutateList,
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : t('procurementGenerateFailed'),
+      );
+    }
   };
 
   const handleSubmit = async () => {
@@ -128,7 +167,6 @@ export default function ProcurementList() {
       return;
     }
 
-    setEditingRow(record);
     setEditingProcurementItem(matchedProcurementItem);
     setSupplierModalOpen(true);
   };
@@ -152,7 +190,6 @@ export default function ProcurementList() {
       message.success(t('procurementSupplierUpdated'));
 
       setSupplierModalOpen(false);
-      setEditingRow(null);
       setEditingProcurementItem(null);
 
       await mutateList();
@@ -188,6 +225,7 @@ export default function ProcurementList() {
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 100,
+      sorter: true,
       render: (value: number) => formatKg(value),
     },
     {
@@ -266,7 +304,7 @@ export default function ProcurementList() {
   const loading = isLoadingList;
 
   const handleTableChange = (
-    _: unknown,
+    nextPage: { current?: number; pageSize?: number },
     __: unknown,
     sorter:
       | SorterResult<ProcurementPreviewSchema>
@@ -274,6 +312,11 @@ export default function ProcurementList() {
   ) => {
     const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
 
+    setPagination({
+      page: nextPage.current ?? 1,
+      pageSize: nextPage.pageSize ?? 10,
+      key: pageKey,
+    });
     setSortBy(activeSorter?.order ? String(activeSorter.columnKey) : undefined);
     setSortOrder(
       activeSorter?.order === 'ascend'
@@ -309,7 +352,16 @@ export default function ProcurementList() {
         </div>
       </div>
 
-      <div className="no-print mb-4 flex items-center gap-4">
+      <div className="no-print mb-4 flex flex-wrap items-center gap-4">
+        <Input.Search
+          allowClear
+          placeholder={t('materialSearchName')}
+          value={materialName}
+          onChange={(event) => {
+            setMaterialName(event.target.value);
+          }}
+          className="w-60!"
+        />
         <Select
           allowClear
           showSearch={{ optionFilterProp: 'label' }}
@@ -330,7 +382,11 @@ export default function ProcurementList() {
           columns={columns}
           dataSource={procurements}
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          pagination={{
+            current: currentPage,
+            pageSize: pagination.pageSize,
+            total,
+          }}
           onChange={handleTableChange}
           tableLayout="fixed"
           locale={{
@@ -344,12 +400,9 @@ export default function ProcurementList() {
 
       <ProcurementSupplierEditModal
         open={supplierModalOpen}
-        materialName={editingRow?.material_name ?? ''}
-        materialId={editingProcurementItem?.material_id}
-        selectedSupplierMaterialId={null}
+        procurementItem={editingProcurementItem}
         onCancel={() => {
           setSupplierModalOpen(false);
-          setEditingRow(null);
           setEditingProcurementItem(null);
         }}
         onSave={handleSaveSupplier}

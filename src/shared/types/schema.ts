@@ -1572,6 +1572,23 @@ export interface components {
         };
         ProcurementPreviewSchema: {
             /**
+             * @description Procurement record id
+             * @example 1
+             */
+            procurement_record_id: number;
+            /**
+             * Format: date
+             * @description Demand date
+             * @example 2026-05-09
+             */
+            needed_date: string;
+            /**
+             * Format: date
+             * @description Order date; null when unknown
+             * @example 2026-05-08
+             */
+            order_date: string | null;
+            /**
              * @description Procurement item id
              * @example 1
              */
@@ -1658,6 +1675,24 @@ export interface components {
              * @example true
              */
             editable: boolean;
+            /**
+             * @description Whether related source data changed after generation
+             * @example true
+             */
+            is_stale: boolean;
+            /**
+             * @description Message explaining why regeneration may be needed
+             * @example Census, menu, recipe, material, or supplier data changed after procurement generation. Please regenerate.
+             */
+            stale_message: string | null;
+            /**
+             * @description Related source groups changed after generation
+             * @example [
+             *       "census",
+             *       "supplier"
+             *     ]
+             */
+            changed_sources: string[];
         };
         ProcurementListResponseSchema: {
             /**
@@ -1690,11 +1725,6 @@ export interface components {
              */
             company_id?: number;
             /**
-             * @description Name filter
-             * @example rice
-             */
-            name?: string;
-            /**
              * @description Column name to sort by
              * @example name
              */
@@ -1716,10 +1746,27 @@ export interface components {
              */
             page_size?: number;
             /**
+             * Format: date
+             * @description Demand date; overrides legacy date
+             * @example 2026-05-09
+             */
+            needed_date?: string;
+            /**
+             * Format: date
+             * @description Filter by order date (assigned on confirmation)
+             * @example 2026-05-08
+             */
+            order_date?: string;
+            /**
              * @description Material category id filter
              * @example 1
              */
             category_id?: number;
+            /**
+             * @description Material name filter
+             * @example Rice
+             */
+            material_name?: string;
             /**
              * @description Start date
              * @example 2026-04-01
@@ -1732,6 +1779,18 @@ export interface components {
             status?: string;
         };
         ProcurementRecordSchema: {
+            /**
+             * Format: date
+             * @description Demand date
+             * @example 2026-05-09
+             */
+            needed_date: string;
+            /**
+             * Format: date
+             * @description Order date; null when unknown
+             * @example 2026-05-08
+             */
+            order_date: string | null;
             /**
              * @description Procurement record id
              * @example 1
@@ -1748,7 +1807,7 @@ export interface components {
              */
             status: string;
         };
-        DateCompanySchema: {
+        ProcurementGenerateSchema: {
             /**
              * @description Date for the request
              * @example 2026-04-28
@@ -1759,11 +1818,6 @@ export interface components {
              * @example 1
              */
             company_id?: number;
-            /**
-             * @description Name filter
-             * @example rice
-             */
-            name?: string;
             /**
              * @description Column name to sort by
              * @example name
@@ -1785,6 +1839,12 @@ export interface components {
              * @example 50
              */
             page_size?: number;
+            /**
+             * Format: date
+             * @description Demand date; overrides legacy date
+             * @example 2026-05-09
+             */
+            needed_date?: string;
         };
         UpdatedCountResponseSchema: {
             /**
@@ -1918,6 +1978,18 @@ export interface components {
             supplier_price: number | null;
         };
         ProcurementSheetSchema: {
+            /**
+             * Format: date
+             * @description Demand date
+             * @example 2026-05-09
+             */
+            needed_date: string;
+            /**
+             * Format: date
+             * @description Order date; null when unknown
+             * @example 2026-05-08
+             */
+            order_date: string | null;
             /**
              * @description Procurement record id
              * @example 1
@@ -2115,6 +2187,18 @@ export interface components {
              * @example 2026-04-28
              */
             target_date: string;
+            /**
+             * Format: date
+             * @description Demand date
+             * @example 2026-05-09
+             */
+            needed_date: string;
+            /**
+             * Format: date
+             * @description Order date; null when unknown
+             * @example 2026-05-08
+             */
+            order_date: string | null;
             /**
              * @description Receiving status
              * @example PENDING
@@ -2339,6 +2423,44 @@ export interface components {
              */
             status: string;
         };
+        DateCompanySchema: {
+            /**
+             * @description Date for the request
+             * @example 2026-04-28
+             */
+            date?: string;
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Name filter
+             * @example rice
+             */
+            name?: string;
+            /**
+             * @description Column name to sort by
+             * @example name
+             */
+            sort_by?: string;
+            /**
+             * @description Sort order
+             * @example desc
+             * @enum {string}
+             */
+            sort_order?: "asc" | "desc";
+            /**
+             * @description Page number
+             * @example 1
+             */
+            page?: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size?: number;
+        };
         HealthResponseDto: {
             /** @example ok */
             status: string;
@@ -2416,7 +2538,7 @@ export type ProcurementPreviewSchema = components['schemas']['ProcurementPreview
 export type ProcurementListResponseSchema = components['schemas']['ProcurementListResponseSchema'];
 export type ProcurementQuerySchema = components['schemas']['ProcurementQuerySchema'];
 export type ProcurementRecordSchema = components['schemas']['ProcurementRecordSchema'];
-export type DateCompanySchema = components['schemas']['DateCompanySchema'];
+export type ProcurementGenerateSchema = components['schemas']['ProcurementGenerateSchema'];
 export type UpdatedCountResponseSchema = components['schemas']['UpdatedCountResponseSchema'];
 export type ProcurementSupplierAssignmentSchema = components['schemas']['ProcurementSupplierAssignmentSchema'];
 export type ProcurementAssignSuppliersSchema = components['schemas']['ProcurementAssignSuppliersSchema'];
@@ -2435,4 +2557,5 @@ export type ReceivingUpdateSchema = components['schemas']['ReceivingUpdateSchema
 export type ProcessingItemSchema = components['schemas']['ProcessingItemSchema'];
 export type ProcessingQuerySchema = components['schemas']['ProcessingQuerySchema'];
 export type ProcessingOrderSchema = components['schemas']['ProcessingOrderSchema'];
+export type DateCompanySchema = components['schemas']['DateCompanySchema'];
 export type HealthResponseDto = components['schemas']['HealthResponseDto'];
