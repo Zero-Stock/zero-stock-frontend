@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type {
-  PurchaseOrderListResponseSchema,
+  PurchaseOrderItemListResponseSchema,
   PurchaseOrderQuerySchema,
 } from '@/shared/types/schema';
 export function usePurchaseSheet(
@@ -17,6 +17,6 @@ export function usePurchaseSheet(
       }
     : null;
   const { data, error, isLoading, mutate } =
-    useSWR<ApiResponseDto<PurchaseOrderListResponseSchema>>(key);
+    useSWR<ApiResponseDto<PurchaseOrderItemListResponseSchema>>(key);
   return { items: data?.result.list ?? [], error, isLoading, mutate };
 }

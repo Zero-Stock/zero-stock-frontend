@@ -435,7 +435,7 @@ export const translations = {
     en: 'No receiving items',
   },
 
-  purchaseRecordId: { zh: '采购单 ID', en: 'Purchase ID' },
+  purchaseOrderId: { zh: '采购单 ID', en: 'Purchase ID' },
   purchaseStatus: { zh: '状态', en: 'Status' },
   purchaseDetail: { zh: '详情', en: 'Details' },
   purchaseBack: { zh: '返回采购单列表', en: 'Back to purchases' },

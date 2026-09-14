@@ -18,20 +18,20 @@ import useMaterialCategories from '@/modules/material/hooks/useMaterialCategorie
 import { usePurchaseDetail } from '../hooks/usePurchaseDetail';
 import { usePurchaseSubmit } from '../hooks/usePurchaseSubmit';
 import { usePurchaseAssignSuppliers } from '../hooks/usePurchaseAssignSuppliers';
-import type { PurchaseOrderSchema } from '@/shared/types/schema';
+import type { PurchaseOrderItemSchema } from '@/shared/types/schema';
 import PurchaseSupplierEditModal from './PurchaseSupplierEditModal';
 import { handleExportPurchasePdf } from '../utils/handleExportPurchasePdf';
 
 const { Title } = Typography;
 
-const getTotalPrice = (record: PurchaseOrderSchema) => {
+const getTotalPrice = (record: PurchaseOrderItemSchema) => {
   if (record.supplier_price == null) return null;
 
   const qty = record.demand_special_unit || record.demand_g || 0;
   return record.supplier_price * Math.ceil(qty);
 };
 
-export default function PurchaseRecord({
+export default function PurchaseOrder({
   purchaseId: routePurchaseId,
 }: {
   purchaseId: string;
@@ -41,7 +41,7 @@ export default function PurchaseRecord({
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [editingPurchaseItem, setEditingPurchaseItem] =
-    useState<PurchaseOrderSchema | null>(null);
+    useState<PurchaseOrderItemSchema | null>(null);
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number>();
   const [materialName, setMaterialName] = useState('');
@@ -132,7 +132,7 @@ export default function PurchaseRecord({
     });
   };
 
-  const handleOpenSupplierModal = (record: PurchaseOrderSchema) => {
+  const handleOpenSupplierModal = (record: PurchaseOrderItemSchema) => {
     const matchedPurchaseItem =
       purchases.find(
         (item) => item.procurement_item_id === record.procurement_item_id,
@@ -177,7 +177,7 @@ export default function PurchaseRecord({
     }
   };
 
-  const columns: ColumnsType<PurchaseOrderSchema> = [
+  const columns: ColumnsType<PurchaseOrderItemSchema> = [
     {
       title: t('purchaseColName'),
       dataIndex: 'material_name',
@@ -285,8 +285,8 @@ export default function PurchaseRecord({
     nextPage: { current?: number; pageSize?: number },
     __: unknown,
     sorter:
-      | SorterResult<PurchaseOrderSchema>
-      | SorterResult<PurchaseOrderSchema>[],
+      | SorterResult<PurchaseOrderItemSchema>
+      | SorterResult<PurchaseOrderItemSchema>[],
   ) => {
     const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
 

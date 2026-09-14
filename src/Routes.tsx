@@ -71,10 +71,10 @@ const CensusListPage = lazyPage(
   () => import('./modules/census/pages/CensusListPage'),
 );
 const PurchaseListPage = lazyPage(
-  () => import('@/modules/purchase/pages/PurchaseRecordListPage'),
+  () => import('@/modules/purchase/pages/PurchaseOrderListPage'),
 );
-const PurchaseRecordDetailPage = lazyPage(
-  () => import('@/modules/purchase/pages/PurchaseRecordDetailPage'),
+const PurchaseOrderDetailPage = lazyPage(
+  () => import('@/modules/purchase/pages/PurchaseOrderDetailPage'),
 );
 const ReceivingListPage = lazyPage(
   () => import('./modules/receiving/pages/ReceivingListPage'),
@@ -165,7 +165,7 @@ export const routes: RouteConfig[] = [
             title: 'Purchase detail',
             titleKey: 'purchaseDetail',
             showInMenu: false,
-            component: PurchaseRecordDetailPage,
+            component: PurchaseOrderDetailPage,
           },
         ],
       },

@@ -1,10 +1,10 @@
 import type { TranslationKey } from '@/shared/translation/translations';
 import { formatKg } from '@/shared/utils/format';
-import type { PurchaseOrderSchema } from '@/shared/types/schema';
+import type { PurchaseOrderItemSchema } from '@/shared/types/schema';
 
 export interface HandleExportPdfParams {
   date: string;
-  items: PurchaseOrderSchema[];
+  items: PurchaseOrderItemSchema[];
   t: (key: TranslationKey) => string;
   message: {
     warning: (content: string) => unknown;

@@ -1553,9 +1553,9 @@ export interface components {
             /** @description Census rows */
             items: components["schemas"]["CensusItemSchema"][];
         };
-        PurchaseRecordSchema: {
+        PurchaseOrderSchema: {
             /**
-             * @description PurchaseRecord.id
+             * @description PurchaseOrder.id
              * @example 1
              */
             procurement_record_id: number;
@@ -1583,7 +1583,7 @@ export interface components {
              */
             total: number;
             /** @description Current page records */
-            list: components["schemas"]["PurchaseRecordSchema"][];
+            list: components["schemas"]["PurchaseOrderSchema"][];
         };
         PurchaseQuerySchema: {
             /**
@@ -1630,7 +1630,7 @@ export interface components {
         };
         PurchaseDetailSchema: {
             /**
-             * @description PurchaseRecord.id
+             * @description PurchaseOrder.id
              * @example 1
              */
             procurement_record_id: number;
@@ -1660,7 +1660,7 @@ export interface components {
              */
             supplier_name: string;
         };
-        PurchaseOrderSchema: {
+        PurchaseOrderItemSchema: {
             /**
              * @description Purchase record id
              * @example 1
@@ -1781,7 +1781,7 @@ export interface components {
              */
             changed_sources: string[];
         };
-        PurchaseOrderListResponseSchema: {
+        PurchaseOrderItemListResponseSchema: {
             /**
              * @description Current page
              * @example 1
@@ -1798,7 +1798,7 @@ export interface components {
              */
             total: number;
             /** @description Current page records */
-            list: components["schemas"]["PurchaseOrderSchema"][];
+            list: components["schemas"]["PurchaseOrderItemSchema"][];
         };
         PurchaseOrderQuerySchema: {
             /**
@@ -2349,14 +2349,14 @@ export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
 export type DatedMutationCountResponseSchema = components['schemas']['DatedMutationCountResponseSchema'];
 export type CensusItemSchema = components['schemas']['CensusItemSchema'];
 export type CensusUpsertSchema = components['schemas']['CensusUpsertSchema'];
-export type PurchaseRecordSchema = components['schemas']['PurchaseRecordSchema'];
+export type PurchaseOrderSchema = components['schemas']['PurchaseOrderSchema'];
 export type PurchaseListResponseSchema = components['schemas']['PurchaseListResponseSchema'];
 export type PurchaseQuerySchema = components['schemas']['PurchaseQuerySchema'];
 export type PurchaseGenerateSchema = components['schemas']['PurchaseGenerateSchema'];
 export type PurchaseDetailSchema = components['schemas']['PurchaseDetailSchema'];
 export type PurchaseAvailableSupplierSchema = components['schemas']['PurchaseAvailableSupplierSchema'];
-export type PurchaseOrderSchema = components['schemas']['PurchaseOrderSchema'];
-export type PurchaseOrderListResponseSchema = components['schemas']['PurchaseOrderListResponseSchema'];
+export type PurchaseOrderItemSchema = components['schemas']['PurchaseOrderItemSchema'];
+export type PurchaseOrderItemListResponseSchema = components['schemas']['PurchaseOrderItemListResponseSchema'];
 export type PurchaseOrderQuerySchema = components['schemas']['PurchaseOrderQuerySchema'];
 export type UpdatedCountResponseSchema = components['schemas']['UpdatedCountResponseSchema'];
 export type PurchaseSupplierAssignmentSchema = components['schemas']['PurchaseSupplierAssignmentSchema'];

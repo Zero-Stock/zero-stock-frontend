@@ -4,11 +4,11 @@ import type { ColumnsType } from 'antd/es/table';
 import { Link } from 'wouter';
 import { useDateStore } from '@/shared/stores/dateStore';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import type { PurchaseRecordSchema } from '@/shared/types/schema';
+import type { PurchaseOrderSchema } from '@/shared/types/schema';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import { usePurchaseGenerate } from '../hooks/usePurchaseGenerate';
 
-export default function PurchaseRecordList() {
+export default function PurchaseOrderList() {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const date = useDateStore((state) => state.date);
@@ -36,9 +36,9 @@ export default function PurchaseRecordList() {
       setGenerating(false);
     }
   };
-  const columns: ColumnsType<PurchaseRecordSchema> = [
+  const columns: ColumnsType<PurchaseOrderSchema> = [
     {
-      title: t('purchaseRecordId'),
+      title: t('purchaseOrderId'),
       dataIndex: 'procurement_record_id',
       key: 'procurement_record_id',
     },

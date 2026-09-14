@@ -4,10 +4,10 @@ import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type {
   PurchaseDetailSchema,
-  PurchaseOrderSchema,
-  PurchaseOrderListResponseSchema,
+  PurchaseOrderItemSchema,
+  PurchaseOrderItemListResponseSchema,
   PurchaseOrderQuerySchema,
-  PurchaseRecordSchema,
+  PurchaseOrderSchema,
 } from '@/shared/types/schema';
 
 export function usePurchaseDetail(
@@ -27,7 +27,7 @@ export function usePurchaseDetail(
       }
     : null;
   const items =
-    useSWR<ApiResponseDto<PurchaseOrderListResponseSchema>>(itemsKey);
+    useSWR<ApiResponseDto<PurchaseOrderItemListResponseSchema>>(itemsKey);
   return {
     record: detail.data?.result,
     purchases: items.data?.result.list ?? [],
@@ -38,17 +38,17 @@ export function usePurchaseDetail(
       await Promise.all([detail.mutate(), items.mutate()]);
     },
     regenerate: async () => {
-      const result = await apiClient.post<ApiResponseDto<PurchaseRecordSchema>>(
+      const result = await apiClient.post<ApiResponseDto<PurchaseOrderSchema>>(
         `/api/purchase/${id}/regenerate`,
         {},
       );
       return result.result;
     },
     fetchAll: async () => {
-      const rows: PurchaseOrderSchema[] = [];
+      const rows: PurchaseOrderItemSchema[] = [];
       for (let page = 1; ; page += 1) {
         const result = await apiClient.post<
-          ApiResponseDto<PurchaseOrderListResponseSchema>
+          ApiResponseDto<PurchaseOrderItemListResponseSchema>
         >(`/api/purchase/${id}/items/list`, {
           body: { ...payload, page, page_size: 1000 },
         });

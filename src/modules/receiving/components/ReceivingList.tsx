@@ -9,7 +9,7 @@ import { usePurchaseSheet } from '@/modules/purchase/hooks/usePurchaseSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
 import { useReceivingCreate } from '../hooks/useReceivingCreate';
 import type {
-  PurchaseOrderSchema,
+  PurchaseOrderItemSchema,
   ReceivingTemplateItemSchema,
 } from '@/shared/types/schema';
 
@@ -20,7 +20,7 @@ type EditedReceivingRow = {
   actual_unit_qty: number;
 };
 
-type ReceivingTableRow = PurchaseOrderSchema & {
+type ReceivingTableRow = PurchaseOrderItemSchema & {
   expected_quantity: number;
   expected_unit_qty: number;
   actual_quantity: number;

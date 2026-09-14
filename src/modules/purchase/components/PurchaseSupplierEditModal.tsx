@@ -4,13 +4,13 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useSupplierMaterials } from '@/modules/supplier/hooks/useSupplierMaterials';
 import type {
-  PurchaseOrderSchema,
+  PurchaseOrderItemSchema,
   SupplierMaterialPreviewSchema,
 } from '@/shared/types/schema';
 
 interface PurchaseSupplierEditModalProps {
   open: boolean;
-  purchaseItem: PurchaseOrderSchema | null;
+  purchaseItem: PurchaseOrderItemSchema | null;
   onCancel: () => void;
   onSave: (supplierMaterialId: number | null) => Promise<void> | void;
 }
