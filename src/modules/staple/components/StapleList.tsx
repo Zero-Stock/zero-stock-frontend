@@ -5,7 +5,6 @@ import type {
   StaplePreviewSchema,
   StapleUpsertSchema,
 } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useStapleCreate } from '../hooks/useStapleCreate';
 import { useStapleDelete } from '../hooks/useStapleDelete';
 import { useStapleList } from '../hooks/useStapleList';
@@ -15,7 +14,6 @@ import StapleEditModal from './StapleEditModal';
 const { Title } = Typography;
 
 export default function StapleList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -29,9 +27,9 @@ export default function StapleList() {
 
   useEffect(() => {
     if (isError) {
-      message.error(t('stapleLoadFailed'));
+      message.error('加载主食失败');
     }
-  }, [isError, message, t]);
+  }, [isError, message]);
 
   const handleCreate = () => {
     setEditingStaple(null);
@@ -49,21 +47,21 @@ export default function StapleList() {
 
       if (editingStaple) {
         await updateStaple(editingStaple.id, payload);
-        message.success(t('stapleUpdated'));
+        message.success('主食已更新');
       } else {
         await createStaple(payload);
-        message.success(t('stapleCreated'));
+        message.success('主食已创建');
       }
 
       setIsModalVisible(false);
       await mutate();
     } catch (error) {
       if (error instanceof Error) {
-        message.error(error.message || t('stapleSaveFailed'));
+        message.error(error.message || '保存主食失败');
         return;
       }
 
-      message.error(t('stapleSaveFailed'));
+      message.error('保存主食失败');
     } finally {
       setIsSaving(false);
     }
@@ -72,38 +70,38 @@ export default function StapleList() {
   const handleDelete = async (id: number) => {
     try {
       await deleteStaple(id);
-      message.success(t('stapleDeleted'));
+      message.success('主食已删除');
       await mutate();
     } catch (error) {
       if (error instanceof Error) {
-        message.error(error.message || t('stapleDeleteFailed'));
+        message.error(error.message || '删除主食失败');
         return;
       }
 
-      message.error(t('stapleDeleteFailed'));
+      message.error('删除主食失败');
     }
   };
 
   const columns: ColumnsType<StaplePreviewSchema> = [
     {
-      title: t('commonName'),
+      title: '名称',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: t('commonUnit'),
+      title: '单位',
       dataIndex: 'unit_name',
       key: 'unit_name',
       width: 180,
     },
     {
-      title: t('stapleGramsPerUnit'),
+      title: '每单位克重',
       dataIndex: 'g_per_unit',
       key: 'g_per_unit',
       width: 180,
     },
     {
-      title: t('commonOperation'),
+      title: '操作',
       key: 'operation',
       width: 200,
       render: (_, record) => (
@@ -113,16 +111,16 @@ export default function StapleList() {
             onClick={() => handleEdit(record)}
             className="p-0!"
           >
-            {t('edit')}
+            {'编辑'}
           </Button>
           <Popconfirm
-            title={t('stapleDeleteConfirm')}
+            title={'确定要删除这个主食吗？'}
             onConfirm={() => handleDelete(record.id)}
-            okText={t('yes')}
-            cancelText={t('no')}
+            okText={'是'}
+            cancelText={'否'}
           >
             <Button type="link" danger className="p-0!">
-              {t('delete')}
+              {'删除'}
             </Button>
           </Popconfirm>
         </Space>
@@ -134,10 +132,10 @@ export default function StapleList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navStaples')}
+          {'主食'}
         </Title>
         <Button type="primary" onClick={handleCreate}>
-          {t('stapleCreate')}
+          {'新建主食'}
         </Button>
       </div>
 

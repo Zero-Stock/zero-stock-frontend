@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
-import { DatePicker, Empty, Layout, theme, Button } from 'antd';
-import { TranslationOutlined } from '@ant-design/icons';
+import { DatePicker, Empty, Layout, theme } from 'antd';
 import { Route, Switch } from 'wouter';
 import Sidebar from './shared/components/Sidebar';
 import Providers from './shared/providers';
@@ -8,14 +7,12 @@ import { renderRoutes, routes } from './Routes';
 import BreadcrumbNav from './shared/components/BreadcrumbNav';
 import ScrollToTop from './shared/components/ScrollToTop';
 import dayjs from 'dayjs';
-import { useTranslation } from './shared/translation/LanguageContext';
 import { useDateStore } from './shared/stores/dateStore';
 
 const { Header, Content, Footer } = Layout;
 
 function NotFoundPage() {
-  const { t } = useTranslation();
-  return <Empty description={t('pageNotFound')} />;
+  return <Empty description={'页面未找到'} />;
 }
 
 function AppContent() {
@@ -23,7 +20,6 @@ function AppContent() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const { locale, setLocale, t } = useTranslation();
   const { date: currentDate, setDate: setCurrentDate } = useDateStore();
 
   return (
@@ -34,24 +30,20 @@ function AppContent() {
           className="flex items-center justify-between"
           style={{ background: colorBgContainer, padding: '0 36px' }}
         >
-          <span className="text-lg font-semibold">{t('appName')}</span>
+          <span className="text-lg font-semibold">
+            {'零库存餐饮生产管理系统'}
+          </span>
           <div className="flex items-center gap-4">
             <span className="font-semibold">
-              {t('todayIs')}
-              {new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date())}
+              {'今天是：'}
+              {new Intl.DateTimeFormat('zh-CN', {
+                timeZone: 'America/New_York',
+              }).format(new Date())}
             </span>
             <DatePicker
               value={dayjs(currentDate)}
               onChange={(date) => date && setCurrentDate(date)}
             />
-            <Button
-              type="text"
-              icon={<TranslationOutlined />}
-              onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
-              style={{ fontSize: 16 }}
-            >
-              {locale === 'zh' ? 'EN' : '中文'}
-            </Button>
           </div>
         </Header>
 
@@ -82,7 +74,7 @@ function AppContent() {
             className="text-center"
             style={{ padding: '6px 0', fontSize: 12, color: 'gray' }}
           >
-            {t('footer', { year: String(new Date().getFullYear()) })}
+            {`零库存餐饮生产管理系统 ©${String(new Date().getFullYear())}`}
           </Footer>
         </div>
       </Layout>

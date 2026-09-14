@@ -13,7 +13,6 @@ import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useMaterialList } from '../hooks/useMaterialList';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { MaterialPreviewSchema } from '@/shared/types/schema';
 
 import MaterialEditModal from './MaterialEditModal';
@@ -23,7 +22,6 @@ import { useMaterialDelete } from '../hooks/useMaterialDelete';
 const { Title } = Typography;
 
 export default function MaterialList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -56,7 +54,7 @@ export default function MaterialList() {
   const handleDelete = async (id: number) => {
     try {
       await deleteMaterial(id);
-      message.success(t('materialDeleted'));
+      message.success('删除食材成功');
       mutate();
     } catch (error) {
       if (!(error instanceof Error)) return;
@@ -66,25 +64,25 @@ export default function MaterialList() {
 
   const columns: ColumnsType<MaterialPreviewSchema> = [
     {
-      title: t('commonName'),
+      title: '名称',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: t('commonCategory'),
+      title: '类别',
       dataIndex: 'category_name',
       key: 'category_name',
       width: 150,
     },
     {
-      title: t('commonYieldRate'),
+      title: '出成率',
       dataIndex: 'yield_rate',
       key: 'yield_rate',
       width: 120,
       render: (yieldRate: string) => Number(yieldRate) * 100 + '%',
     },
     {
-      title: t('commonStockG'),
+      title: '库存(kg)',
       dataIndex: 'currentStockG',
       key: 'currentStockG',
       width: 140,
@@ -98,7 +96,7 @@ export default function MaterialList() {
       render: (name: string | null) => name || '-',
     },
     {
-      title: t('commonSpecs'),
+      title: '加工规格',
       dataIndex: 'processing',
       key: 'processing',
       render: (processing: MaterialPreviewSchema['processing']) => (
@@ -110,23 +108,23 @@ export default function MaterialList() {
       ),
     },
     {
-      title: t('commonOperation'),
+      title: '操作',
       key: 'operation',
       width: 200,
       render: (_, record) => (
         <Space size="middle">
           <Typography.Link onClick={() => handleEdit(record)}>
-            {t('edit')}
+            {'编辑'}
           </Typography.Link>
           <Popconfirm
-            title={t('materialDeleteConfirm')}
-            okText={t('delete')}
+            title={'确定删除该食材吗？'}
+            okText={'删除'}
             okButtonProps={{ danger: true }}
-            cancelText={t('cancel')}
+            cancelText={'取消'}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="link" danger className="p-0">
-              {t('delete')}
+              {'删除'}
             </Button>
           </Popconfirm>
         </Space>
@@ -138,17 +136,17 @@ export default function MaterialList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navMaterialList')}
+          {'食材'}
         </Title>
         <Button type="primary" onClick={() => navigate('/material/create')}>
-          {t('materialCreate')}
+          {'新建食材'}
         </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-4">
         <Input.Search
           allowClear
-          placeholder={t('materialSearchName')}
+          placeholder={'搜索食材名'}
           value={keyword}
           onChange={(event) => {
             setKeyword(event.target.value);
@@ -158,7 +156,7 @@ export default function MaterialList() {
         />
         <Select
           allowClear
-          placeholder={t('materialFilterCategory')}
+          placeholder={'按类别筛选'}
           className="w-60"
           onChange={(value) => {
             setSelectedCategory(value);

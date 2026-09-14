@@ -9,7 +9,6 @@ import {
   isValidYieldRatePercent,
   percentYieldRateToDecimal,
 } from '../utils/yieldRate';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface MaterialFields {
   name: string;
@@ -23,7 +22,6 @@ function normalizeMaterialName(name: string) {
 }
 
 export default function NewMaterialForm() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
   const { trigger: createMaterial } = useMaterialCreate();
@@ -56,7 +54,7 @@ export default function NewMaterialForm() {
       return [
         {
           name: ['items', index, 'name'],
-          errors: [t('materialDuplicateName')],
+          errors: ['食材名称重复'],
         },
       ];
     });
@@ -75,14 +73,14 @@ export default function NewMaterialForm() {
 
     try {
       await createMaterial(data);
-      message.success(t('materialCreateSuccess'));
+      message.success('创建食材成功');
       navigate('/material');
     } catch (error) {
       const details =
         error instanceof Error && 'details' in error
           ? String(error.details)
           : undefined;
-      message.error(details || t('materialCreateFailed'));
+      message.error(details || '创建食材失败');
     }
   };
 
@@ -92,36 +90,32 @@ export default function NewMaterialForm() {
         {(fields, { add, remove }) => {
           const columns: ColumnsType<(typeof fields)[number]> = [
             {
-              title: t('commonName'),
+              title: '名称',
               dataIndex: 'name',
               key: 'name',
               render: (_, _record, index) => (
                 <Form.Item
                   name={[fields[index].name, 'name']}
-                  rules={[
-                    { required: true, message: t('materialNameRequired') },
-                  ]}
+                  rules={[{ required: true, message: '请输入名称' }]}
                   className="mb-0!"
                 >
-                  <Input placeholder={t('materialNamePlaceholder')} />
+                  <Input placeholder={'输入食材名称'} />
                 </Form.Item>
               ),
             },
             {
-              title: t('commonCategory'),
+              title: '类别',
               dataIndex: 'category_id',
               key: 'category_id',
               width: 200,
               render: (_, _record, index) => (
                 <Form.Item
                   name={[fields[index].name, 'category_id']}
-                  rules={[
-                    { required: true, message: t('materialCategoryRequired') },
-                  ]}
+                  rules={[{ required: true, message: '请选择类别' }]}
                   className="mb-0!"
                 >
                   <Select
-                    placeholder={t('materialCategoryPlaceholder')}
+                    placeholder={'选择类别'}
                     className="w-full"
                     options={categoryOptions}
                     loading={isLoadingCategories}
@@ -130,7 +124,7 @@ export default function NewMaterialForm() {
               ),
             },
             {
-              title: t('commonYieldRate'),
+              title: '出成率',
               dataIndex: 'yield_rate',
               width: 200,
               key: 'yield_rate',
@@ -140,7 +134,7 @@ export default function NewMaterialForm() {
                   rules={[
                     {
                       required: true,
-                      message: t('materialYieldRateRequired'),
+                      message: '请输入出成率',
                     },
                     {
                       validator: (_, value: string | undefined) => {
@@ -149,7 +143,7 @@ export default function NewMaterialForm() {
                         }
 
                         return Promise.reject(
-                          new Error(t('materialYieldRateRange')),
+                          new Error('出成率必须在 0 到 100 之间'),
                         );
                       },
                     },
@@ -162,14 +156,14 @@ export default function NewMaterialForm() {
                     max={100}
                     step="1"
                     suffix="%"
-                    placeholder={t('materialYieldRatePlaceholder')}
+                    placeholder={'例如：80'}
                     className="w-full!"
                   />
                 </Form.Item>
               ),
             },
             {
-              title: t('commonSpecs'),
+              title: '加工规格',
               dataIndex: 'processing',
               key: 'processing',
               render: (_, _record, index) => (
@@ -180,7 +174,7 @@ export default function NewMaterialForm() {
                   <Select
                     mode="tags"
                     dropdownStyle={{ display: 'none' }}
-                    placeholder={t('materialSpecsPlaceholder')}
+                    placeholder={'例如：块、片、丝'}
                     className="w-full"
                   />
                 </Form.Item>
@@ -197,7 +191,7 @@ export default function NewMaterialForm() {
                   type="link"
                   onClick={() => remove(fields[index].name)}
                 >
-                  {t('delete')}
+                  {'删除'}
                 </Button>
               ),
             },
@@ -219,20 +213,18 @@ export default function NewMaterialForm() {
                     icon={<PlusOutlined />}
                     className="mt-1"
                   >
-                    {t('materialAddRow')}
+                    {'新增一行'}
                   </Button>
                 )}
               />
               <div className="mt-4 flex justify-end gap-3">
-                <Button onClick={() => navigate('/material')}>
-                  {t('cancel')}
-                </Button>
+                <Button onClick={() => navigate('/material')}>{'取消'}</Button>
                 <Button
                   type="primary"
                   htmlType="submit"
                   loading={isLoadingMaterials}
                 >
-                  {t('materialSubmit')}
+                  {'提交'}
                 </Button>
               </div>
             </>

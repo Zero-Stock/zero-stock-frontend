@@ -10,7 +10,6 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
   CensusPreviewSchema,
   CensusUpsertSchema,
@@ -80,7 +79,6 @@ function buildTableData(records: CensusPreviewSchema[]) {
 }
 
 export default function CensusTable() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const { token } = theme.useToken();
   const [rows, setRows] = useState<RegionRow[]>([]);
@@ -137,10 +135,10 @@ export default function CensusTable() {
       setIsSaving(true);
       await saveCensus(payload);
       await mutate();
-      message.success(t('censusSaved'));
+      message.success('人数统计已保存');
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : t('censusSaveFailed');
+        error instanceof Error ? error.message : '保存人数统计失败';
       message.error(errorMessage);
     } finally {
       setIsSaving(false);
@@ -172,7 +170,7 @@ export default function CensusTable() {
     () => ({
       key: 'total',
       regionId: 0,
-      regionName: t('commonTotal'),
+      regionName: '合计',
       values: dietColumns.reduce<Record<string, number>>((acc, diet) => {
         acc[diet.key] = activeRows.reduce(
           (sum, row) => sum + (row.values[diet.key] ?? 0),
@@ -181,7 +179,7 @@ export default function CensusTable() {
         return acc;
       }, {}),
     }),
-    [activeRows, dietColumns, t],
+    [activeRows, dietColumns],
   );
   const tableData = useMemo(
     () => [...activeRows, totalRow],
@@ -191,7 +189,7 @@ export default function CensusTable() {
   const columns = useMemo<ColumnsType<RegionRow>>(
     () => [
       {
-        title: t('censusRegionColumn'),
+        title: '区域',
         dataIndex: 'regionName',
         key: 'regionName',
         fixed: 'left',
@@ -234,7 +232,7 @@ export default function CensusTable() {
         },
       })),
       {
-        title: t('commonTotal'),
+        title: '合计',
         key: 'rowTotal',
         width: 140,
         align: 'center',
@@ -245,24 +243,24 @@ export default function CensusTable() {
         ),
       },
     ],
-    [dietColumns, isEditing, t, token.colorPrimary],
+    [dietColumns, isEditing, token.colorPrimary],
   );
 
   return (
     <div>
       <div className="mb-4 flex items-start justify-between gap-4">
         <Title level={3} className="mb-0!">
-          {t('censusListTitle')}
+          {'人数统计表'}
         </Title>
 
         <Space>
           {isEditing ? (
             <>
               <Button type="primary" onClick={handleSave} loading={isSaving}>
-                {t('save')}
+                {'保存'}
               </Button>
               <Button danger onClick={handleCancel} disabled={isSaving}>
-                {t('cancel')}
+                {'取消'}
               </Button>
             </>
           ) : (
@@ -271,7 +269,7 @@ export default function CensusTable() {
               onClick={handleStartEditing}
               disabled={rows.length === 0 || isLoading}
             >
-              {t('edit')}
+              {'编辑'}
             </Button>
           )}
         </Space>
@@ -280,7 +278,7 @@ export default function CensusTable() {
       <div className="mb-4 flex items-center gap-4">
         <Select
           allowClear
-          placeholder={t('censusFilterRegion')}
+          placeholder={'按区域筛选'}
           className="w-60"
           value={selectedRegionId}
           onChange={(value: number | undefined) =>

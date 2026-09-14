@@ -5,12 +5,10 @@ import { useProcessingList } from '../hooks/useProcessingList';
 import { useProcessingGenerate } from '../hooks/useProcessingGenerate';
 import type { ProcessingItemDto } from '../dtos/processingItem.dto';
 import { useMemo } from 'react';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 export default function ProcessingList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const date = useDateStore((state) => state.date);
 
@@ -21,7 +19,7 @@ export default function ProcessingList() {
   const handleGenerate = async () => {
     try {
       await generateTrigger({ date });
-      message.success(t('processingGenerated'));
+      message.success('加工单已生成');
       await mutate();
     } catch (error) {
       if (!(error instanceof Error)) return;
@@ -31,32 +29,33 @@ export default function ProcessingList() {
 
   const columns: ColumnsType<ProcessingItemDto> = [
     {
-      title: t('processingMaterialNameColumn'),
+      title: '食材名称',
       dataIndex: 'material_name',
       key: 'material_name',
       width: 160,
     },
     {
-      title: t('commonCategory'),
+      title: '类别',
       dataIndex: 'category',
       key: 'category',
       width: 100,
     },
     {
-      title: t('processingMethodColumn'),
+      title: '加工方式',
       dataIndex: 'processing_method',
       key: 'processing_method',
       width: 160,
     },
     {
-      title: t('processingRequirementColumn'),
+      title: '加工要求',
       dataIndex: 'processing_requirement',
       key: 'processing_requirement',
       width: 120,
-      render: (value: number) => typeof value === 'number' ? value.toFixed(2) : value,
+      render: (value: number) =>
+        typeof value === 'number' ? value.toFixed(2) : value,
     },
     {
-      title: t('processingTimeColumn'),
+      title: '加工时间',
       dataIndex: 'processing_time',
       key: 'processing_time',
       width: 130,
@@ -69,11 +68,11 @@ export default function ProcessingList() {
     <div>
       <div className="print-header mb-6 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('processingListTitle')}
+          {'加工单'}
         </Title>
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate}>
-            {hasProcessing ? t('commonRegenerate') : t('processingGenerate')}
+            {hasProcessing ? '重新生成加工单' : '生成加工单'}
           </Button>
         </div>
       </div>
@@ -86,9 +85,7 @@ export default function ProcessingList() {
         pagination={{ pageSize: 10 }}
         tableLayout="fixed"
         locale={{
-          emptyText: hasProcessing
-            ? t('processingNoItems')
-            : t('processingNoData'),
+          emptyText: hasProcessing ? '暂无明细' : '暂无数据，请先点击生成',
         }}
         scroll={{ x: 620 }}
       />

@@ -3,12 +3,10 @@ import { useLocation } from 'wouter';
 
 import { useCompanyDetail } from '../hooks/useCompanyDetail';
 import CompanyRegionTable from './CompanyRegionTable';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 export default function CompanyDetail({ companyId }: { companyId: string }) {
-  const { t } = useTranslation();
   const [, navigate] = useLocation();
 
   const idNum = Number(companyId);
@@ -25,8 +23,8 @@ export default function CompanyDetail({ companyId }: { companyId: string }) {
   if (!company) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <Title level={3}>{t('companyNotFound')}</Title>
-        <Button onClick={() => navigate('/company')}>{t('companyBack')}</Button>
+        <Title level={3}>{'未找到公司'}</Title>
+        <Button onClick={() => navigate('/company')}>{'返回'}</Button>
       </div>
     );
   }
@@ -44,35 +42,35 @@ export default function CompanyDetail({ companyId }: { companyId: string }) {
             items={[
               {
                 key: 'code',
-                label: t('companyCode'),
+                label: '公司编码',
                 children: company.code || '-',
               },
               {
                 key: 'contact_person',
-                label: t('commonContactPerson'),
+                label: '联系人',
                 children: company.contact_person || '-',
               },
               {
                 key: 'phone',
-                label: t('commonPhone'),
+                label: '电话',
                 children: company.phone || '-',
               },
               {
                 key: 'address',
-                label: t('commonAddress'),
+                label: '地址',
                 children: company.address || '-',
               },
               {
                 key: 'description',
-                label: t('companyDescription'),
-                children: company.description || t('none'),
+                label: '描述',
+                children: company.description || '无',
                 span: 2,
               },
             ]}
           />
         </div>
 
-        <Button onClick={() => navigate('/company')}>{t('companyBack')}</Button>
+        <Button onClick={() => navigate('/company')}>{'返回'}</Button>
       </Space>
 
       <div className="mt-6">

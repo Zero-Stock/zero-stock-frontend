@@ -6,7 +6,6 @@ import {
 } from '@ant-design/icons';
 import { Card, Col, Row, Space, Typography } from 'antd';
 import { useLocation } from 'wouter';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Paragraph, Text } = Typography;
 
@@ -14,37 +13,35 @@ const quickLinks = [
   {
     path: '/diet',
     icon: <CalendarOutlined className="text-xl" />,
-    titleKey: 'navDiet',
-    descriptionKey: 'homeQuickDietDesc',
+    title: '膳食计划',
+    description: '维护膳食计划并核对每个餐次的菜品安排。',
   },
   {
     path: '/census',
     icon: <TeamOutlined className="text-xl" />,
-    titleKey: 'navCensus',
-    descriptionKey: 'homeQuickCensusDesc',
+    title: '人数统计',
+    description: '更新各区域各餐次人数，为后续采购和加工提供基础。',
   },
   {
     path: '/procurement/purchase/',
     icon: <ShoppingCartOutlined className="text-xl" />,
-    titleKey: 'navPurchaseOrder',
-    descriptionKey: 'homeQuickPurchaseDesc',
+    title: '采购单',
+    description: '查看并生成采购单，跟进供应商分配情况。',
   },
   {
     path: '/processing',
     icon: <FireOutlined className="text-xl" />,
-    titleKey: 'navProcessing',
-    descriptionKey: 'homeQuickProcessingDesc',
+    title: '加工管理',
+    description: '按加工规格检查今日需要执行的食材处理任务。',
   },
 ] as const;
 
 export default function QuickStartSection() {
   const [, setLocation] = useLocation();
-  const { t } = useTranslation();
-
   return (
     <Card
-      title={t('homeQuickStartTitle')}
-      extra={<Text type="secondary">{t('homeQuickStartSubtitle')}</Text>}
+      title={'快速开始'}
+      extra={<Text type="secondary">{'从最常用的业务入口继续今天的工作'}</Text>}
     >
       <Row gutter={[16, 16]}>
         {quickLinks.map((link) => (
@@ -61,10 +58,10 @@ export default function QuickStartSection() {
                 </div>
                 <div>
                   <Text strong className="text-base">
-                    {t(link.titleKey)}
+                    {link.title}
                   </Text>
                   <Paragraph className="mt-1! mb-0! text-sm! text-slate-500!">
-                    {t(link.descriptionKey)}
+                    {link.description}
                   </Paragraph>
                 </div>
               </Space>

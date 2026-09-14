@@ -2,7 +2,6 @@ import { Button, Spin, Typography } from 'antd';
 import { useLocation } from 'wouter';
 import SupplierUpsertForm from '@/modules/supplier/components/SupplierUpsertForm';
 import { useSupplierDetail } from '../hooks/useSupplierDetail';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { SupplierUpsertSchema } from '@/shared/types/schema';
 
 const { Title } = Typography;
@@ -11,8 +10,9 @@ interface SupplierUpdatePageProps {
   params: { supplierId: string };
 }
 
-export default function SupplierUpdatePage({ params }: SupplierUpdatePageProps) {
-  const { t } = useTranslation();
+export default function SupplierUpdatePage({
+  params,
+}: SupplierUpdatePageProps) {
   const [, navigate] = useLocation();
   const supplierId = Number(params.supplierId);
   const { supplier, isLoading } = useSupplierDetail(supplierId);
@@ -28,8 +28,8 @@ export default function SupplierUpdatePage({ params }: SupplierUpdatePageProps) 
   if (!supplier) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <Title level={3}>{t('supplierNotFound')}</Title>
-        <Button onClick={() => navigate('/supplier')}>{t('supplierBack')}</Button>
+        <Title level={3}>{'未找到供应商'}</Title>
+        <Button onClick={() => navigate('/supplier')}>{'返回'}</Button>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function SupplierUpdatePage({ params }: SupplierUpdatePageProps) 
 
   return (
     <div style={{ padding: '24px' }}>
-      <Title level={3}>{t('supplierEdit')}</Title>
+      <Title level={3}>{'编辑供应商'}</Title>
 
       <div style={{ marginTop: '24px' }}>
         <SupplierUpsertForm supplierId={supplier.id} initValues={initValues} />

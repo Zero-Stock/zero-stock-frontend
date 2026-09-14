@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useSupplierCreate } from '../hooks/useSupplierCreate';
 import { useSupplierUpdate } from '../hooks/useSupplierUpdate';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import SupplierCreateMaterialTable from './SupplierCreateMaterialTable';
 import type {
   SupplierMaterialUpsertSchema,
@@ -32,7 +31,6 @@ export default function SupplierUpsertForm({
   supplierId,
   initValues,
 }: SupplierUpsertFormProps) {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
   const [form] = Form.useForm<SupplierUpsertFormValues>();
@@ -77,7 +75,7 @@ export default function SupplierUpsertForm({
 
       if (supplierId) {
         await updateSupplier(supplierId, payload);
-        message.success(t('supplierUpdated'));
+        message.success('供应商已更新');
         navigate(`/supplier/${supplierId}`);
         return;
       }
@@ -86,16 +84,14 @@ export default function SupplierUpsertForm({
       const nextSupplierId = createdSupplier.result.id;
 
       if (!nextSupplierId) {
-        message.error(t('supplierCreateErrorId'));
+        message.error('获取创建的供应商 ID 失败。');
         return;
       }
-      message.success(t('supplierCreated'));
+      message.success('供应商已创建');
       navigate(`/supplier/${nextSupplierId}`);
     } catch (err) {
       console.error(err);
-      message.error(
-        supplierId ? t('supplierUpdateFailed') : t('supplierCreateFailed'),
-      );
+      message.error(supplierId ? '更新供应商失败' : '创建供应商失败');
     } finally {
       setIsSubmitting(false);
     }
@@ -110,35 +106,37 @@ export default function SupplierUpsertForm({
         materials: [emptyMaterialRow],
       }}
     >
-      <Title level={4}>{t('supplierBasicInfo')}</Title>
+      <Title level={4}>{'基础信息'}</Title>
 
       <div className="grid w-full grid-cols-4 gap-4">
         <Form.Item
-          label={t('commonName')}
+          label={'名称'}
           name="name"
-          rules={[{ required: true, message: t('supplierRequired') }]}
+          rules={[{ required: true, message: '必填' }]}
         >
-          <Input placeholder={t('supplierNamePlaceholder')} />
+          <Input placeholder={'供应商名称'} />
         </Form.Item>
 
-        <Form.Item label={t('commonContactPerson')} name="contact_person">
-          <Input placeholder={t('supplierContactPlaceholder')} />
+        <Form.Item label={'联系人'} name="contact_person">
+          <Input placeholder={'联系人名称'} />
         </Form.Item>
 
-        <Form.Item label={t('commonPhone')} name="phone">
-          <Input placeholder={t('supplierPhonePlaceholder')} />
+        <Form.Item label={'电话'} name="phone">
+          <Input placeholder={'电话号码'} />
         </Form.Item>
 
-        <Form.Item label={t('commonAddress')} name="address">
-          <Input placeholder={t('commonAddress')} />
+        <Form.Item label={'地址'} name="address">
+          <Input placeholder={'地址'} />
         </Form.Item>
       </div>
 
       <div className="mt-6">
         <Title level={4} className="mb-1">
-          {t('supplierMaterialDetails')}
+          {'食材明细'}
         </Title>
-        <Text type="secondary">{t('supplierMaterialDetailsDesc')}</Text>
+        <Text type="secondary">
+          {'可选。您可以在此处维护该供应商提供的食材。'}
+        </Text>
 
         <div className="mt-4 max-w-275">
           <SupplierCreateMaterialTable />
@@ -152,11 +150,11 @@ export default function SupplierUpsertForm({
           }}
           disabled={isSubmitting}
         >
-          {t('cancel')}
+          {'取消'}
         </Button>
 
         <Button type="primary" htmlType="submit" loading={isSubmitting}>
-          {t('save')}
+          {'保存'}
         </Button>
       </div>
     </Form>

@@ -1,7 +1,6 @@
 import { Modal, Radio, Table } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useSupplierMaterials } from '@/modules/supplier/hooks/useSupplierMaterials';
 import type {
   PurchaseOrderItemSchema,
@@ -29,7 +28,6 @@ export default function PurchaseSupplierEditModal({
   onCancel,
   onSave,
 }: PurchaseSupplierEditModalProps) {
-  const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -86,23 +84,21 @@ export default function PurchaseSupplierEditModal({
       ),
     },
     {
-      title: t('commonSupplier'),
+      title: '供应商',
       dataIndex: 'supplier_name',
       key: 'supplier_name',
       width: 180,
     },
     {
-      title: t('purchaseColSupplierPrice'),
+      title: '供应商单价',
       dataIndex: 'price_per_unit',
       key: 'price_per_unit',
       width: 120,
       render: (value: string | null) =>
-        value != null
-          ? `${t('commonCurrencySymbol')}${Number(value).toFixed(2)}`
-          : '-',
+        value != null ? `${'¥'}${Number(value).toFixed(2)}` : '-',
     },
     {
-      title: t('purchaseColSupplierUnit'),
+      title: '供应商单位',
       dataIndex: 'unit_name',
       key: 'unit_name',
       width: 120,
@@ -119,12 +115,12 @@ export default function PurchaseSupplierEditModal({
 
   return (
     <Modal
-      title={`${t('purchaseEditSupplierTitle')} - ${purchaseItem?.material_name ?? ''}`}
+      title={`${'编辑供应商'} - ${purchaseItem?.material_name ?? ''}`}
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
-      okText={t('save')}
-      cancelText={t('cancel')}
+      okText={'保存'}
+      cancelText={'取消'}
       confirmLoading={isSaving}
       width={760}
       destroyOnHidden
@@ -136,7 +132,7 @@ export default function PurchaseSupplierEditModal({
         loading={isLoading}
         pagination={false}
         tableLayout="fixed"
-        locale={{ emptyText: t('purchaseNoAvailableSuppliers') }}
+        locale={{ emptyText: '暂无可选供应商' }}
         onRow={(record) => ({
           onClick: () => setSelectedId(record.id),
         })}

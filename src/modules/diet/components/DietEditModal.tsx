@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { App, Modal, Form, Button, InputNumber, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { DayPlan, DishItem } from '../apiAdapter';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useDietDishList } from '../hooks/useDietDishList';
 
 interface DietEditModalProps {
@@ -19,7 +18,6 @@ export default function DietEditModal({
   onSave,
 }: DietEditModalProps) {
   const [form] = Form.useForm();
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const {
     dishes: availableDishes,
@@ -30,9 +28,9 @@ export default function DietEditModal({
   useEffect(() => {
     if (isError) {
       console.error('Failed to fetch dishes:', isError);
-      message.error(t('dietLoadDishesFailed'));
+      message.error('加载菜品列表失败');
     }
-  }, [isError, message, t]);
+  }, [isError, message]);
 
   useEffect(() => {
     if (visible && dayData) {
@@ -84,14 +82,12 @@ export default function DietEditModal({
                 <Form.Item
                   {...restField}
                   name={[fieldName, 'id']}
-                  rules={[
-                    { required: true, message: t('dietSelectDishRequired') },
-                  ]}
+                  rules={[{ required: true, message: '请选择菜品' }]}
                   className="m-0! min-w-0 flex-1"
                 >
                   <Select
                     showSearch={{ optionFilterProp: 'label' }}
-                    placeholder={t('dietSelectDish')}
+                    placeholder={'选择菜品'}
                     loading={isLoading}
                     options={availableDishes.map((dish) => ({
                       label: dish.name,
@@ -100,7 +96,7 @@ export default function DietEditModal({
                   />
                 </Form.Item>
 
-                <span className="shrink-0 text-sm text-gray-500">x</span>
+                <span className="shrink-0 text-sm text-gray-500">×</span>
                 <Form.Item
                   {...restField}
                   name={[fieldName, 'count']}
@@ -128,7 +124,7 @@ export default function DietEditModal({
                 block
                 icon={<PlusOutlined />}
               >
-                {t('dietAddDish')}
+                {'添加菜品'}
               </Button>
             </Form.Item>
           </>
@@ -139,11 +135,7 @@ export default function DietEditModal({
 
   return (
     <Modal
-      title={
-        dayData
-          ? t('dietEditTitle', { day: dayData.dayOfWeek })
-          : t('dietEditTitleGeneric')
-      }
+      title={dayData ? `编辑 ${dayData.dayOfWeek} 食谱` : '编辑食谱'}
       open={visible}
       onOk={handleOk}
       onCancel={() => {
@@ -151,14 +143,14 @@ export default function DietEditModal({
         onCancel();
       }}
       width={600}
-      okText={t('save')}
-      cancelText={t('cancel')}
+      okText={'保存'}
+      cancelText={'取消'}
       forceRender
     >
       <Form form={form} layout="vertical">
-        {renderDishList('breakfast', t('dietBreakfast'))}
-        {renderDishList('lunch', t('dietLunch'))}
-        {renderDishList('dinner', t('dietDinner'))}
+        {renderDishList('breakfast', '早餐')}
+        {renderDishList('lunch', '午餐')}
+        {renderDishList('dinner', '晚餐')}
       </Form>
     </Modal>
   );

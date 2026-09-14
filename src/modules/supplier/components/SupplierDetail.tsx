@@ -2,12 +2,10 @@ import { Button, Descriptions, Space, Typography, Spin } from 'antd';
 import { useLocation } from 'wouter';
 import { useSupplierDetail } from '../hooks/useSupplierDetail';
 import SupplierMaterialTable from './SupplierMaterialTable';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 export default function SupplierDetail({ supplierId }: { supplierId: string }) {
-  const { t } = useTranslation();
   const [, navigate] = useLocation();
 
   const idNum = Number(supplierId);
@@ -24,10 +22,8 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
   if (!supplier) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <Title level={3}>{t('supplierNotFound')}</Title>
-        <Button onClick={() => navigate('/supplier')}>
-          {t('supplierBack')}
-        </Button>
+        <Title level={3}>{'未找到供应商'}</Title>
+        <Button onClick={() => navigate('/supplier')}>{'返回'}</Button>
       </div>
     );
   }
@@ -45,17 +41,17 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
             items={[
               {
                 key: 'contact_person',
-                label: t('commonContactPerson'),
+                label: '联系人',
                 children: supplier.contact_person || '-',
               },
               {
                 key: 'phone',
-                label: t('commonPhone'),
+                label: '电话',
                 children: supplier.phone || '-',
               },
               {
                 key: 'address',
-                label: t('commonAddress'),
+                label: '地址',
                 children: supplier.address || '-',
               },
             ]}
@@ -63,14 +59,12 @@ export default function SupplierDetail({ supplierId }: { supplierId: string }) {
         </div>
 
         <Space>
-          <Button onClick={() => navigate('/supplier')}>
-            {t('supplierBack')}
-          </Button>
+          <Button onClick={() => navigate('/supplier')}>{'返回'}</Button>
           <Button
             type="primary"
             onClick={() => navigate(`/supplier/update/${supplier.id}`)}
           >
-            {t('supplierEdit')}
+            {'编辑供应商'}
           </Button>
         </Space>
       </Space>

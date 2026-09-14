@@ -17,8 +17,6 @@ import {
   FireOutlined,
   ShopOutlined,
 } from '@ant-design/icons';
-import type { TranslationKey } from './shared/translation/translations';
-
 type RouteComponent =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | ComponentType<any>
@@ -86,7 +84,6 @@ const ProcessingListPage = lazyPage(
 export interface RouteConfig {
   path: string;
   title: string;
-  titleKey?: TranslationKey;
   icon?: ReactNode;
   showInMenu?: boolean;
   component?: RouteComponent;
@@ -96,8 +93,7 @@ export interface RouteConfig {
 export const routes: RouteConfig[] = [
   {
     path: '/',
-    title: 'Home',
-    titleKey: 'navHome',
+    title: '首页',
     icon: <HomeOutlined />,
     showInMenu: true,
     component: HomePage,
@@ -105,23 +101,20 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/company',
-    title: 'Company',
-    titleKey: 'commonCompany',
+    title: '公司',
     icon: <BankOutlined />,
     showInMenu: true,
     component: CompanyListPage,
     children: [
       {
         path: '/company/create',
-        title: 'Create Company',
-        titleKey: 'navCreateCompany',
+        title: '新建公司',
         showInMenu: false,
         component: CompanyCreatePage,
       },
       {
         path: '/company/:companyId',
-        title: 'Company Detail',
-        titleKey: 'navCompanyDetail',
+        title: '公司详情',
         showInMenu: false,
         component: CompanyDetailPage,
       },
@@ -130,8 +123,7 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/diet',
-    title: 'Diet',
-    titleKey: 'navDiet',
+    title: '膳食计划',
     icon: <ReadOutlined />,
     showInMenu: true,
     component: DietBoardPage,
@@ -139,8 +131,7 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/census',
-    title: 'Census',
-    titleKey: 'navCensus',
+    title: '人数统计',
     icon: <TeamOutlined />,
     showInMenu: true,
     component: CensusListPage,
@@ -148,22 +139,19 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/procurement',
-    title: 'Procurement',
-    titleKey: 'navProcurement',
+    title: '采购管理',
     icon: <ShoppingCartOutlined />,
     showInMenu: true,
     children: [
       {
         path: '/procurement/purchase/',
-        title: 'Purchase Order',
-        titleKey: 'navPurchaseOrder',
+        title: '采购单',
         showInMenu: true,
         component: PurchaseListPage,
         children: [
           {
             path: '/procurement/purchase/:id',
-            title: 'Purchase detail',
-            titleKey: 'purchaseDetail',
+            title: '采购详情',
             showInMenu: false,
             component: PurchaseOrderDetailPage,
           },
@@ -171,14 +159,13 @@ export const routes: RouteConfig[] = [
       },
       {
         path: '/procurement/order',
-        title: 'Purchase redirect',
+        title: '采购跳转',
         showInMenu: false,
         component: () => <Redirect to="/procurement/purchase/" />,
       },
       {
         path: '/procurement/receiving',
-        title: 'Receiving Order',
-        titleKey: 'navReceivingOrder',
+        title: '收货单',
         showInMenu: true,
         component: ReceivingListPage,
       },
@@ -187,8 +174,7 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/processing',
-    title: 'Processing',
-    titleKey: 'navProcessing',
+    title: '加工管理',
     icon: <ProfileOutlined />,
     showInMenu: true,
     component: ProcessingListPage,
@@ -196,8 +182,7 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/dish',
-    title: 'Dishes',
-    titleKey: 'navDishes',
+    title: '菜品管理',
     icon: <FireOutlined />,
     showInMenu: true,
     component: DishListPage,
@@ -205,30 +190,26 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/supplier',
-    title: 'Supplier',
-    titleKey: 'commonSupplier',
+    title: '供应商',
     icon: <ShopOutlined />,
     showInMenu: true,
     component: SupplierListPage,
     children: [
       {
         path: '/supplier/create',
-        title: 'Create Supplier',
-        titleKey: 'navCreateSupplier',
+        title: '新建供应商',
         showInMenu: false,
         component: SupplierCreatePage,
       },
       {
         path: '/supplier/update/:supplierId',
-        title: 'Update Supplier',
-        titleKey: 'supplierEdit',
+        title: '编辑供应商',
         showInMenu: false,
         component: SupplierUpdatePage,
       },
       {
         path: '/supplier/:supplierId',
-        title: 'Supplier Detail',
-        titleKey: 'navSupplierDetail',
+        title: '供应商详情',
         showInMenu: false,
         component: SupplierDetailPage,
       },
@@ -237,30 +218,26 @@ export const routes: RouteConfig[] = [
 
   {
     path: '/material',
-    title: 'Materials',
-    titleKey: 'navMaterials',
+    title: '原料管理',
     icon: <DatabaseOutlined />,
     showInMenu: true,
     component: MaterialListPage,
     children: [
       {
         path: '/material/raw',
-        title: 'Materials',
-        titleKey: 'navMaterialList',
+        title: '食材',
         showInMenu: true,
         component: MaterialListPage,
       },
       {
         path: '/material/staples',
-        title: 'Staples',
-        titleKey: 'navStaples',
+        title: '主食',
         showInMenu: true,
         component: StapleListPage,
       },
       {
         path: '/material/create',
-        title: 'Create Material',
-        titleKey: 'navCreateMaterial',
+        title: '新建食材',
         showInMenu: false,
         component: MaterialCreatePage,
       },

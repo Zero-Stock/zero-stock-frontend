@@ -4,7 +4,6 @@ import type {
   StaplePreviewSchema,
   StapleUpsertSchema,
 } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 interface StapleEditModalProps {
   visible: boolean;
@@ -22,7 +21,6 @@ export default function StapleEditModal({
   onSave,
 }: StapleEditModalProps) {
   const [form] = Form.useForm<StapleUpsertSchema>();
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (!visible) {
@@ -53,46 +51,44 @@ export default function StapleEditModal({
 
   return (
     <Modal
-      title={record ? t('stapleEditTitle') : t('stapleCreate')}
+      title={record ? '编辑主食' : '新建主食'}
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
       afterClose={() => form.resetFields()}
       confirmLoading={confirmLoading}
-      okText={t('save')}
-      cancelText={t('cancel')}
+      okText={'保存'}
+      cancelText={'取消'}
       forceRender
     >
       <Form form={form} layout="vertical">
         <Form.Item<StapleUpsertSchema>
           name="name"
-          label={t('commonName')}
-          rules={[{ required: true, message: t('stapleNameRequired') }]}
+          label={'名称'}
+          rules={[{ required: true, message: '请输入主食名称' }]}
         >
-          <Input placeholder={t('stapleNamePlaceholder')} />
+          <Input placeholder={'例如：米饭'} />
         </Form.Item>
 
         <Form.Item<StapleUpsertSchema>
           name="unit_name"
-          label={t('commonUnit')}
-          rules={[{ required: true, message: t('stapleUnitRequired') }]}
+          label={'单位'}
+          rules={[{ required: true, message: '请输入单位' }]}
         >
-          <Input placeholder={t('stapleUnitPlaceholder')} />
+          <Input placeholder={'例如：碗、份、g'} />
         </Form.Item>
 
         <Form.Item<StapleUpsertSchema>
           name="g_per_unit"
-          label={t('stapleGramsPerUnit')}
-          rules={[
-            { required: true, message: t('stapleGramsPerUnitRequired') },
-          ]}
+          label={'每单位克重'}
+          rules={[{ required: true, message: '请输入每单位克重' }]}
         >
           <InputNumber
             stringMode
             min={0}
             step="1"
             className="w-full!"
-            placeholder={t('stapleGramsPerUnitPlaceholder')}
+            placeholder={'例如：180'}
           />
         </Form.Item>
       </Form>

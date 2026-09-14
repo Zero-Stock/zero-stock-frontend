@@ -7,7 +7,6 @@ import {
   isValidYieldRatePercent,
   percentYieldRateToDecimal,
 } from '../utils/yieldRate';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
   MaterialPreviewSchema,
   MaterialUpsertSchema,
@@ -35,7 +34,6 @@ export default function MaterialEditModal({
   onUpdated,
 }: MaterialEditModalProps) {
   const { message } = App.useApp();
-  const { t } = useTranslation();
   const [form] = Form.useForm<MaterialEditFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,14 +71,14 @@ export default function MaterialEditModal({
 
       setIsSubmitting(true);
       await updateMaterial(payload);
-      message.success(t('materialEditSuccess'));
+      message.success('更新食材成功');
       onUpdated?.();
       onCancel();
     } catch (error) {
       if (!(error instanceof Error)) {
         return;
       }
-      message.error(error.message || t('materialEditFailed'));
+      message.error(error.message || '更新食材失败');
     } finally {
       setIsSubmitting(false);
     }
@@ -88,14 +86,14 @@ export default function MaterialEditModal({
 
   return (
     <Modal
-      title={t('materialEditTitle')}
+      title={'编辑食材'}
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
       destroyOnHidden
       confirmLoading={isSubmitting}
-      okText={t('save')}
-      cancelText={t('cancel')}
+      okText={'保存'}
+      cancelText={'取消'}
     >
       <Form
         form={form}
@@ -105,29 +103,29 @@ export default function MaterialEditModal({
       >
         <Form.Item<MaterialEditFormValues>
           name="name"
-          label={t('commonName')}
-          rules={[{ required: true, message: t('materialNameRequired') }]}
+          label={'名称'}
+          rules={[{ required: true, message: '请输入名称' }]}
         >
-          <Input placeholder={t('materialNamePlaceholder')} />
+          <Input placeholder={'输入食材名称'} />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="category_id"
-          label={t('commonCategory')}
-          rules={[{ required: true, message: t('materialCategoryRequired') }]}
+          label={'类别'}
+          rules={[{ required: true, message: '请选择类别' }]}
         >
           <Select
-            placeholder={t('materialCategoryPlaceholder')}
+            placeholder={'选择类别'}
             options={categoryOptions}
             loading={isLoadingCategories}
           />
         </Form.Item>
         <Form.Item<MaterialEditFormValues>
           name="yield_rate"
-          label={t('commonYieldRate')}
+          label={'出成率'}
           rules={[
             {
               required: true,
-              message: t('materialYieldRateRequired'),
+              message: '请输入出成率',
             },
             {
               validator: (_, value: string | undefined) => {
@@ -137,7 +135,7 @@ export default function MaterialEditModal({
 
                 if (!isValidYieldRatePercent(value)) {
                   return Promise.reject(
-                    new Error(t('materialYieldRateRange')),
+                    new Error('出成率必须在 0 到 100 之间'),
                   );
                 }
 
@@ -153,17 +151,14 @@ export default function MaterialEditModal({
             step="1"
             suffix="%"
             className="w-full"
-            placeholder={t('materialYieldRatePlaceholder')}
+            placeholder={'例如：80'}
           />
         </Form.Item>
-        <Form.Item<MaterialEditFormValues>
-          name="processing"
-          label={t('commonSpecs')}
-        >
+        <Form.Item<MaterialEditFormValues> name="processing" label={'加工规格'}>
           <Select
             mode="tags"
             dropdownStyle={{ display: 'none' }}
-            placeholder={t('materialSpecsPlaceholder')}
+            placeholder={'例如：块、片、丝'}
           />
         </Form.Item>
       </Form>

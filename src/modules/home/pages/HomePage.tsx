@@ -6,14 +6,12 @@ import KeyCadenceSection from '@/modules/home/components/KeyCadenceSection';
 import QuickStartSection from '@/modules/home/components/QuickStartSection';
 import ShiftChecklistSection from '@/modules/home/components/ShiftChecklistSection';
 import TodayOverviewSection from '@/modules/home/components/TodayOverviewSection';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useDateStore } from '@/shared/stores/dateStore';
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function HomePage() {
   const [, setLocation] = useLocation();
-  const { t } = useTranslation();
   const { date } = useDateStore();
 
   return (
@@ -36,15 +34,17 @@ export default function HomePage() {
             <Col xs={24} xl={15}>
               <Space orientation="vertical" size={16} className="w-full">
                 <Text className="text-sm! font-medium text-yellow-600!">
-                  {t('homeHeroBadge')}
+                  {'今日生产指挥台'}
                 </Text>
 
                 <div>
                   <Title level={1} className="mb-3! text-4xl! leading-tight!">
-                    {t('homeHeroTitle')}
+                    {'把备餐、人数、采购和加工安排在一个起点完成。'}
                   </Title>
                   <Paragraph className="mb-0! max-w-2xl! text-base! text-slate-600!">
-                    {t('homeHeroDescription')}
+                    {
+                      '首页聚合了零库存餐饮生产流程中的关键入口，帮助你从人数统计快速推进到菜单、采购和加工执行。'
+                    }
                   </Paragraph>
                 </div>
 
@@ -55,12 +55,12 @@ export default function HomePage() {
                     icon={<ArrowRightOutlined />}
                     onClick={() => setLocation('/census')}
                   >
-                    {t('homePrimaryAction')}
+                    {'先去更新人数统计'}
                   </Button>
                   <Button size="large" onClick={() => setLocation('/diet')}>
-                    {t('homeSecondaryAction')}
+                    {'查看膳食计划'}
                   </Button>
-                  <Text type="secondary">{t('homeDateLabel', { date })}</Text>
+                  <Text type="secondary">{`当前生产日期：${date}`}</Text>
                 </Space>
               </Space>
             </Col>

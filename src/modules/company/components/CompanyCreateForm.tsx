@@ -4,7 +4,6 @@ import { useLocation } from 'wouter';
 
 import { useCompanyCreate } from '../hooks/useCompanyCreate';
 import CompanyCreateRegionTable from './CompanyCreateRegionTable';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type {
   CompanyRegionUpsertSchema,
   CompanyUpsertSchema,
@@ -18,7 +17,6 @@ type CompanyCreateFormValues = CompanyUpsertSchema & {
 };
 
 export default function CompanyCreateForm() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
   const [form] = Form.useForm<CompanyCreateFormValues>();
@@ -55,15 +53,15 @@ export default function CompanyCreateForm() {
       const companyId = createdCompany.result.id;
 
       if (!companyId) {
-        message.error(t('companyCreateErrorId'));
+        message.error('获取创建的公司 ID 失败。');
         return;
       }
 
-      message.success(t('companyCreated'));
+      message.success('公司已创建');
       navigate(`/company/${companyId}`);
     } catch (err) {
       console.error(err);
-      message.error(t('companyCreateFailed'));
+      message.error('创建公司失败');
     } finally {
       setIsSubmitting(false);
     }
@@ -76,55 +74,49 @@ export default function CompanyCreateForm() {
       onFinish={onFinish}
       initialValues={{ regions: [{ name: '' }] }}
     >
-      <Title level={4}>{t('companyBasicInfo')}</Title>
+      <Title level={4}>{'基础信息'}</Title>
 
       <div className="grid w-full grid-cols-4 gap-4">
         <Form.Item
-          label={t('commonName')}
+          label={'名称'}
           name="name"
-          rules={[{ required: true, message: t('companyRequired') }]}
+          rules={[{ required: true, message: '必填' }]}
         >
-          <Input placeholder={t('companyNamePlaceholder')} />
+          <Input placeholder={'公司名称'} />
         </Form.Item>
 
         <Form.Item
-          label={t('companyCode')}
+          label={'公司编码'}
           name="code"
-          rules={[{ required: true, message: t('companyRequired') }]}
+          rules={[{ required: true, message: '必填' }]}
         >
-          <Input placeholder={t('companyCodePlaceholder')} />
+          <Input placeholder={'公司编码'} />
         </Form.Item>
 
-        <Form.Item label={t('commonContactPerson')} name="contact_person">
-          <Input placeholder={t('companyContactPlaceholder')} />
+        <Form.Item label={'联系人'} name="contact_person">
+          <Input placeholder={'联系人名称'} />
         </Form.Item>
 
-        <Form.Item label={t('commonPhone')} name="phone">
-          <Input placeholder={t('companyPhonePlaceholder')} />
+        <Form.Item label={'电话'} name="phone">
+          <Input placeholder={'电话号码'} />
         </Form.Item>
 
-        <Form.Item
-          label={t('commonAddress')}
-          name="address"
-          className="col-span-2"
-        >
-          <Input placeholder={t('commonAddress')} />
+        <Form.Item label={'地址'} name="address" className="col-span-2">
+          <Input placeholder={'地址'} />
         </Form.Item>
 
-        <Form.Item
-          label={t('companyDescription')}
-          name="description"
-          className="col-span-2"
-        >
-          <TextArea rows={1} placeholder={t('companyDescriptionPlaceholder')} />
+        <Form.Item label={'描述'} name="description" className="col-span-2">
+          <TextArea rows={1} placeholder={'公司描述'} />
         </Form.Item>
       </div>
 
       <div className="mt-6">
         <Title level={4} className="mb-1">
-          {t('companyRegionDetails')}
+          {'区域明细'}
         </Title>
-        <Text type="secondary">{t('companyRegionDetailsDesc')}</Text>
+        <Text type="secondary">
+          {'可选。您可以在此处添加区域，或稍后在公司详情页中进行编辑。'}
+        </Text>
 
         <div className="mt-4 max-w-180">
           <CompanyCreateRegionTable />
@@ -133,11 +125,11 @@ export default function CompanyCreateForm() {
 
       <div className="mt-6 flex w-full justify-end gap-3">
         <Button onClick={() => navigate('/company')} disabled={isSubmitting}>
-          {t('cancel')}
+          {'取消'}
         </Button>
 
         <Button type="primary" htmlType="submit" loading={isSubmitting}>
-          {t('save')}
+          {'保存'}
         </Button>
       </div>
     </Form>

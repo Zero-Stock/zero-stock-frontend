@@ -12,7 +12,6 @@ import {
 import { useLocation } from 'wouter';
 import type { ColumnsType } from 'antd/es/table';
 import type { SorterResult } from 'antd/es/table/interface';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
 import useMaterialCategories from '@/modules/material/hooks/useMaterialCategories';
 import { usePurchaseDetail } from '../hooks/usePurchaseDetail';
@@ -40,7 +39,6 @@ export default function PurchaseOrder({
 }) {
   const [, navigate] = useLocation();
   const id = Number(routePurchaseId);
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [editingPurchaseItem, setEditingPurchaseItem] =
     useState<PurchaseOrderItemSchema | null>(null);
@@ -92,12 +90,10 @@ export default function PurchaseOrder({
   const handleGenerate = async () => {
     try {
       await generateTrigger();
-      message.success(t('purchaseGenerateSuccess'));
+      message.success('采购单已生成');
       await mutateList();
     } catch (error: Error | unknown) {
-      message.error(
-        error instanceof Error ? error.message : t('purchaseGenerateFailed'),
-      );
+      message.error(error instanceof Error ? error.message : '采购单生成失败');
     }
   };
 
@@ -106,31 +102,28 @@ export default function PurchaseOrder({
       handleExportPurchasePdf({
         date,
         items: purchases,
-        t,
         message,
       });
     } catch (error) {
-      message.error(
-        error instanceof Error ? error.message : t('purchaseGenerateFailed'),
-      );
+      message.error(error instanceof Error ? error.message : '采购单生成失败');
     }
   };
 
   const handleSubmit = async () => {
     if (!purchaseId) {
-      message.warning(t('purchaseNoData'));
+      message.warning('暂无采购单，请先点击生成采购单');
       return;
     }
 
     Modal.confirm({
-      title: t('purchaseSubmit'),
-      content: t('purchaseSubmitConfirm'),
-      okText: t('purchaseSubmit'),
-      cancelText: t('cancel'),
+      title: '确认采购单',
+      content: '确定要确认这张采购单吗？',
+      okText: '确认采购单',
+      cancelText: '取消',
       onOk: async () => {
         try {
           await submitTrigger(purchaseId);
-          message.success(t('purchaseSubmitSuccess'));
+          message.success('采购单已确认');
           await mutateList();
         } catch (error) {
           if (!(error instanceof Error)) return;
@@ -142,14 +135,12 @@ export default function PurchaseOrder({
 
   const handleOpenSupplierModal = (record: PurchaseOrderItemSchema) => {
     const matchedPurchaseItem =
-      purchases.find(
-        (item) => item.po_item_id === record.po_item_id,
-      ) ??
+      purchases.find((item) => item.po_item_id === record.po_item_id) ??
       purchases.find((item) => item.material_id === record.material_id) ??
       null;
 
     if (!matchedPurchaseItem) {
-      message.error(t('purchaseItemNotFound'));
+      message.error('未找到匹配的采购单明细');
       return;
     }
 
@@ -159,7 +150,7 @@ export default function PurchaseOrder({
 
   const handleSaveSupplier = async (supplierMaterialId: number | null) => {
     if (!editingPurchaseItem?.po_item_id) {
-      message.error(t('purchaseMissingItemId'));
+      message.error('缺少采购单明细 ID');
       return;
     }
 
@@ -173,7 +164,7 @@ export default function PurchaseOrder({
         ],
       });
 
-      message.success(t('purchaseSupplierUpdated'));
+      message.success('供应商已更新');
 
       setSupplierModalOpen(false);
       setEditingPurchaseItem(null);
@@ -187,19 +178,19 @@ export default function PurchaseOrder({
 
   const columns: ColumnsType<PurchaseOrderItemSchema> = [
     {
-      title: t('purchaseColName'),
+      title: '品名',
       dataIndex: 'material_name',
       key: 'material_name',
       width: 100,
     },
     {
-      title: t('purchaseColCategory'),
+      title: '规格/类别',
       dataIndex: 'material_category',
       key: 'material_category',
       width: 100,
     },
     {
-      title: t('purchaseColStockKg'),
+      title: '库存(kg)',
       dataIndex: 'stock_g',
       key: 'stock_g',
       width: 100,
@@ -207,7 +198,7 @@ export default function PurchaseOrder({
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('purchaseColDemandKg'),
+      title: '需求(kg)',
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 100,
@@ -215,13 +206,13 @@ export default function PurchaseOrder({
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('purchaseColDemandUnit'),
+      title: '需求(采购单位)',
       dataIndex: 'demand_special_unit',
       key: 'demand_special_unit',
       width: 120,
     },
     {
-      title: t('purchaseColPurchaseKg'),
+      title: '采购需求(kg)',
       dataIndex: 'required_g',
       key: 'required_g',
       width: 120,
@@ -229,48 +220,46 @@ export default function PurchaseOrder({
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('purchaseColPurchaseUnit'),
+      title: '采购需求(采购单位)',
       dataIndex: 'required_special_unit',
       key: 'required_special_unit',
       width: 120,
     },
     {
-      title: t('commonSupplier'),
+      title: '供应商',
       dataIndex: 'supplier_name',
       key: 'supplier_name',
       width: 160,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('purchaseColSupplierUnit'),
+      title: '供应商单位',
       dataIndex: 'supplier_unit',
       key: 'supplier_unit',
       width: 80,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('purchaseColSupplierPrice'),
+      title: '供应商单价',
       dataIndex: 'supplier_price',
       key: 'supplier_price',
       width: 90,
       render: (value: number | null) =>
-        value != null ? `${t('commonCurrencySymbol')}${value.toFixed(2)}` : '-',
+        value != null ? `${'¥'}${value.toFixed(2)}` : '-',
     },
     {
-      title: t('commonTotalPrice'),
+      title: '总价',
       key: 'total_price',
       width: 100,
       render: (_, record) => {
         const total = getTotalPrice(record);
         if (total == null) return '-';
 
-        return total > 0
-          ? `${t('commonCurrencySymbol')}${total.toFixed(2)}`
-          : `${t('commonCurrencySymbol')}0.00`;
+        return total > 0 ? `${'¥'}${total.toFixed(2)}` : `${'¥'}0.00`;
       },
     },
     {
-      title: t('commonAction'),
+      title: '操作',
       key: 'action',
       width: 100,
       render: (_, record) => (
@@ -280,7 +269,7 @@ export default function PurchaseOrder({
           disabled={!record.editable}
           onClick={() => handleOpenSupplierModal(record)}
         >
-          {t('edit')}
+          {'编辑'}
         </Button>
       ),
     },
@@ -324,9 +313,9 @@ export default function PurchaseOrder({
         role="alert"
         className="flex h-full flex-col items-center justify-center"
       >
-        <Title level={3}>{t('purchaseNotFound')}</Title>
+        <Title level={3}>{'采购单不存在'}</Title>
         <Button onClick={() => navigate('/procurement/purchase/')}>
-          {t('purchaseBack')}
+          {'返回采购单列表'}
         </Button>
       </div>
     );
@@ -336,15 +325,15 @@ export default function PurchaseOrder({
     <div>
       <div className="print-header mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navPurchaseOrder')} #{id}
+          {'采购单'} #{id}
         </Title>
         <div className="no-print flex items-center gap-3">
           <Button onClick={handleGenerate} disabled={record?.status !== 'INIT'}>
-            {hasPurchase ? t('purchaseRegenerate') : t('purchaseGenerate')}
+            {hasPurchase ? '重新生成采购单' : '生成采购单'}
           </Button>
 
           <Button onClick={onExportPdf} disabled={!hasPurchase}>
-            {t('commonExportPdf')}
+            {'导出 PDF / 打印'}
           </Button>
 
           <Button
@@ -352,7 +341,7 @@ export default function PurchaseOrder({
             onClick={handleSubmit}
             disabled={record?.status !== 'INIT'}
           >
-            {t('purchaseSubmit')}
+            {'确认采购单'}
           </Button>
         </div>
       </div>
@@ -360,7 +349,7 @@ export default function PurchaseOrder({
       <div className="no-print mb-4 flex flex-wrap items-center gap-4">
         <Input.Search
           allowClear
-          placeholder={t('materialSearchName')}
+          placeholder={'搜索食材名'}
           value={materialName}
           onChange={(event) => {
             setMaterialName(event.target.value);
@@ -371,7 +360,7 @@ export default function PurchaseOrder({
         <Select
           allowClear
           showSearch={{ optionFilterProp: 'label' }}
-          placeholder={t('purchaseFilterCategory')}
+          placeholder={'按类别筛选'}
           value={selectedCategory}
           onChange={(value) => {
             setSelectedCategory(value);
@@ -400,7 +389,9 @@ export default function PurchaseOrder({
           onChange={handleTableChange}
           tableLayout="fixed"
           locale={{
-            emptyText: hasPurchase ? t('purchaseNoItems') : t('purchaseNoData'),
+            emptyText: hasPurchase
+              ? '暂无采购单明细'
+              : '暂无采购单，请先点击生成采购单',
           }}
           scroll={{ x: 1950 }}
         />

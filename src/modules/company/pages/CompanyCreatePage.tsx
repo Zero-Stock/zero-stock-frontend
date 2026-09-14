@@ -6,7 +6,7 @@ const { Title } = Typography;
 export default function CompanyCreatePage() {
   return (
     <div style={{ padding: '24px' }}>
-      <Title level={3}>Add New Company</Title>
+      <Title level={3}>{'新建公司'}</Title>
 
       <div style={{ marginTop: '24px' }}>
         <CompanyCreateForm />

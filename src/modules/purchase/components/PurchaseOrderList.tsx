@@ -3,13 +3,11 @@ import { App, Button, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Link } from 'wouter';
 import { useDateStore } from '@/shared/stores/dateStore';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { PurchasePreviewSchema } from '@/shared/types/schema';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import { usePurchaseGenerate } from '../hooks/usePurchaseGenerate';
 
 export default function PurchaseOrderList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const date = useDateStore((state) => state.date);
   const [page, setPage] = useState(1);
@@ -28,11 +26,9 @@ export default function PurchaseOrderList() {
       await trigger({ needed_date: date });
       setPage(1);
       await mutate();
-      message.success(t('purchaseGenerateSuccess'));
+      message.success('采购单已生成');
     } catch (error) {
-      message.error(
-        error instanceof Error ? error.message : t('purchaseGenerateFailed'),
-      );
+      message.error(error instanceof Error ? error.message : '采购单生成失败');
     } finally {
       setGenerating(false);
     }
@@ -40,29 +36,27 @@ export default function PurchaseOrderList() {
 
   const columns: ColumnsType<PurchasePreviewSchema> = [
     {
-      title: t('purchaseOrderId'),
+      title: '采购单 ID',
       dataIndex: 'po_id',
       key: 'po_id',
     },
-    { title: t('purchaseStatus'), dataIndex: 'status', key: 'status' },
+    { title: '状态', dataIndex: 'status', key: 'status' },
     {
-      title: t('purchaseNeededDate'),
+      title: '需求日期',
       dataIndex: 'needed_date',
       key: 'needed_date',
     },
     {
-      title: t('purchaseOrderDate'),
+      title: '下单日期',
       dataIndex: 'order_date',
       key: 'order_date',
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('commonAction'),
+      title: '操作',
       key: 'action',
       render: (_, record) => (
-        <Link href={`/procurement/purchase/${record.po_id}`}>
-          {t('purchaseDetail')}
-        </Link>
+        <Link href={`/procurement/purchase/${record.po_id}`}>{'详情'}</Link>
       ),
     },
   ];
@@ -70,12 +64,12 @@ export default function PurchaseOrderList() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <Typography.Title level={3}>{t('navPurchaseOrder')}</Typography.Title>
+        <Typography.Title level={3}>{'采购单'}</Typography.Title>
         <Button onClick={generate} loading={generating}>
-          {t('purchaseGenerate')} · {date}
+          {'生成采购单'} · {date}
         </Button>
       </div>
-      {error ? <div role="alert">{t('purchaseLoadFailed')}</div> : null}
+      {error ? <div role="alert">{'采购单不存在或加载失败'}</div> : null}
       <Table
         rowKey="po_id"
         columns={columns}

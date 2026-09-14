@@ -26,7 +26,6 @@ import {
   handleExportDietPdf,
   dietPrintStyles,
 } from '../components/handleExportDietPdf';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useDietCategoryList } from '../hooks/useDietCategoryList';
 import { useDietDishDetails } from '../hooks/useDietDishDetails';
 import { useDietMenuList } from '../hooks/useDietMenuList';
@@ -34,12 +33,10 @@ import { useDietCategoryCreate } from '../hooks/useDietCategoryCreate';
 import { useDietCategoryUpdate } from '../hooks/useDietCategoryUpdate';
 import { useDietCategoryDelete } from '../hooks/useDietCategoryDelete';
 import { useDietSaveWeeklyMenu } from '../hooks/useDietSaveWeeklyMenu';
-import type { TranslationKey } from '@/shared/translation/translations';
 
 const { Title, Text } = Typography;
 
 export default function DietBoardPage() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [newCategoryName, setNewCategoryName] = useState('');
   const inputRef = useRef<InputRef>(null);
@@ -71,20 +68,21 @@ export default function DietBoardPage() {
   useEffect(() => {
     if (dietError) {
       console.error('Failed to fetch diets:', dietError);
-      message.error(t('dietLoadDietsFailed'));
+      message.error('加载套餐类别失败');
     }
-  }, [dietError, message, t]);
+  }, [dietError, message]);
 
   useEffect(() => {
     if (menuError) {
       console.error('Failed to fetch weekly menus:', menuError);
-      message.error(t('dietLoadMenuFailed'));
+      message.error('加载周菜单失败');
     }
-  }, [menuError, message, t]);
+  }, [menuError, message]);
 
   const dayPlans = useMemo(() => {
-    return mealSlotsToDayPlans(menuRows, (d) => t(`day${d}` as TranslationKey));
-  }, [menuRows, t]);
+    const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    return mealSlotsToDayPlans(menuRows, (day) => dayNames[day - 1] ?? '');
+  }, [menuRows]);
 
   const dishIds = useMemo(
     () =>
@@ -110,10 +108,10 @@ export default function DietBoardPage() {
         setSelectedCategoryId(newCategory.id);
         setNewCategoryName('');
         setSelectOpen(false);
-        message.success(t('dietCategoryCreated'));
+        message.success('套餐类别已创建');
       } catch (err) {
         console.error('Failed to create diet:', err);
-        message.error(t('dietCategoryCreateFailed'));
+        message.error('创建套餐类别失败');
       }
     }
   };
@@ -130,27 +128,27 @@ export default function DietBoardPage() {
   const handleRenameDiet = (diet: DietOptionSchema) => {
     let newName = diet.name;
     Modal.confirm({
-      title: t('dietRenameTitle'),
+      title: '重命名套餐类别',
       content: (
         <Input
           defaultValue={diet.name}
           onChange={(e) => {
             newName = e.target.value;
           }}
-          placeholder={t('dietRenameInput')}
+          placeholder={'输入新名称'}
         />
       ),
-      okText: t('save'),
-      cancelText: t('cancel'),
+      okText: '保存',
+      cancelText: '取消',
       onOk: async () => {
         if (!newName || newName === diet.name) return;
         try {
           await updateDiet(diet.id, { name: newName });
           await mutateDiets();
-          message.success(t('dietCategoryRenamed'));
+          message.success('套餐类别已重命名');
         } catch (err) {
           console.error('Failed to rename diet:', err);
-          message.error(t('dietCategoryRenameFailed'));
+          message.error('重命名失败');
         }
       },
     });
@@ -179,14 +177,14 @@ export default function DietBoardPage() {
       }
 
       if (deleted) {
-        message.success(t('dietCategoryDeleted'));
+        message.success('套餐类别已删除');
         return;
       }
     } catch (syncErr) {
       console.error('Failed to refresh diets after delete:', syncErr);
     }
 
-    message.error(t('dietCategoryDeleteFailed'));
+    message.error('删除失败');
   };
 
   const handleEdit = (day: DayPlan) => {
@@ -199,12 +197,12 @@ export default function DietBoardPage() {
 
     try {
       await saveWeeklyMenu(activeCategoryId, mealSlots);
-      message.success(t('dietSaved'));
+      message.success('菜单已保存');
       setIsModalVisible(false);
       await mutateMenus();
     } catch (err) {
       console.error('Failed to save weekly menu:', err);
-      message.error(t('dietSaveFailed'));
+      message.error('保存菜单失败');
     }
   };
 
@@ -212,7 +210,7 @@ export default function DietBoardPage() {
     <div>
       <div className="no-print mb-6 flex items-center justify-between">
         <Title level={3} className="m-0!">
-          {t('dietBoardTitle')}
+          {'标准膳食计划'}
         </Title>
         <Space>
           <Select
@@ -253,13 +251,11 @@ export default function DietBoardPage() {
                       onClick={(e) => {
                         e.stopPropagation();
                         Modal.confirm({
-                          title: t('dietDeleteConfirm'),
-                          content: t('dietDeleteConfirmContent', {
-                            name: diet.name,
-                          }),
-                          okText: t('delete'),
+                          title: '确认删除',
+                          content: `确定要删除套餐类别「${diet.name}」吗？该类别下的所有菜单数据也将被删除。`,
+                          okText: '删除',
                           okType: 'danger',
-                          cancelText: t('cancel'),
+                          cancelText: '取消',
                           onOk: () => handleDeleteDiet(diet.id),
                         });
                       }}
@@ -274,14 +270,14 @@ export default function DietBoardPage() {
                 <Divider className="my-2!" />
                 <div className="flex items-center justify-between gap-2 p-2">
                   <Input
-                    placeholder={t('dietNewDietPlaceholder')}
+                    placeholder={'新套餐名称'}
                     ref={inputRef}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                   <Button icon={<PlusOutlined />} onClick={addDietCategory}>
-                    {t('dietAddDiet')}
+                    {'添加'}
                   </Button>
                 </div>
               </>
@@ -290,17 +286,16 @@ export default function DietBoardPage() {
           <Button
             onClick={() =>
               handleExportDietPdf({
-                t,
                 message,
                 categoryName:
                   dietCategories.find((c) => c.id === activeCategoryId)?.name ??
-                  t('dietUnknownDiet'),
+                  '未知套餐',
                 dayPlans,
                 dishDetails,
               })
             }
           >
-            {t('commonExportPdf')}
+            {'导出 PDF / 打印'}
           </Button>
         </Space>
       </div>
@@ -308,12 +303,12 @@ export default function DietBoardPage() {
       {/* Print Header */}
       <div className="print-only mb-5 hidden text-center">
         <Title level={3} className="m-0!">
-          {t('dietPrintTitle')}
+          {'标准膳食计划'}
         </Title>
         <Title level={3} className="my-2!">
           {dietCategories.find((c) => c.id === activeCategoryId)?.name ??
-            t('dietUnknownDiet')}
-          {t('dietConfigSheet')}
+            '未知套餐'}
+          {'配料表'}
         </Title>
       </div>
 
@@ -326,14 +321,14 @@ export default function DietBoardPage() {
             description={
               <div className="flex flex-col items-center">
                 <Text strong className="text-lg">
-                  {t('dietNoDietTitle')}
+                  {'暂无套餐类别'}
                 </Text>
                 <Text type="secondary" className="mt-1 mb-4">
-                  {t('dietNoDietDesc')}
+                  {'请先添加一个套餐类别开始制定菜单'}
                 </Text>
                 <Space>
                   <Input
-                    placeholder={t('dietNewDietPlaceholder')}
+                    placeholder={'新套餐名称'}
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     style={{ width: 200 }}
@@ -344,7 +339,7 @@ export default function DietBoardPage() {
                     icon={<PlusOutlined />}
                     onClick={addDietCategory}
                   >
-                    {t('dietAddDiet')}
+                    {'添加'}
                   </Button>
                 </Space>
               </div>

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useDateStore } from '@/shared/stores/dateStore';
 import { App, Button, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
 import { usePurchaseList } from '@/modules/purchase/hooks/usePurchaseList';
 import { usePurchaseOrderItemList } from '@/modules/purchase/hooks/usePurchaseOrderItemList';
@@ -28,7 +27,6 @@ type ReceivingTableRow = PurchaseOrderItemSchema & {
 };
 
 export default function ReceivingList() {
-  const { t } = useTranslation();
   const date = useDateStore((state) => state.date);
   const { message } = App.useApp();
   const [editedRows, setEditedRows] = useState<
@@ -126,7 +124,7 @@ export default function ReceivingList() {
 
   const handleSubmit = async () => {
     if (!template?.procurement_id) {
-      message.warning(t('receivingNoData'));
+      message.warning('暂无可收货的采购单，请先确认采购单');
       return;
     }
 
@@ -147,7 +145,7 @@ export default function ReceivingList() {
         ),
       });
 
-      message.success(t('receivingSubmitSuccess'));
+      message.success('收货单已提交');
       setEditedRows({});
       await mutateList();
       await mutateSheet();
@@ -160,66 +158,66 @@ export default function ReceivingList() {
 
   const columns: ColumnsType<ReceivingTableRow> = [
     {
-      title: t('purchaseColName'),
+      title: '品名',
       dataIndex: 'material_name',
       key: 'material_name',
       width: 160,
     },
     {
-      title: t('purchaseColCategory'),
+      title: '规格/类别',
       dataIndex: 'material_category',
       key: 'material_category',
       width: 140,
     },
     {
-      title: t('purchaseColStockKg'),
+      title: '库存(kg)',
       dataIndex: 'stock_g',
       key: 'stock_g',
       width: 120,
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('purchaseColDemandKg'),
+      title: '需求(kg)',
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 120,
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('purchaseColDemandUnit'),
+      title: '需求(采购单位)',
       dataIndex: 'demand_special_unit',
       key: 'demand_special_unit',
       width: 140,
     },
     {
-      title: t('commonSupplier'),
+      title: '供应商',
       dataIndex: 'supplier_name',
       key: 'supplier_name',
       width: 180,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('purchaseColSupplierUnit'),
+      title: '供应商单位',
       dataIndex: 'supplier_unit',
       key: 'supplier_unit',
       width: 120,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('receivingColExpectedKg'),
+      title: '应收(kg)',
       dataIndex: 'expected_quantity',
       key: 'expected_quantity',
       width: 140,
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('receivingColExpectedUnit'),
+      title: '应收(采购单位)',
       dataIndex: 'expected_unit_qty',
       key: 'expected_unit_qty',
       width: 160,
     },
     {
-      title: t('receivingColActualKg'),
+      title: '实收(kg)',
       key: 'actual_quantity',
       width: 160,
       render: (_, record) => (
@@ -234,7 +232,7 @@ export default function ReceivingList() {
       ),
     },
     {
-      title: t('receivingColActualUnit'),
+      title: '实收(采购单位)',
       key: 'actual_unit_qty',
       width: 170,
       render: (_, record) => (
@@ -255,11 +253,11 @@ export default function ReceivingList() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navReceivingOrder')}
+          {'收货单'}
         </Title>
 
         <Button type="primary" onClick={handleSubmit} disabled={!hasTemplate}>
-          {t('purchaseSubmit')}
+          {'确认采购单'}
         </Button>
       </div>
 
@@ -271,7 +269,9 @@ export default function ReceivingList() {
         pagination={{ pageSize: 10 }}
         tableLayout="fixed"
         locale={{
-          emptyText: hasTemplate ? t('receivingNoItems') : t('receivingNoData'),
+          emptyText: hasTemplate
+            ? '暂无收货单明细'
+            : '暂无可收货的采购单，请先确认采购单',
         }}
         scroll={{ x: 2200 }}
       />

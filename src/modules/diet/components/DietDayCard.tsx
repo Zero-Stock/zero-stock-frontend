@@ -1,7 +1,6 @@
 import { Button, Card, Divider, Skeleton, Typography } from 'antd';
 import type { DayPlan, DishItem } from '../apiAdapter';
 import type { DishDetailSchema } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Text } = Typography;
 
@@ -25,8 +24,6 @@ function MealSection({
   dishDetails,
   loadingDishDetails,
 }: MealSectionProps) {
-  const { t } = useTranslation();
-
   return (
     <div className="mb-3">
       <Text strong className="print-diet-title text-primary! mb-1 block">
@@ -34,7 +31,7 @@ function MealSection({
       </Text>
       {dishes.length === 0 ? (
         <Text type="secondary" italic>
-          {t('none')}
+          {'无'}
         </Text>
       ) : (
         <ul className="m-0 list-disc pl-4">
@@ -46,10 +43,8 @@ function MealSection({
                 <span>
                   <Text strong>{dish.name}</Text>
                   {dish.count && dish.count > 1 && (
-                    <Text
-                      className="ml-1 font-semibold text-primary!"
-                    >
-                      x{dish.count}
+                    <Text className="text-primary! ml-1 font-semibold">
+                      ×{dish.count}
                     </Text>
                   )}
                 </span>
@@ -83,35 +78,33 @@ export default function DietDayCard({
   loadingDishDetails,
   onEdit,
 }: DietDayCardProps) {
-  const { t } = useTranslation();
-
   return (
     <Card
       title={day.dayOfWeek}
       extra={
         <Button type="link" onClick={() => onEdit(day)} className="no-print">
-          {t('edit')}
+          {'编辑'}
         </Button>
       }
       className="print-card h-full"
       styles={{ body: { padding: '12px' } }}
     >
       <MealSection
-        sectionTitle={t('dietBreakfast')}
+        sectionTitle={'早餐'}
         dishes={day.breakfast}
         dishDetails={dishDetails}
         loadingDishDetails={loadingDishDetails}
       />
       <Divider className="print-divider my-2!" />
       <MealSection
-        sectionTitle={t('dietLunch')}
+        sectionTitle={'午餐'}
         dishes={day.lunch}
         dishDetails={dishDetails}
         loadingDishDetails={loadingDishDetails}
       />
       <Divider className="print-divider my-2!" />
       <MealSection
-        sectionTitle={t('dietDinner')}
+        sectionTitle={'晚餐'}
         dishes={day.dinner}
         dishDetails={dishDetails}
         loadingDishDetails={loadingDishDetails}

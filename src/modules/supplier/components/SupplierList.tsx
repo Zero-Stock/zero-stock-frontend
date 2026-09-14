@@ -15,13 +15,11 @@ import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 import { useSupplierList } from '../hooks/useSupplierList';
 import { useSupplierDelete } from '../hooks/useSupplierDelete';
 import type { SupplierPreviewSchema } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title } = Typography;
 
 export default function SupplierList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
 
@@ -47,16 +45,16 @@ export default function SupplierList() {
   const { trigger: deleteTrigger } = useSupplierDelete();
 
   const columns: ColumnsType<SupplierPreviewSchema> = [
-    { title: t('commonName'), dataIndex: 'name', key: 'name' },
+    { title: '名称', dataIndex: 'name', key: 'name' },
     {
-      title: t('commonContactPerson'),
+      title: '联系人',
       dataIndex: 'contact_person',
       key: 'contact_person',
     },
-    { title: t('commonPhone'), dataIndex: 'phone', key: 'phone' },
-    { title: t('commonAddress'), dataIndex: 'address', key: 'address' },
+    { title: '电话', dataIndex: 'phone', key: 'phone' },
+    { title: '地址', dataIndex: 'address', key: 'address' },
     {
-      title: t('commonOperation'),
+      title: '操作',
       key: 'operation',
       width: 220,
       render: (_, record) => (
@@ -66,7 +64,7 @@ export default function SupplierList() {
             onClick={() => navigate(`/supplier/${record.id}`)}
             className="p-0!"
           >
-            {t('supplierDetail')}
+            {'详情'}
           </Button>
 
           <Button
@@ -74,22 +72,22 @@ export default function SupplierList() {
             onClick={() => navigate(`/supplier/update/${record.id}`)}
             className="p-0!"
           >
-            {t('edit')}
+            {'编辑'}
           </Button>
 
           <Popconfirm
-            title={t('supplierDeleteConfirm')}
-            okText={t('delete')}
+            title={'确定删除该供应商吗？'}
+            okText={'删除'}
             okButtonProps={{ danger: true }}
-            cancelText={t('cancel')}
+            cancelText={'取消'}
             onConfirm={async () => {
               await deleteTrigger(record.id);
-              message.success(t('supplierDeleted'));
+              message.success('供应商已删除');
               mutate();
             }}
           >
             <Button type="link" danger className="p-0!">
-              {t('delete')}
+              {'删除'}
             </Button>
           </Popconfirm>
         </Space>
@@ -101,16 +99,16 @@ export default function SupplierList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('supplierListTitle')}
+          {'供应商列表'}
         </Title>
         <Button type="primary" onClick={() => navigate('/supplier/create')}>
-          {t('navCreateSupplier')}
+          {'新建供应商'}
         </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-4">
         <Input.Search
-          placeholder={t('supplierSearchName')}
+          placeholder={'搜索供应商名'}
           value={keyword}
           onChange={(e) => {
             setKeyword(e.target.value);
@@ -122,7 +120,7 @@ export default function SupplierList() {
         <Select
           allowClear
           showSearch={{ optionFilterProp: 'label' }}
-          placeholder={t('commonSelectMaterial')}
+          placeholder={'选择食材'}
           value={selectedMaterialId}
           onChange={(value) => {
             setSelectedMaterialId(value);
@@ -151,7 +149,6 @@ export default function SupplierList() {
         }}
         tableLayout="fixed"
       />
-
     </div>
   );
 }

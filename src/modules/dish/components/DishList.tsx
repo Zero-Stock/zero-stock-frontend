@@ -21,7 +21,6 @@ import { useDishDelete } from '../hooks/useDishDelete';
 import { useDishList } from '../hooks/useDishList';
 import { useDishUpdate } from '../hooks/useDishUpdate';
 import DishEditModal from './DishEditModal';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 
 const { Title } = Typography;
@@ -40,7 +39,6 @@ function formatIngredient(ingredient: DishIngredientSchema): string {
 }
 
 export default function DishList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
@@ -96,9 +94,9 @@ export default function DishList() {
   useEffect(() => {
     if (isError) {
       console.error('Failed to fetch dishes:', isError);
-      message.error(t('dishLoadFailed'));
+      message.error('加载菜品失败');
     }
-  }, [isError, message, t]);
+  }, [isError, message]);
 
   const handlePrint = () => {
     window.requestAnimationFrame(() => {
@@ -121,16 +119,16 @@ export default function DishList() {
     try {
       if (editingDish) {
         await updateDish(editingDish.id, payload);
-        message.success(t('dishUpdated'));
+        message.success('菜品已更新');
       } else {
         await createDish(payload);
-        message.success(t('dishCreated'));
+        message.success('菜品已创建');
       }
       setIsModalVisible(false);
       await mutate();
     } catch (err) {
       console.error('Failed to save dish:', err);
-      message.error(t('dishSaveFailed'));
+      message.error('保存菜品失败');
     }
   };
 
@@ -153,26 +151,26 @@ export default function DishList() {
       const deleted = !latest.some((d) => d.id === id);
 
       if (deleted) {
-        message.success(t('dishDeleted'));
+        message.success('菜品已删除');
         return;
       }
     } catch (syncErr) {
       console.error('Failed to refresh dishes after delete:', syncErr);
     }
 
-    message.error(t('dishDeleteFailed'));
+    message.error('删除菜品失败');
   };
 
   const columns: ColumnsType<DishPreviewSchema> = [
     {
-      title: t('dishColName'),
+      title: '品名',
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name, 'zh-CN'),
       width: '12%',
     },
     {
-      title: t('dishColIngredients'),
+      title: '食材',
       dataIndex: 'ingredients',
       key: 'ingredients',
       width: '19%',
@@ -190,7 +188,7 @@ export default function DishList() {
       ),
     },
     {
-      title: t('dishColSeasonings'),
+      title: '调料',
       dataIndex: 'seasonings',
       key: 'seasonings',
       width: '15%',
@@ -199,7 +197,7 @@ export default function DishList() {
       ),
     },
     {
-      title: t('dishColCookingMethod'),
+      title: '具体制作工艺',
       dataIndex: 'cooking_method',
       key: 'cooking_method',
       width: '19%',
@@ -208,7 +206,7 @@ export default function DishList() {
       ),
     },
     {
-      title: t('commonAction'),
+      title: '操作',
       key: 'action',
       className: 'no-print',
       width: '10%',
@@ -219,16 +217,16 @@ export default function DishList() {
             onClick={() => handleEdit(record)}
             className="p-0!"
           >
-            {t('edit')}
+            {'编辑'}
           </Button>
           <Popconfirm
-            title={t('dishDeleteConfirm')}
+            title={'确定要删除这个菜品吗？'}
             onConfirm={() => handleDelete(record.id)}
-            okText={t('yes')}
-            cancelText={t('no')}
+            okText={'是'}
+            cancelText={'否'}
           >
             <Button type="link" danger className="p-0!">
-              {t('delete')}
+              {'删除'}
             </Button>
           </Popconfirm>
         </Space>
@@ -240,19 +238,19 @@ export default function DishList() {
     <div>
       <div className="no-print mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('dishListTitle')}
+          {'菜品制作单'}
         </Title>
         <Space>
           <Button type="primary" onClick={handleCreate}>
-            {t('dishCreate')}
+            {'新建菜品'}
           </Button>
-          <Button onClick={handlePrint}>{t('commonExportPdf')}</Button>
+          <Button onClick={handlePrint}>{'导出 PDF / 打印'}</Button>
         </Space>
       </div>
 
       <div className="no-print mb-4 flex items-center gap-4">
         <Input.Search
-          placeholder={t('dishSearchName')}
+          placeholder={'搜索菜品名'}
           allowClear
           value={searchText}
           onSearch={(value) => {
@@ -268,7 +266,7 @@ export default function DishList() {
         <Select
           allowClear
           showSearch={{ optionFilterProp: 'label' }}
-          placeholder={t('commonSelectMaterial')}
+          placeholder={'选择食材'}
           value={selectedMaterialId}
           onChange={(value) => {
             setSelectedMaterialId(value);
@@ -282,7 +280,7 @@ export default function DishList() {
 
       {/* Print Header */}
       <Title level={3} className="print-only m-0! mb-5 hidden text-center">
-        {t('dishListTitle')}
+        {'菜品制作单'}
       </Title>
 
       <Table

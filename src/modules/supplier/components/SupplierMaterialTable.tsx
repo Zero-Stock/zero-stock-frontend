@@ -3,7 +3,6 @@ import { useState } from 'react';
 
 import { useSupplierMaterials } from '../hooks/useSupplierMaterials';
 import { useSupplierMaterialUpdate } from '../hooks/useSupplierMaterialUpdate';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import type { ColumnsType } from 'antd/es/table';
 import { useSupplierMaterialDelete } from '../hooks/useSupplierMaterialDelete';
 import type { SupplierMaterialPreviewSchema } from '@/shared/types/schema';
@@ -19,7 +18,6 @@ export default function SupplierMaterialTable(
   props: SupplierMaterialTableProps,
 ) {
   const { supplierId } = props;
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [keyword, setKeyword] = useState('');
 
@@ -31,19 +29,19 @@ export default function SupplierMaterialTable(
 
   const columns: ColumnsType<SupplierMaterialPreviewSchema> = [
     {
-      title: t('commonName'),
+      title: '名称',
       dataIndex: 'material_name',
       key: 'material_name',
       width: '15%',
     },
     {
-      title: t('commonUnit'),
+      title: '单位',
       dataIndex: 'unit_name',
       key: 'unit_name',
       width: '10%',
     },
     {
-      title: t('supplierKgPerUnit'),
+      title: '千克/单位',
       dataIndex: 'g_per_unit',
       key: 'g_per_unit',
       width: '15%',
@@ -51,12 +49,12 @@ export default function SupplierMaterialTable(
         `${gramsToKg(value)} kg`,
     },
     {
-      title: t('supplierPrice'),
+      title: '单位价格',
       dataIndex: 'price_per_unit',
       key: 'price_per_unit',
       width: '15%',
     },
-    { title: t('supplierMaterialNotes'), dataIndex: 'notes', key: 'notes' },
+    { title: '备注', dataIndex: 'notes', key: 'notes' },
     {
       title: '默认供应商',
       key: 'isDefaultSupplierMaterial',
@@ -90,7 +88,7 @@ export default function SupplierMaterialTable(
       ),
     },
     {
-      title: t('supplierMaterialActions'),
+      title: '操作',
       key: 'actions',
       width: '10%',
       render: (_, record: SupplierMaterialPreviewSchema) => (
@@ -105,7 +103,7 @@ export default function SupplierMaterialTable(
             }}
             className="p-0!"
           >
-            {t('delete')}
+            {'删除'}
           </Button>
         </Space>
       ),
@@ -122,13 +120,13 @@ export default function SupplierMaterialTable(
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          {t('supplierMaterialsTitle')}
+          {'供应商食材'}
         </Title>
 
         <Space>
           <Input.Search
             allowClear
-            placeholder={t('supplierSearchMaterial')}
+            placeholder={'按食材 ID 或名称搜索'}
             style={{ width: 320 }}
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}

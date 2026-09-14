@@ -1,11 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Select, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import useMaterialOptions from '@/modules/material/hooks/useMaterialOptions';
 
 export default function SupplierCreateMaterialTable() {
-  const { t } = useTranslation();
   const { materialOptions } = useMaterialOptions();
 
   return (
@@ -13,19 +11,19 @@ export default function SupplierCreateMaterialTable() {
       {(fields, { add, remove }) => {
         const columns: ColumnsType<(typeof fields)[number]> = [
           {
-            title: t('supplierMaterial'),
+            title: '食材',
             dataIndex: 'material_id',
             key: 'material_id',
             width: '15%',
             render: (_, _record, index) => (
               <Form.Item
                 name={[fields[index].name, 'material_id']}
-                rules={[{ required: true, message: t('supplierRequired') }]}
+                rules={[{ required: true, message: '必填' }]}
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
                 <Select
-                  placeholder={t('commonSelectMaterial')}
+                  placeholder={'选择食材'}
                   options={materialOptions}
                   showSearch
                 />
@@ -33,7 +31,7 @@ export default function SupplierCreateMaterialTable() {
             ),
           },
           {
-            title: t('supplierPrice'),
+            title: '单位价格',
             dataIndex: 'price_per_unit',
             key: 'price_per_unit',
             width: '15%',
@@ -49,13 +47,13 @@ export default function SupplierCreateMaterialTable() {
                   step="0.01"
                   suffix="¥"
                   style={{ width: '100%' }}
-                  placeholder={t('supplierPricePlaceholder')}
+                  placeholder={'例如：12.5'}
                 />
               </Form.Item>
             ),
           },
           {
-            title: t('supplierUnitSpec'),
+            title: '单位（规格）',
             dataIndex: 'unit_name',
             key: 'unit_name',
             width: '15%',
@@ -65,12 +63,12 @@ export default function SupplierCreateMaterialTable() {
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
-                <Input placeholder={t('supplierUnitPlaceholder')} />
+                <Input placeholder={'例如：箱 / 袋'} />
               </Form.Item>
             ),
           },
           {
-            title: t('supplierKgPerUnit'),
+            title: '千克/单位',
             dataIndex: 'g_per_unit',
             key: 'g_per_unit',
             width: '15%',
@@ -86,13 +84,13 @@ export default function SupplierCreateMaterialTable() {
                   step="0.01"
                   suffix="kg"
                   style={{ width: '100%' }}
-                  placeholder={t('supplierKgPlaceholder')}
+                  placeholder={'例如：10'}
                 />
               </Form.Item>
             ),
           },
           {
-            title: t('supplierMaterialNotes'),
+            title: '备注',
             dataIndex: 'notes',
             key: 'notes',
             render: (_, _record, index) => (
@@ -101,7 +99,7 @@ export default function SupplierCreateMaterialTable() {
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
-                <Input placeholder={t('supplierMaterialNotes')} />
+                <Input placeholder={'备注'} />
               </Form.Item>
             ),
           },
@@ -115,7 +113,7 @@ export default function SupplierCreateMaterialTable() {
                 type="link"
                 onClick={() => remove(fields[index].name)}
               >
-                {t('delete')}
+                {'删除'}
               </Button>
             ),
           },
@@ -143,7 +141,7 @@ export default function SupplierCreateMaterialTable() {
                 icon={<PlusOutlined />}
                 className="mt-1"
               >
-                {t('materialAddRow')}
+                {'新增一行'}
               </Button>
             )}
           />

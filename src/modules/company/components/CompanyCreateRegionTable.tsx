@@ -2,17 +2,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
-import { useTranslation } from '@/shared/translation/LanguageContext';
-
 export default function CompanyCreateRegionTable() {
-  const { t } = useTranslation();
-
   return (
     <Form.List name="regions">
       {(fields, { add, remove }) => {
         const columns: ColumnsType<(typeof fields)[number]> = [
           {
-            title: t('companyRegionName'),
+            title: '区域名称',
             dataIndex: 'name',
             key: 'name',
             render: (_, _record, index) => (
@@ -21,7 +17,7 @@ export default function CompanyCreateRegionTable() {
                 className="mb-0!"
                 style={{ marginBottom: 0 }}
               >
-                <Input placeholder={t('companyRegionNamePlaceholder')} />
+                <Input placeholder={'区域名称'} />
               </Form.Item>
             ),
           },
@@ -36,7 +32,7 @@ export default function CompanyCreateRegionTable() {
                 type="link"
                 onClick={() => remove(fields[index].name)}
               >
-                {t('delete')}
+                {'删除'}
               </Button>
             ),
           },
@@ -56,7 +52,7 @@ export default function CompanyCreateRegionTable() {
                 icon={<PlusOutlined />}
                 className="mt-1"
               >
-                {t('materialAddRow')}
+                {'新增一行'}
               </Button>
             )}
           />

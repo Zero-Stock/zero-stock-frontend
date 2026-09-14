@@ -9,7 +9,7 @@
 - API client: custom fetch wrapper in `src/shared/api/apiClient.ts`, plus auth retry helpers in `src/shared/api/apiClientAuthed.client.ts`.
 - Types: OpenAPI-generated schemas in `src/shared/types/schema.ts`.
 - State: Zustand for shared client state such as the selected business date.
-- Localization: custom `LanguageProvider` with Chinese and English strings in `src/shared/translation/translations.ts`.
+- UI copy is written directly in Chinese in components.
 - Package manager: pnpm (`pnpm-lock.yaml`).
 
 ## Commands
@@ -97,15 +97,15 @@
 - Use `@ant-design/icons` for iconography.
 - Use Tailwind utility classes for layout and small styling adjustments, especially flex/grid/spacing/width helpers.
 - Use Ant Design theme tokens through `theme.useToken()` when styling needs to align with the design system.
-- Keep interface copy localized via `useTranslation()` and `translations.ts` when it is user-facing.
-- UI copy is primarily Chinese with English support. Add both `zh` and `en` values for new translation keys.
+- Write user-facing interface copy directly in Chinese in its component.
+- The UI is Chinese-only. Do not add locale state, language switching, or English text variants.
 - Avoid hard-coded user-facing strings unless the surrounding file already does so for the same domain.
 - Keep operational screens dense, scannable, and table/form oriented. This is an inventory/procurement workflow app, not a marketing site.
 
 ## Routing
 
 - Add pages to `src/Routes.tsx` with `lazyPage`.
-- Use route metadata (`title`, `titleKey`, `icon`, `showInMenu`, `children`) consistently so sidebar and breadcrumbs continue to work.
+- Use route metadata (`title`, `icon`, `showInMenu`, `children`) consistently so sidebar and breadcrumbs continue to work.
 - Navigate with Wouter APIs such as `useLocation()`.
 - Use route paths that match the existing domain hierarchy, for example `/material/create` or `/procurement/receiving`.
 

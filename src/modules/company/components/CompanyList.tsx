@@ -6,12 +6,10 @@ import type { ColumnsType } from 'antd/es/table';
 import { useCompanyList } from '../hooks/useCompanyList';
 import { useCompanyDelete } from '../hooks/useCompanyDelete';
 import type { CompanyPreviewSchema } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Title } = Typography;
 
 export default function CompanyList() {
-  const { t } = useTranslation();
   const { message } = App.useApp();
   const [, navigate] = useLocation();
 
@@ -33,17 +31,17 @@ export default function CompanyList() {
   const { trigger: deleteTrigger } = useCompanyDelete();
 
   const columns: ColumnsType<CompanyPreviewSchema> = [
-    { title: t('commonName'), dataIndex: 'name', key: 'name' },
-    { title: t('companyCode'), dataIndex: 'code', key: 'code', width: 140 },
+    { title: '名称', dataIndex: 'name', key: 'name' },
+    { title: '公司编码', dataIndex: 'code', key: 'code', width: 140 },
     {
-      title: t('commonContactPerson'),
+      title: '联系人',
       dataIndex: 'contact_person',
       key: 'contact_person',
     },
-    { title: t('commonPhone'), dataIndex: 'phone', key: 'phone' },
-    { title: t('commonAddress'), dataIndex: 'address', key: 'address' },
+    { title: '电话', dataIndex: 'phone', key: 'phone' },
+    { title: '地址', dataIndex: 'address', key: 'address' },
     {
-      title: t('commonOperation'),
+      title: '操作',
       key: 'operation',
       width: 160,
       render: (_, record) => (
@@ -53,21 +51,21 @@ export default function CompanyList() {
             onClick={() => navigate(`/company/${record.id}`)}
             className="p-0!"
           >
-            {t('companyDetail')}
+            {'详情'}
           </Button>
           <Popconfirm
-            title={t('companyDeleteConfirm')}
-            okText={t('delete')}
+            title={'确定删除该公司吗？'}
+            okText={'删除'}
             okButtonProps={{ danger: true }}
-            cancelText={t('cancel')}
+            cancelText={'取消'}
             onConfirm={async () => {
               await deleteTrigger(record.id);
-              message.success(t('companyDeleted'));
+              message.success('公司已删除');
               mutate();
             }}
           >
             <Button type="link" danger className="p-0!">
-              {t('delete')}
+              {'删除'}
             </Button>
           </Popconfirm>
         </Space>
@@ -79,16 +77,16 @@ export default function CompanyList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('companyListTitle')}
+          {'公司列表'}
         </Title>
         <Button type="primary" onClick={() => navigate('/company/create')}>
-          {t('navCreateCompany')}
+          {'新建公司'}
         </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-4">
         <Input.Search
-          placeholder={t('companySearchName')}
+          placeholder={'搜索公司名'}
           value={keyword}
           onChange={(e) => {
             setKeyword(e.target.value);
@@ -98,7 +96,7 @@ export default function CompanyList() {
           allowClear
         />
         <Input.Search
-          placeholder={t('companySearchCode')}
+          placeholder={'搜索公司编码'}
           value={code}
           onChange={(e) => {
             setCode(e.target.value);

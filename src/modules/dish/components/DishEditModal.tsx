@@ -15,7 +15,6 @@ import type {
   DishUpsertSchema,
   MaterialPreviewSchema,
 } from '@/shared/types/schema';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useMaterialList } from '@/modules/material/hooks/useMaterialList';
 
 const { TextArea } = Input;
@@ -34,7 +33,6 @@ export default function DishEditModal({
   onSave,
 }: DishEditModalProps) {
   const [form] = Form.useForm<DishUpsertSchema>();
-  const { t } = useTranslation();
   const { materials, isLoading: isLoadingMaterials } = useMaterialList({
     page_size: 10000,
   });
@@ -102,26 +100,26 @@ export default function DishEditModal({
 
   return (
     <Modal
-      title={record ? t('dishEditTitle') : t('dishCreate')}
+      title={record ? '编辑菜品' : '新建菜品'}
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
       afterClose={() => form.resetFields()}
       width={700}
-      okText={t('save')}
-      cancelText={t('cancel')}
+      okText={'保存'}
+      cancelText={'取消'}
       forceRender
     >
       <Form form={form} layout="vertical">
         <Form.Item
           name="name"
-          label={t('dishNameLabel')}
-          rules={[{ required: true, message: t('dishNameRequired') }]}
+          label={'菜品名'}
+          rules={[{ required: true, message: '请输入菜品名' }]}
         >
-          <Input placeholder={t('dishNamePlaceholder')} />
+          <Input placeholder={'例如：西红柿打卤面'} />
         </Form.Item>
 
-        <div className="mb-2 font-semibold">{t('dishIngredientLabel')}</div>
+        <div className="mb-2 font-semibold">{'食材'}</div>
         <Form.List name="ingredients">
           {(fields, { add, remove }) => (
             <>
@@ -134,14 +132,14 @@ export default function DishEditModal({
                       rules={[
                         {
                           required: true,
-                          message: t('commonSelectMaterial'),
+                          message: '选择食材',
                         },
                       ]}
                       className="m-0!"
                     >
                       <Select
                         showSearch={{ optionFilterProp: 'label' }}
-                        placeholder={t('commonSelectMaterial')}
+                        placeholder={'选择食材'}
                         options={materialOptions}
                         loading={isLoadingMaterials}
                         onChange={() => {
@@ -179,7 +177,7 @@ export default function DishEditModal({
                             <Select
                               showSearch={{ optionFilterProp: 'label' }}
                               allowClear
-                              placeholder={t('dishSelectProcessing')}
+                              placeholder={'加工方式'}
                               options={processingOptions}
                               disabled={!materialId}
                             />
@@ -195,7 +193,7 @@ export default function DishEditModal({
                       rules={[
                         {
                           required: true,
-                          message: t('dishWeightRequired'),
+                          message: '输入克重',
                         },
                       ]}
                       className="m-0!"
@@ -203,7 +201,7 @@ export default function DishEditModal({
                       <InputNumber
                         stringMode
                         min={1}
-                        placeholder={t('dishWeightPlaceholder')}
+                        placeholder={'重量(g)'}
                         className="w-full!"
                       />
                     </Form.Item>
@@ -227,31 +225,31 @@ export default function DishEditModal({
                   block
                   icon={<PlusOutlined />}
                 >
-                  {t('dishAddIngredient')}
+                  {'添加食材'}
                 </Button>
               </Form.Item>
             </>
           )}
         </Form.List>
 
-        <div className="mb-2 font-semibold">{t('dishColSeasonings')}</div>
+        <div className="mb-2 font-semibold">{'调料'}</div>
         <Form.Item
           name="seasonings"
-          rules={[{ required: true, message: t('dishSeasoningsRequired') }]}
+          rules={[{ required: true, message: '请填写调料' }]}
         >
           <TextArea
-            placeholder={t('dishSeasoningsPlaceholder')}
+            placeholder={'盐2g, 糖1g'}
             autoSize={{ minRows: 2, maxRows: 4 }}
           />
         </Form.Item>
 
-        <div className="mb-2 font-semibold">{t('dishColCookingMethod')}</div>
+        <div className="mb-2 font-semibold">{'具体制作工艺'}</div>
         <Form.Item
           name="cooking_method"
-          rules={[{ required: true, message: t('dishCookingMethodRequired') }]}
+          rules={[{ required: true, message: '请填写制作工艺' }]}
         >
           <TextArea
-            placeholder={t('dishCookingMethodPlaceholder')}
+            placeholder={'1. 去皮前膀加盐煎至两面金黄\n2. 炒西红柿'}
             autoSize={{ minRows: 4, maxRows: 8 }}
           />
         </Form.Item>

@@ -1,11 +1,9 @@
-import type { TranslationKey } from '@/shared/translation/translations';
 import { formatKg } from '@/shared/utils/format';
 import type { PurchaseOrderItemSchema } from '@/shared/types/schema';
 
 export interface HandleExportPdfParams {
   date: string;
   items: PurchaseOrderItemSchema[];
-  t: (key: TranslationKey) => string;
   message: {
     warning: (content: string) => unknown;
     success: (content: string) => unknown;
@@ -14,11 +12,11 @@ export interface HandleExportPdfParams {
 }
 
 export const handleExportPurchasePdf = (params: HandleExportPdfParams) => {
-  const { t, items, date, message } = params;
+  const { items, date, message } = params;
 
   const printPurchaseSheet = () => {
     if (!items || items.length === 0) {
-      message.warning(t('purchaseNoData'));
+      message.warning('暂无采购单，请先点击生成采购单');
       return;
     }
 
@@ -86,21 +84,21 @@ export const handleExportPurchasePdf = (params: HandleExportPdfParams) => {
           </style>
         </head>
         <body>
-          <h2 style="font-size: 16px;">${t('navPurchaseOrder')} - ${date}</h2>
+          <h2 style="font-size: 16px;">${'采购单'} - ${date}</h2>
           <table>
             <thead>
               <tr>
-                <th style="${thStyle}">${t('purchaseOrderDate')}</th>
-                <th style="${thStyle} width:12%">${t('purchaseColName')}</th>
-                <th style="${thStyle}">${t('purchaseColCategory')}</th>
-                <th style="${thStyle}">${t('purchaseColStockKg')}</th>
-                <th style="${thStyle}">${t('purchaseColDemandKg')}</th>
-                <th style="${thStyle}">${t('purchaseColDemandUnit')}</th>
-                <th style="${thStyle}">${t('purchaseColPurchaseKg')}</th>
-                <th style="${thStyle}">${t('purchaseColPurchaseUnit')}</th>
-                <th style="${thStyle} width:12%">${t('commonSupplier')}</th>
-                <th style="${thStyle}">${t('purchaseColSupplierUnit')}</th>
-                <th style="${thStyle}">${t('purchaseColSupplierPrice')}</th>
+                <th style="${thStyle}">${'下单日期'}</th>
+                <th style="${thStyle} width:12%">${'品名'}</th>
+                <th style="${thStyle}">${'规格/类别'}</th>
+                <th style="${thStyle}">${'库存(kg)'}</th>
+                <th style="${thStyle}">${'需求(kg)'}</th>
+                <th style="${thStyle}">${'需求(采购单位)'}</th>
+                <th style="${thStyle}">${'采购需求(kg)'}</th>
+                <th style="${thStyle}">${'采购需求(采购单位)'}</th>
+                <th style="${thStyle} width:12%">${'供应商'}</th>
+                <th style="${thStyle}">${'供应商单位'}</th>
+                <th style="${thStyle}">${'供应商单价'}</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>

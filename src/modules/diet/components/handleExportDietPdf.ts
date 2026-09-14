@@ -1,10 +1,8 @@
-import type { TranslationKey } from '@/shared/translation/translations';
 import type { DayPlan, DishItem } from '../apiAdapter';
 import type { DishDetailSchema } from '@/shared/types/schema';
 
 // 定义传入参数的接口，确保与组件内的数据结构一致
 export interface ExportDietPdfParams {
-  t: (key: TranslationKey) => string;
   message: {
     warning: (content: string) => unknown;
   };
@@ -14,14 +12,13 @@ export interface ExportDietPdfParams {
 }
 
 export function handleExportDietPdf({
-  t,
   message,
   categoryName,
   dayPlans,
   dishDetails,
 }: ExportDietPdfParams) {
   if (!dayPlans || dayPlans.length === 0) {
-    message.warning(t('purchaseNoData'));
+    message.warning('暂无采购单，请先点击生成采购单');
     return;
   }
 
@@ -54,7 +51,7 @@ export function handleExportDietPdf({
   // 2. 构建渲染菜品详情的内部函数（模拟组件内的 renderDietSection）
   const getDietHtml = (sectionTitle: string, dishes: DishItem[]) => {
     if (!dishes || dishes.length === 0) {
-      return `<p style="color: #999; font-style: italic; font-size: 11px;">${t('none')}</p>`;
+      return `<p style="color: #999; font-style: italic; font-size: 11px;">${'无'}</p>`;
     }
 
     const itemsHtml = dishes
@@ -99,9 +96,9 @@ export function handleExportDietPdf({
       <div style="font-size: 14px; font-weight: bold; background: #f5f5f5; padding: 4px 8px; margin: -10px -10px 10px -10px; border-bottom: 1px solid #000;">
         ${day.dayOfWeek}
       </div>
-      ${getDietHtml(t('dietBreakfast'), day.breakfast)}
-      ${getDietHtml(t('dietLunch'), day.lunch)}
-      ${getDietHtml(t('dietDinner'), day.dinner)}
+      ${getDietHtml('早餐', day.breakfast)}
+      ${getDietHtml('午餐', day.lunch)}
+      ${getDietHtml('晚餐', day.dinner)}
     </div>
   `,
     )
@@ -113,7 +110,7 @@ export function handleExportDietPdf({
     <html>
       <head>
         <meta charset="utf-8">
-        <title>Diet Print</title>
+        <title>膳食计划打印</title>
         <style>
           @page { size: A4 portrait; margin: 10mm; }
           body { 
@@ -136,8 +133,8 @@ export function handleExportDietPdf({
       </head>
       <body>
         <div class="header">
-          <h1>${t('dietPrintTitle')}</h1>
-          <p>${categoryName} ${t('dietConfigSheet')}</p>
+          <h1>${'标准膳食计划'}</h1>
+          <p>${categoryName} ${'配料表'}</p>
         </div>
         <div class="grid">
           ${dayCardsHtml}

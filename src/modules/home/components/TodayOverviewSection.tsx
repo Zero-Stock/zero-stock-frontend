@@ -5,13 +5,10 @@ import {
   ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { Card, Col, Row, Space, Statistic, Typography } from 'antd';
-import { useTranslation } from '@/shared/translation/LanguageContext';
 
 const { Paragraph, Text } = Typography;
 
 export default function TodayOverviewSection() {
-  const { t } = useTranslation();
-
   return (
     <Card
       variant="borderless"
@@ -20,37 +17,37 @@ export default function TodayOverviewSection() {
     >
       <Space orientation="vertical" size={20} className="w-full">
         <div>
-          <Text strong>{t('homeOverviewTitle')}</Text>
+          <Text strong>{'今日概览'}</Text>
           <Paragraph className="mt-2! mb-0! text-sm! text-slate-500!">
-            {t('homeOverviewDescription')}
+            {'用一个统一视图把当天的主流程衔接起来。'}
           </Paragraph>
         </div>
 
         <Row gutter={[16, 16]}>
           <Col span={12}>
             <Statistic
-              title={t('homeStatDiet')}
+              title={'膳食菜单项'}
               value={24}
               prefix={<CalendarOutlined />}
             />
           </Col>
           <Col span={12}>
             <Statistic
-              title={t('homeStatPurchase')}
+              title={'待采购单'}
               value={8}
               prefix={<ShoppingCartOutlined />}
             />
           </Col>
           <Col span={12}>
             <Statistic
-              title={t('homeStatProcessing')}
+              title={'加工明细'}
               value={16}
               prefix={<FireOutlined />}
             />
           </Col>
           <Col span={12}>
             <Statistic
-              title={t('homeStatReadiness')}
+              title={'执行就绪度'}
               value={92}
               suffix="%"
               prefix={<CheckCircleOutlined />}
