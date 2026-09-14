@@ -8,7 +8,7 @@ import type { PurchaseRecordSchema } from '@/shared/types/schema';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import { usePurchaseGenerate } from '../hooks/usePurchaseGenerate';
 
-export default function PurchaseRecordsPage() {
+export default function PurchaseRecordList() {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const date = useDateStore((state) => state.date);

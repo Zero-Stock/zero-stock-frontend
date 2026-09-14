@@ -71,7 +71,7 @@ const CensusListPage = lazyPage(
   () => import('./modules/census/pages/CensusListPage'),
 );
 const PurchaseListPage = lazyPage(
-  () => import('@/modules/purchase/pages/PurchaseListPage'),
+  () => import('@/modules/purchase/pages/PurchaseRecordListPage'),
 );
 const PurchaseRecordDetailPage = lazyPage(
   () => import('@/modules/purchase/pages/PurchaseRecordDetailPage'),
