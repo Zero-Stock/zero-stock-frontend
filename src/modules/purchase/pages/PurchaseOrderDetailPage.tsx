@@ -7,5 +7,9 @@ interface PurchaseOrderDetailPageProps {
 export default function PurchaseOrderDetailPage({
   params,
 }: PurchaseOrderDetailPageProps) {
-  return <PurchaseOrder key={params.id} purchaseId={params.id} />;
+  return (
+    <div>
+      <PurchaseOrder key={params.id} purchaseId={params.id} />
+    </div>
+  );
 }

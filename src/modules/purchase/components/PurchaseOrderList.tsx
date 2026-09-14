@@ -4,7 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { Link } from 'wouter';
 import { useDateStore } from '@/shared/stores/dateStore';
 import { useTranslation } from '@/shared/translation/LanguageContext';
-import type { PurchaseOrderSchema } from '@/shared/types/schema';
+import type { PurchasePreviewSchema } from '@/shared/types/schema';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import { usePurchaseGenerate } from '../hooks/usePurchaseGenerate';
 
@@ -20,6 +20,7 @@ export default function PurchaseOrderList() {
     page,
     page_size: pageSize,
   });
+
   const { trigger } = usePurchaseGenerate();
   const generate = async () => {
     try {
@@ -36,7 +37,8 @@ export default function PurchaseOrderList() {
       setGenerating(false);
     }
   };
-  const columns: ColumnsType<PurchaseOrderSchema> = [
+
+  const columns: ColumnsType<PurchasePreviewSchema> = [
     {
       title: t('purchaseOrderId'),
       dataIndex: 'procurement_record_id',
@@ -64,6 +66,7 @@ export default function PurchaseOrderList() {
       ),
     },
   ];
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">

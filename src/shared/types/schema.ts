@@ -1553,7 +1553,7 @@ export interface components {
             /** @description Census rows */
             items: components["schemas"]["CensusItemSchema"][];
         };
-        PurchaseOrderSchema: {
+        PurchasePreviewSchema: {
             /**
              * @description PurchaseOrder.id
              * @example 1
@@ -1583,7 +1583,7 @@ export interface components {
              */
             total: number;
             /** @description Current page records */
-            list: components["schemas"]["PurchaseOrderSchema"][];
+            list: components["schemas"]["PurchasePreviewSchema"][];
         };
         PurchaseQuerySchema: {
             /**
@@ -2349,7 +2349,7 @@ export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
 export type DatedMutationCountResponseSchema = components['schemas']['DatedMutationCountResponseSchema'];
 export type CensusItemSchema = components['schemas']['CensusItemSchema'];
 export type CensusUpsertSchema = components['schemas']['CensusUpsertSchema'];
-export type PurchaseOrderSchema = components['schemas']['PurchaseOrderSchema'];
+export type PurchasePreviewSchema = components['schemas']['PurchasePreviewSchema'];
 export type PurchaseListResponseSchema = components['schemas']['PurchaseListResponseSchema'];
 export type PurchaseQuerySchema = components['schemas']['PurchaseQuerySchema'];
 export type PurchaseGenerateSchema = components['schemas']['PurchaseGenerateSchema'];

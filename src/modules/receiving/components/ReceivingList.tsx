@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
 import { usePurchaseList } from '@/modules/purchase/hooks/usePurchaseList';
-import { usePurchaseSheet } from '@/modules/purchase/hooks/usePurchaseSheet';
+import { usePurchaseOrderItemList } from '@/modules/purchase/hooks/usePurchaseOrderItemList';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
 import { useReceivingCreate } from '../hooks/useReceivingCreate';
 import type {
@@ -51,7 +51,7 @@ export default function ReceivingList() {
     items: sheetItems,
     isLoading: isLoadingSheet,
     mutate: mutateSheet,
-  } = usePurchaseSheet(purchaseId);
+  } = usePurchaseOrderItemList(purchaseId);
 
   const {
     template,

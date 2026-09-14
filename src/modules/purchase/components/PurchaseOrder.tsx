@@ -16,6 +16,8 @@ import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
 import useMaterialCategories from '@/modules/material/hooks/useMaterialCategories';
 import { usePurchaseDetail } from '../hooks/usePurchaseDetail';
+import { usePurchaseOrderItemList } from '../hooks/usePurchaseOrderItemList';
+import { usePurchaseRegenerate } from '../hooks/usePurchaseRegenerate';
 import { usePurchaseSubmit } from '../hooks/usePurchaseSubmit';
 import { usePurchaseAssignSuppliers } from '../hooks/usePurchaseAssignSuppliers';
 import type { PurchaseOrderItemSchema } from '@/shared/types/schema';
@@ -63,14 +65,21 @@ export default function PurchaseOrder({
   );
 
   const {
-    purchases,
-    total,
-    fetchAll,
     record,
-    isLoading: isLoadingList,
-    mutate: mutateList,
-    regenerate: generateTrigger,
-  } = usePurchaseDetail(id, purchaseQuery);
+    isLoading: isLoadingDetail,
+    mutate: mutateDetail,
+  } = usePurchaseDetail(id);
+
+  const {
+    items: purchases,
+    total,
+    isLoading: isLoadingItems,
+    mutate: mutateItems,
+  } = usePurchaseOrderItemList(id, purchaseQuery);
+
+  const { trigger: generateTrigger } = usePurchaseRegenerate(id);
+  const isLoadingList = isLoadingDetail || isLoadingItems;
+  const mutateList = () => Promise.all([mutateDetail(), mutateItems()]);
   const date = record?.needed_date ?? '';
   const purchaseId = id;
 
@@ -92,12 +101,11 @@ export default function PurchaseOrder({
     }
   };
 
-  const onExportPdf = async () => {
+  const onExportPdf = () => {
     try {
-      const items = await fetchAll();
       handleExportPurchasePdf({
         date,
-        items,
+        items: purchases,
         t,
         message,
       });
