@@ -1,112 +1,93 @@
 import { useMemo, useState } from 'react';
-import { App, Button, Input, Modal, Select, Table, Typography } from 'antd';
-import { useDateStore } from '@/shared/stores/dateStore';
+import {
+  App,
+  Button,
+  Input,
+  Modal,
+  Select,
+  Spin,
+  Table,
+  Typography,
+} from 'antd';
+import { useLocation } from 'wouter';
 import type { ColumnsType } from 'antd/es/table';
 import type { SorterResult } from 'antd/es/table/interface';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
 import useMaterialCategories from '@/modules/material/hooks/useMaterialCategories';
-import { useProcurementList } from '../hooks/useProcurementList';
-import { useProcurementGenerate } from '../hooks/useProcurementGenerate';
-import { useProcurementSubmit } from '../hooks/useProcurementSubmit';
-import { useProcurementAssignSuppliers } from '../hooks/useProcurementAssignSuppliers';
-import type { ProcurementPreviewSchema } from '@/shared/types/schema';
-import ProcurementSupplierEditModal from './ProcurementSupplierEditModal';
-import { handleExportPdf } from './handleExportPdf';
+import { usePurchaseDetail } from '../hooks/usePurchaseDetail';
+import { usePurchaseSubmit } from '../hooks/usePurchaseSubmit';
+import { usePurchaseAssignSuppliers } from '../hooks/usePurchaseAssignSuppliers';
+import type { PurchaseOrderSchema } from '@/shared/types/schema';
+import PurchaseSupplierEditModal from './PurchaseSupplierEditModal';
+import { handleExportPurchasePdf } from '../utils/handleExportPurchasePdf';
 
 const { Title } = Typography;
 
-const getTotalPrice = (record: ProcurementPreviewSchema) => {
+const getTotalPrice = (record: PurchaseOrderSchema) => {
   if (record.supplier_price == null) return null;
 
   const qty = record.demand_special_unit || record.demand_g || 0;
   return record.supplier_price * Math.ceil(qty);
 };
 
-export default function ProcurementList() {
+export default function PurchaseRecord({
+  purchaseId: routePurchaseId,
+}: {
+  purchaseId: string;
+}) {
+  const [, navigate] = useLocation();
+  const id = Number(routePurchaseId);
   const { t } = useTranslation();
   const { message } = App.useApp();
-  const date = useDateStore((state) => state.date);
-  const [generatedProcurement, setGeneratedProcurement] = useState<{
-    date: string;
-    id: number;
-  } | null>(null);
-  const [editingProcurementItem, setEditingProcurementItem] =
-    useState<ProcurementPreviewSchema | null>(null);
+  const [editingPurchaseItem, setEditingPurchaseItem] =
+    useState<PurchaseOrderSchema | null>(null);
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number>();
   const [materialName, setMaterialName] = useState('');
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 10,
-    key: '',
-  });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<string>();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>();
 
-  const pageKey = JSON.stringify([
-    date,
-    materialName,
-    selectedCategory,
-    sortBy,
-    sortOrder,
-  ]);
-  const currentPage = pagination.key === pageKey ? pagination.page : 1;
-
-  const procurementQuery = useMemo(
+  const purchaseQuery = useMemo(
     () => ({
-      needed_date: date,
-      page: currentPage,
-      page_size: pagination.pageSize,
+      page,
+      page_size: pageSize,
       material_name: materialName.trim() || undefined,
       category_id: selectedCategory,
       sort_by: sortBy,
       sort_order: sortOrder,
     }),
-    [
-      date,
-      materialName,
-      selectedCategory,
-      sortBy,
-      sortOrder,
-      pagination,
-      currentPage,
-    ],
+    [materialName, selectedCategory, sortBy, sortOrder, page, pageSize],
   );
 
   const {
-    procurements,
+    purchases,
     total,
     fetchAll,
+    record,
     isLoading: isLoadingList,
     mutate: mutateList,
-  } = useProcurementList(procurementQuery);
+    regenerate: generateTrigger,
+  } = usePurchaseDetail(id, purchaseQuery);
+  const date = record?.needed_date ?? '';
+  const purchaseId = id;
 
-  const procurementId =
-    procurements[0]?.procurement_record_id ??
-    (generatedProcurement?.date === date ? generatedProcurement.id : undefined);
-
-  const { trigger: generateTrigger } = useProcurementGenerate();
-  const { trigger: submitTrigger } = useProcurementSubmit();
-  const { trigger: assignSuppliersTrigger } = useProcurementAssignSuppliers();
+  const { trigger: submitTrigger } = usePurchaseSubmit();
+  const { trigger: assignSuppliersTrigger } = usePurchaseAssignSuppliers(id);
 
   const { categoryOptions, isLoading: isLoadingCategories } =
     useMaterialCategories();
 
   const handleGenerate = async () => {
     try {
-      const result = await generateTrigger({
-        needed_date: date,
-      });
-      setGeneratedProcurement({
-        date: result.needed_date,
-        id: result.procurement_record_id,
-      });
-      message.success(t('procurementGenerateSuccess'));
+      await generateTrigger();
+      message.success(t('purchaseGenerateSuccess'));
       await mutateList();
     } catch (error: Error | unknown) {
       message.error(
-        error instanceof Error ? error.message : t('procurementGenerateFailed'),
+        error instanceof Error ? error.message : t('purchaseGenerateFailed'),
       );
     }
   };
@@ -114,37 +95,34 @@ export default function ProcurementList() {
   const onExportPdf = async () => {
     try {
       const items = await fetchAll();
-      handleExportPdf({
+      handleExportPurchasePdf({
         date,
         items,
         t,
         message,
-        generateTrigger,
-        setProcurementId: (id) => setGeneratedProcurement({ date, id }),
-        mutateList,
       });
     } catch (error) {
       message.error(
-        error instanceof Error ? error.message : t('procurementGenerateFailed'),
+        error instanceof Error ? error.message : t('purchaseGenerateFailed'),
       );
     }
   };
 
   const handleSubmit = async () => {
-    if (!procurementId) {
-      message.warning(t('procurementNoData'));
+    if (!purchaseId) {
+      message.warning(t('purchaseNoData'));
       return;
     }
 
     Modal.confirm({
-      title: t('procurementSubmit'),
-      content: t('procurementSubmitConfirm'),
-      okText: t('procurementSubmit'),
+      title: t('purchaseSubmit'),
+      content: t('purchaseSubmitConfirm'),
+      okText: t('purchaseSubmit'),
       cancelText: t('cancel'),
       onOk: async () => {
         try {
-          await submitTrigger(procurementId);
-          message.success(t('procurementSubmitSuccess'));
+          await submitTrigger(purchaseId);
+          message.success(t('purchaseSubmitSuccess'));
           await mutateList();
         } catch (error) {
           if (!(error instanceof Error)) return;
@@ -154,26 +132,26 @@ export default function ProcurementList() {
     });
   };
 
-  const handleOpenSupplierModal = (record: ProcurementPreviewSchema) => {
-    const matchedProcurementItem =
-      procurements.find(
+  const handleOpenSupplierModal = (record: PurchaseOrderSchema) => {
+    const matchedPurchaseItem =
+      purchases.find(
         (item) => item.procurement_item_id === record.procurement_item_id,
       ) ??
-      procurements.find((item) => item.material_id === record.material_id) ??
+      purchases.find((item) => item.material_id === record.material_id) ??
       null;
 
-    if (!matchedProcurementItem) {
-      message.error(t('procurementItemNotFound'));
+    if (!matchedPurchaseItem) {
+      message.error(t('purchaseItemNotFound'));
       return;
     }
 
-    setEditingProcurementItem(matchedProcurementItem);
+    setEditingPurchaseItem(matchedPurchaseItem);
     setSupplierModalOpen(true);
   };
 
   const handleSaveSupplier = async (supplierMaterialId: number | null) => {
-    if (!editingProcurementItem?.procurement_item_id) {
-      message.error(t('procurementMissingItemId'));
+    if (!editingPurchaseItem?.procurement_item_id) {
+      message.error(t('purchaseMissingItemId'));
       return;
     }
 
@@ -181,16 +159,16 @@ export default function ProcurementList() {
       await assignSuppliersTrigger({
         assignments: [
           {
-            procurement_item_id: editingProcurementItem.procurement_item_id,
+            procurement_item_id: editingPurchaseItem.procurement_item_id,
             supplier_material_id: supplierMaterialId,
           },
         ],
       });
 
-      message.success(t('procurementSupplierUpdated'));
+      message.success(t('purchaseSupplierUpdated'));
 
       setSupplierModalOpen(false);
-      setEditingProcurementItem(null);
+      setEditingPurchaseItem(null);
 
       await mutateList();
     } catch (error) {
@@ -199,21 +177,21 @@ export default function ProcurementList() {
     }
   };
 
-  const columns: ColumnsType<ProcurementPreviewSchema> = [
+  const columns: ColumnsType<PurchaseOrderSchema> = [
     {
-      title: t('procurementColName'),
+      title: t('purchaseColName'),
       dataIndex: 'material_name',
       key: 'material_name',
       width: 100,
     },
     {
-      title: t('procurementColCategory'),
+      title: t('purchaseColCategory'),
       dataIndex: 'material_category',
       key: 'material_category',
       width: 100,
     },
     {
-      title: t('procurementColStockKg'),
+      title: t('purchaseColStockKg'),
       dataIndex: 'stock_g',
       key: 'stock_g',
       width: 100,
@@ -221,7 +199,7 @@ export default function ProcurementList() {
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('procurementColDemandKg'),
+      title: t('purchaseColDemandKg'),
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 100,
@@ -229,13 +207,13 @@ export default function ProcurementList() {
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('procurementColDemandUnit'),
+      title: t('purchaseColDemandUnit'),
       dataIndex: 'demand_special_unit',
       key: 'demand_special_unit',
       width: 120,
     },
     {
-      title: t('procurementColPurchaseKg'),
+      title: t('purchaseColPurchaseKg'),
       dataIndex: 'required_g',
       key: 'required_g',
       width: 120,
@@ -243,7 +221,7 @@ export default function ProcurementList() {
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('procurementColPurchaseUnit'),
+      title: t('purchaseColPurchaseUnit'),
       dataIndex: 'required_special_unit',
       key: 'required_special_unit',
       width: 120,
@@ -256,14 +234,14 @@ export default function ProcurementList() {
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('procurementColSupplierUnit'),
+      title: t('purchaseColSupplierUnit'),
       dataIndex: 'supplier_unit',
       key: 'supplier_unit',
       width: 80,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('procurementColSupplierPrice'),
+      title: t('purchaseColSupplierPrice'),
       dataIndex: 'supplier_price',
       key: 'supplier_price',
       width: 90,
@@ -274,7 +252,6 @@ export default function ProcurementList() {
       title: t('commonTotalPrice'),
       key: 'total_price',
       width: 100,
-      sorter: true,
       render: (_, record) => {
         const total = getTotalPrice(record);
         if (total == null) return '-';
@@ -292,6 +269,7 @@ export default function ProcurementList() {
         <Button
           type="link"
           className="p-0!"
+          disabled={!record.editable}
           onClick={() => handleOpenSupplierModal(record)}
         >
           {t('edit')}
@@ -300,23 +278,20 @@ export default function ProcurementList() {
     },
   ];
 
-  const hasProcurement = procurements.length > 0;
+  const hasPurchase = purchases.length > 0;
   const loading = isLoadingList;
 
   const handleTableChange = (
     nextPage: { current?: number; pageSize?: number },
     __: unknown,
     sorter:
-      | SorterResult<ProcurementPreviewSchema>
-      | SorterResult<ProcurementPreviewSchema>[],
+      | SorterResult<PurchaseOrderSchema>
+      | SorterResult<PurchaseOrderSchema>[],
   ) => {
     const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
 
-    setPagination({
-      page: nextPage.current ?? 1,
-      pageSize: nextPage.pageSize ?? 10,
-      key: pageKey,
-    });
+    setPage(nextPage.current ?? 1);
+    setPageSize(nextPage.pageSize ?? 10);
     setSortBy(activeSorter?.order ? String(activeSorter.columnKey) : undefined);
     setSortOrder(
       activeSorter?.order === 'ascend'
@@ -327,27 +302,49 @@ export default function ProcurementList() {
     );
   };
 
+  if (isLoadingList) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spin />
+      </div>
+    );
+  }
+
+  if (!record) {
+    return (
+      <div
+        role="alert"
+        className="flex h-full flex-col items-center justify-center"
+      >
+        <Title level={3}>{t('purchaseNotFound')}</Title>
+        <Button onClick={() => navigate('/procurement/purchase/')}>
+          {t('purchaseBack')}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="print-header mb-4 flex items-center justify-between">
         <Title level={3} className="mb-0!">
-          {t('navProcurementOrder')}
+          {t('navPurchaseOrder')} #{id}
         </Title>
         <div className="no-print flex items-center gap-3">
-          <Button onClick={handleGenerate}>
-            {hasProcurement ? t('commonRegenerate') : t('procurementGenerate')}
+          <Button onClick={handleGenerate} disabled={record?.status !== 'INIT'}>
+            {hasPurchase ? t('purchaseRegenerate') : t('purchaseGenerate')}
           </Button>
 
-          <Button onClick={onExportPdf} disabled={!hasProcurement}>
+          <Button onClick={onExportPdf} disabled={!hasPurchase}>
             {t('commonExportPdf')}
           </Button>
 
           <Button
             type="primary"
             onClick={handleSubmit}
-            disabled={!procurementId}
+            disabled={record?.status !== 'INIT'}
           >
-            {t('procurementSubmit')}
+            {t('purchaseSubmit')}
           </Button>
         </div>
       </div>
@@ -359,51 +356,54 @@ export default function ProcurementList() {
           value={materialName}
           onChange={(event) => {
             setMaterialName(event.target.value);
+            setPage(1);
           }}
           className="w-60!"
         />
         <Select
           allowClear
           showSearch={{ optionFilterProp: 'label' }}
-          placeholder={t('procurementFilterCategory')}
+          placeholder={t('purchaseFilterCategory')}
           value={selectedCategory}
-          onChange={setSelectedCategory}
+          onChange={(value) => {
+            setSelectedCategory(value);
+            setPage(1);
+          }}
           options={categoryOptions}
           loading={isLoadingCategories}
           className="w-60"
         />
       </div>
 
-      <div id="procurement-print-area">
+      <div id="purchase-print-area">
         <Table
           rowKey={(record, index) =>
             String(record.procurement_item_id ?? record.material_id ?? index)
           }
           columns={columns}
-          dataSource={procurements}
+          dataSource={purchases}
           loading={loading}
           pagination={{
-            current: currentPage,
-            pageSize: pagination.pageSize,
+            current: page,
+            pageSize,
             total,
+            showSizeChanger: true,
           }}
           onChange={handleTableChange}
           tableLayout="fixed"
           locale={{
-            emptyText: hasProcurement
-              ? t('procurementNoItems')
-              : t('procurementNoData'),
+            emptyText: hasPurchase ? t('purchaseNoItems') : t('purchaseNoData'),
           }}
           scroll={{ x: 1950 }}
         />
       </div>
 
-      <ProcurementSupplierEditModal
+      <PurchaseSupplierEditModal
         open={supplierModalOpen}
-        procurementItem={editingProcurementItem}
+        purchaseItem={editingPurchaseItem}
         onCancel={() => {
           setSupplierModalOpen(false);
-          setEditingProcurementItem(null);
+          setEditingPurchaseItem(null);
         }}
         onSave={handleSaveSupplier}
       />

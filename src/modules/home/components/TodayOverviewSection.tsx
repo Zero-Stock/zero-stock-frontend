@@ -36,7 +36,7 @@ export default function TodayOverviewSection() {
           </Col>
           <Col span={12}>
             <Statistic
-              title={t('homeStatProcurement')}
+              title={t('homeStatPurchase')}
               value={8}
               prefix={<ShoppingCartOutlined />}
             />

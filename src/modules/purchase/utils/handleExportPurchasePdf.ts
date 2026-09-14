@@ -1,33 +1,24 @@
-import { Modal } from 'antd';
 import type { TranslationKey } from '@/shared/translation/translations';
 import { formatKg } from '@/shared/utils/format';
-import type {
-  ProcurementPreviewSchema,
-  ProcurementRecordSchema,
-} from '@/shared/types/schema';
+import type { PurchaseOrderSchema } from '@/shared/types/schema';
 
 export interface HandleExportPdfParams {
   date: string;
-  items: ProcurementPreviewSchema[];
+  items: PurchaseOrderSchema[];
   t: (key: TranslationKey) => string;
   message: {
     warning: (content: string) => unknown;
     success: (content: string) => unknown;
     error: (content: string) => unknown;
   };
-  generateTrigger: (params: {
-    needed_date: string;
-  }) => Promise<ProcurementRecordSchema>;
-  setProcurementId: (id: number) => void;
-  mutateList: () => Promise<unknown>;
 }
 
-export const handleExportPdf = (params: HandleExportPdfParams) => {
+export const handleExportPurchasePdf = (params: HandleExportPdfParams) => {
   const { t, items, date, message } = params;
 
-  const printProcurementSheet = () => {
+  const printPurchaseSheet = () => {
     if (!items || items.length === 0) {
-      message.warning(t('procurementNoData'));
+      message.warning(t('purchaseNoData'));
       return;
     }
 
@@ -95,21 +86,21 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
           </style>
         </head>
         <body>
-          <h2 style="font-size: 16px;">${t('navProcurementOrder')} - ${date}</h2>
+          <h2 style="font-size: 16px;">${t('navPurchaseOrder')} - ${date}</h2>
           <table>
             <thead>
               <tr>
-                <th style="${thStyle}">${t('procurementOrderDate')}</th>
-                <th style="${thStyle} width:12%">${t('procurementColName')}</th>
-                <th style="${thStyle}">${t('procurementColCategory')}</th>
-                <th style="${thStyle}">${t('procurementColStockKg')}</th>
-                <th style="${thStyle}">${t('procurementColDemandKg')}</th>
-                <th style="${thStyle}">${t('procurementColDemandUnit')}</th>
-                <th style="${thStyle}">${t('procurementColPurchaseKg')}</th>
-                <th style="${thStyle}">${t('procurementColPurchaseUnit')}</th>
+                <th style="${thStyle}">${t('purchaseOrderDate')}</th>
+                <th style="${thStyle} width:12%">${t('purchaseColName')}</th>
+                <th style="${thStyle}">${t('purchaseColCategory')}</th>
+                <th style="${thStyle}">${t('purchaseColStockKg')}</th>
+                <th style="${thStyle}">${t('purchaseColDemandKg')}</th>
+                <th style="${thStyle}">${t('purchaseColDemandUnit')}</th>
+                <th style="${thStyle}">${t('purchaseColPurchaseKg')}</th>
+                <th style="${thStyle}">${t('purchaseColPurchaseUnit')}</th>
                 <th style="${thStyle} width:12%">${t('commonSupplier')}</th>
-                <th style="${thStyle}">${t('procurementColSupplierUnit')}</th>
-                <th style="${thStyle}">${t('procurementColSupplierPrice')}</th>
+                <th style="${thStyle}">${t('purchaseColSupplierUnit')}</th>
+                <th style="${thStyle}">${t('purchaseColSupplierPrice')}</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -136,34 +127,5 @@ export const handleExportPdf = (params: HandleExportPdfParams) => {
     document.body.appendChild(iframe);
   };
 
-  const confirmModal = Modal.confirm({
-    title: t('procurementExportTitle'),
-    content: t('procurementExportConfirm'),
-    maskClosable: true,
-    okText: t('procurementExportRegenerateFirst'),
-    cancelText: t('procurementExportDirectly'),
-    cancelButtonProps: {
-      onClick: () => {
-        confirmModal.destroy();
-        setTimeout(() => {
-          printProcurementSheet();
-        }, 0);
-      },
-    },
-    onOk: async () => {
-      try {
-        const result = await params.generateTrigger({
-          needed_date: params.date,
-        });
-        params.setProcurementId(result.procurement_record_id);
-        await params.mutateList();
-        message.success(t('procurementRegenerateSuccess'));
-      } catch (error: unknown) {
-        message.error(error instanceof Error ? error.message : 'Failed');
-      }
-    },
-    onCancel: () => {
-      confirmModal.destroy();
-    },
-  });
+  printPurchaseSheet();
 };

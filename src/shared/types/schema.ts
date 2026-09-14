@@ -1553,7 +1553,97 @@ export interface components {
             /** @description Census rows */
             items: components["schemas"]["CensusItemSchema"][];
         };
-        ProcurementAvailableSupplierSchema: {
+        PurchaseRecordSchema: {
+            /**
+             * @description PurchaseRecord.id
+             * @example 1
+             */
+            procurement_record_id: number;
+            /** @enum {string} */
+            status: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
+            /** Format: date */
+            needed_date: string;
+            /** Format: date */
+            order_date: string | null;
+        };
+        PurchaseListResponseSchema: {
+            /**
+             * @description Current page
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size: number;
+            /**
+             * @description Total records matching the query
+             * @example 100
+             */
+            total: number;
+            /** @description Current page records */
+            list: components["schemas"]["PurchaseRecordSchema"][];
+        };
+        PurchaseQuerySchema: {
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /**
+             * @description Column name to sort by
+             * @example name
+             */
+            sort_by?: string;
+            /**
+             * @description Sort order
+             * @example desc
+             * @enum {string}
+             */
+            sort_order?: "asc" | "desc";
+            /**
+             * @description Page number
+             * @example 1
+             */
+            page?: number;
+            /**
+             * @description Page size
+             * @example 50
+             */
+            page_size?: number;
+            /** Format: date */
+            needed_date?: string;
+            /** Format: date */
+            order_date?: string;
+            /** @enum {string} */
+            status?: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
+        };
+        PurchaseGenerateSchema: {
+            /**
+             * @description Company id
+             * @example 1
+             */
+            company_id?: number;
+            /** Format: date */
+            needed_date: string;
+        };
+        PurchaseDetailSchema: {
+            /**
+             * @description PurchaseRecord.id
+             * @example 1
+             */
+            procurement_record_id: number;
+            /** @enum {string} */
+            status: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
+            /** Format: date */
+            needed_date: string;
+            /** Format: date */
+            order_date: string | null;
+            company_id: number;
+            company: string;
+        };
+        PurchaseAvailableSupplierSchema: {
             /**
              * @description Supplier-material offering id
              * @example 1
@@ -1570,9 +1660,9 @@ export interface components {
              */
             supplier_name: string;
         };
-        ProcurementPreviewSchema: {
+        PurchaseOrderSchema: {
             /**
-             * @description Procurement record id
+             * @description Purchase record id
              * @example 1
              */
             procurement_record_id: number;
@@ -1589,15 +1679,10 @@ export interface components {
              */
             order_date: string | null;
             /**
-             * @description Procurement item id
+             * @description Purchase item id
              * @example 1
              */
             procurement_item_id: number;
-            /**
-             * @description Procurement date
-             * @example 2026-04-28
-             */
-            date: string;
             /**
              * @description Material id
              * @example 1
@@ -1663,10 +1748,12 @@ export interface components {
              * @example bag
              */
             supplier_unit: string | null;
+            /** @description Grams per supplier unit */
+            supplier_g_per_unit: number | null;
             /** @description Available suppliers */
-            available_suppliers: components["schemas"]["ProcurementAvailableSupplierSchema"][];
+            available_suppliers: components["schemas"]["PurchaseAvailableSupplierSchema"][];
             /**
-             * @description Procurement status
+             * @description Purchase status
              * @example pending
              */
             status: string;
@@ -1694,7 +1781,7 @@ export interface components {
              */
             changed_sources: string[];
         };
-        ProcurementListResponseSchema: {
+        PurchaseOrderListResponseSchema: {
             /**
              * @description Current page
              * @example 1
@@ -1710,20 +1797,10 @@ export interface components {
              * @example 100
              */
             total: number;
-            /** @description Procurement rows matching the query */
-            list: components["schemas"]["ProcurementPreviewSchema"][];
+            /** @description Current page records */
+            list: components["schemas"]["PurchaseOrderSchema"][];
         };
-        ProcurementQuerySchema: {
-            /**
-             * @description Date for the request
-             * @example 2026-04-28
-             */
-            date?: string;
-            /**
-             * @description Company id
-             * @example 1
-             */
-            company_id?: number;
+        PurchaseOrderQuerySchema: {
             /**
              * @description Column name to sort by
              * @example name
@@ -1745,106 +1822,8 @@ export interface components {
              * @example 50
              */
             page_size?: number;
-            /**
-             * Format: date
-             * @description Demand date; overrides legacy date
-             * @example 2026-05-09
-             */
-            needed_date?: string;
-            /**
-             * Format: date
-             * @description Filter by order date (assigned on confirmation)
-             * @example 2026-05-08
-             */
-            order_date?: string;
-            /**
-             * @description Material category id filter
-             * @example 1
-             */
-            category_id?: number;
-            /**
-             * @description Material name filter
-             * @example Rice
-             */
             material_name?: string;
-            /**
-             * @description Start date
-             * @example 2026-04-01
-             */
-            start?: string;
-            /**
-             * @description Procurement status
-             * @example PENDING
-             */
-            status?: string;
-        };
-        ProcurementRecordSchema: {
-            /**
-             * Format: date
-             * @description Demand date
-             * @example 2026-05-09
-             */
-            needed_date: string;
-            /**
-             * Format: date
-             * @description Order date; null when unknown
-             * @example 2026-05-08
-             */
-            order_date: string | null;
-            /**
-             * @description Procurement record id
-             * @example 1
-             */
-            procurement_record_id: number;
-            /**
-             * @description Target date
-             * @example 2026-04-28
-             */
-            target_date: string;
-            /**
-             * @description Procurement status
-             * @example PENDING
-             */
-            status: string;
-        };
-        ProcurementGenerateSchema: {
-            /**
-             * @description Date for the request
-             * @example 2026-04-28
-             */
-            date?: string;
-            /**
-             * @description Company id
-             * @example 1
-             */
-            company_id?: number;
-            /**
-             * @description Column name to sort by
-             * @example name
-             */
-            sort_by?: string;
-            /**
-             * @description Sort order
-             * @example desc
-             * @enum {string}
-             */
-            sort_order?: "asc" | "desc";
-            /**
-             * @description Page number
-             * @example 1
-             */
-            page?: number;
-            /**
-             * @description Page size
-             * @example 50
-             */
-            page_size?: number;
-            /**
-             * Format: date
-             * @description Demand date; overrides legacy date
-             * @example 2026-05-09
-             */
-            needed_date?: string;
+            category_id?: number;
         };
         UpdatedCountResponseSchema: {
             /**
@@ -1853,170 +1832,12 @@ export interface components {
              */
             updated: number;
         };
-        ProcurementSupplierAssignmentSchema: {
-            /**
-             * @description Procurement item id
-             * @example 1
-             */
+        PurchaseSupplierAssignmentSchema: {
             procurement_item_id: number;
-            /**
-             * @description Supplier material id
-             * @example 1
-             */
             supplier_material_id?: number | null;
         };
-        ProcurementAssignSuppliersSchema: {
-            /**
-             * @description Date for the request
-             * @example 2026-04-28
-             */
-            date?: string;
-            /**
-             * @description Company id
-             * @example 1
-             */
-            company_id?: number;
-            /**
-             * @description Name filter
-             * @example rice
-             */
-            name?: string;
-            /**
-             * @description Column name to sort by
-             * @example name
-             */
-            sort_by?: string;
-            /**
-             * @description Sort order
-             * @example desc
-             * @enum {string}
-             */
-            sort_order?: "asc" | "desc";
-            /**
-             * @description Page number
-             * @example 1
-             */
-            page?: number;
-            /**
-             * @description Page size
-             * @example 50
-             */
-            page_size?: number;
-            /** @description Supplier assignments */
-            assignments: components["schemas"]["ProcurementSupplierAssignmentSchema"][];
-        };
-        ProcurementSheetItemSchema: {
-            /**
-             * @description Procurement item id
-             * @example 1
-             */
-            procurement_item_id: number;
-            /**
-             * @description Material id
-             * @example 1
-             */
-            material_id: number;
-            /**
-             * @description Material name
-             * @example Rice
-             */
-            name: string;
-            /**
-             * @description Material category
-             * @example Grains
-             */
-            category: string;
-            /**
-             * @description Demand in grams
-             * @example 20000
-             */
-            demand_g: number;
-            /**
-             * @description Demand in supplier units
-             * @example 1
-             */
-            demand_unit_qty: number | null;
-            /**
-             * @description Stock in grams
-             * @example 5000
-             */
-            stock_g: number;
-            /**
-             * @description Stock in supplier units
-             * @example 0.2
-             */
-            stock_unit_qty: number | null;
-            /**
-             * @description Purchase quantity in grams
-             * @example 15000
-             */
-            purchase_g: number;
-            /**
-             * @description Purchase quantity in supplier units
-             * @example 0.6
-             */
-            purchase_unit_qty: number | null;
-            /**
-             * @description Supplier name
-             * @example Fresh Market
-             */
-            supplier: string | null;
-            /**
-             * @description Supplier unit name
-             * @example bag
-             */
-            supplier_unit_name: string | null;
-            /**
-             * @description Grams per supplier unit
-             * @example 25000
-             */
-            supplier_g_per_unit: number | null;
-            /**
-             * @description Supplier price
-             * @example 50
-             */
-            supplier_price: number | null;
-        };
-        ProcurementSheetSchema: {
-            /**
-             * Format: date
-             * @description Demand date
-             * @example 2026-05-09
-             */
-            needed_date: string;
-            /**
-             * Format: date
-             * @description Order date; null when unknown
-             * @example 2026-05-08
-             */
-            order_date: string | null;
-            /**
-             * @description Procurement record id
-             * @example 1
-             */
-            procurement_record_id: number;
-            /**
-             * @description Target date
-             * @example 2026-04-28
-             */
-            date: string;
-            /**
-             * @description Day of week
-             * @example Tuesday
-             */
-            day_of_week: string;
-            /**
-             * @description Company name
-             * @example Main Campus
-             */
-            company: string;
-            /**
-             * @description Procurement status
-             * @example PENDING
-             */
-            status: string;
-            /** @description Sheet items */
-            items: components["schemas"]["ProcurementSheetItemSchema"][];
+        PurchaseAssignSuppliersSchema: {
+            assignments: components["schemas"]["PurchaseSupplierAssignmentSchema"][];
         };
         ReceivingPreviewSchema: {
             /**
@@ -2178,15 +1999,10 @@ export interface components {
         };
         ReceivingTemplateSchema: {
             /**
-             * @description Procurement record id
+             * @description Purchase record id
              * @example 1
              */
             procurement_id: number;
-            /**
-             * @description Target date
-             * @example 2026-04-28
-             */
-            target_date: string;
             /**
              * Format: date
              * @description Demand date
@@ -2262,7 +2078,7 @@ export interface components {
              */
             page_size?: number;
             /**
-             * @description Procurement id
+             * @description Purchase id
              * @example 1
              */
             procurement_id: number;
@@ -2533,17 +2349,18 @@ export type CensusQuerySchema = components['schemas']['CensusQuerySchema'];
 export type DatedMutationCountResponseSchema = components['schemas']['DatedMutationCountResponseSchema'];
 export type CensusItemSchema = components['schemas']['CensusItemSchema'];
 export type CensusUpsertSchema = components['schemas']['CensusUpsertSchema'];
-export type ProcurementAvailableSupplierSchema = components['schemas']['ProcurementAvailableSupplierSchema'];
-export type ProcurementPreviewSchema = components['schemas']['ProcurementPreviewSchema'];
-export type ProcurementListResponseSchema = components['schemas']['ProcurementListResponseSchema'];
-export type ProcurementQuerySchema = components['schemas']['ProcurementQuerySchema'];
-export type ProcurementRecordSchema = components['schemas']['ProcurementRecordSchema'];
-export type ProcurementGenerateSchema = components['schemas']['ProcurementGenerateSchema'];
+export type PurchaseRecordSchema = components['schemas']['PurchaseRecordSchema'];
+export type PurchaseListResponseSchema = components['schemas']['PurchaseListResponseSchema'];
+export type PurchaseQuerySchema = components['schemas']['PurchaseQuerySchema'];
+export type PurchaseGenerateSchema = components['schemas']['PurchaseGenerateSchema'];
+export type PurchaseDetailSchema = components['schemas']['PurchaseDetailSchema'];
+export type PurchaseAvailableSupplierSchema = components['schemas']['PurchaseAvailableSupplierSchema'];
+export type PurchaseOrderSchema = components['schemas']['PurchaseOrderSchema'];
+export type PurchaseOrderListResponseSchema = components['schemas']['PurchaseOrderListResponseSchema'];
+export type PurchaseOrderQuerySchema = components['schemas']['PurchaseOrderQuerySchema'];
 export type UpdatedCountResponseSchema = components['schemas']['UpdatedCountResponseSchema'];
-export type ProcurementSupplierAssignmentSchema = components['schemas']['ProcurementSupplierAssignmentSchema'];
-export type ProcurementAssignSuppliersSchema = components['schemas']['ProcurementAssignSuppliersSchema'];
-export type ProcurementSheetItemSchema = components['schemas']['ProcurementSheetItemSchema'];
-export type ProcurementSheetSchema = components['schemas']['ProcurementSheetSchema'];
+export type PurchaseSupplierAssignmentSchema = components['schemas']['PurchaseSupplierAssignmentSchema'];
+export type PurchaseAssignSuppliersSchema = components['schemas']['PurchaseAssignSuppliersSchema'];
 export type ReceivingPreviewSchema = components['schemas']['ReceivingPreviewSchema'];
 export type ReceivingListResponseSchema = components['schemas']['ReceivingListResponseSchema'];
 export type ReceivingQuerySchema = components['schemas']['ReceivingQuerySchema'];

@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react';
+import { useDateStore } from '@/shared/stores/dateStore';
 import { App, Button, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { formatKg } from '@/shared/utils/format';
-import { useProcurementList } from '../hooks/useProcurementList';
-import { useProcurementSheet } from '../hooks/useProcurementSheet';
+import { usePurchaseList } from '@/modules/purchase/hooks/usePurchaseList';
+import { usePurchaseSheet } from '@/modules/purchase/hooks/usePurchaseSheet';
 import { useReceivingTemplate } from '../hooks/useReceivingTemplate';
 import { useReceivingCreate } from '../hooks/useReceivingCreate';
 import type {
-  ProcurementSheetItemSchema,
+  PurchaseOrderSchema,
   ReceivingTemplateItemSchema,
 } from '@/shared/types/schema';
 
@@ -19,7 +20,7 @@ type EditedReceivingRow = {
   actual_unit_qty: number;
 };
 
-type ReceivingTableRow = ProcurementSheetItemSchema & {
+type ReceivingTableRow = PurchaseOrderSchema & {
   expected_quantity: number;
   expected_unit_qty: number;
   actual_quantity: number;
@@ -28,43 +29,44 @@ type ReceivingTableRow = ProcurementSheetItemSchema & {
 
 export default function ReceivingList() {
   const { t } = useTranslation();
+  const date = useDateStore((state) => state.date);
   const { message } = App.useApp();
   const [editedRows, setEditedRows] = useState<
     Record<string, EditedReceivingRow>
   >({});
 
   const {
-    procurements,
+    purchases: purchases,
     isLoading: isLoadingList,
     mutate: mutateList,
-  } = useProcurementList();
+  } = usePurchaseList({ company_id: 1, needed_date: date });
 
-  const currentProcurement = useMemo(() => {
-    return procurements[0];
-  }, [procurements]);
+  const currentPurchase = useMemo(() => {
+    return purchases[0];
+  }, [purchases]);
 
-  const procurementId = currentProcurement?.procurement_item_id;
+  const purchaseId = currentPurchase?.procurement_record_id;
 
   const {
     items: sheetItems,
     isLoading: isLoadingSheet,
     mutate: mutateSheet,
-  } = useProcurementSheet(procurementId);
+  } = usePurchaseSheet(purchaseId);
 
   const {
     template,
     isLoading: isLoadingTemplate,
     mutate: mutateTemplate,
-  } = useReceivingTemplate(procurementId);
+  } = useReceivingTemplate(purchaseId);
 
   const { trigger: createReceivingTrigger } = useReceivingCreate();
 
   const tableData = useMemo<ReceivingTableRow[]>(() => {
     return sheetItems.map((sheetItem) => {
-      const expectedQuantity = Number(sheetItem.purchase_g ?? 0);
-      const expectedUnitQty = Number(sheetItem.purchase_unit_qty ?? 0);
+      const expectedQuantity = Number(sheetItem.required_g ?? 0);
+      const expectedUnitQty = Number(sheetItem.required_special_unit ?? 0);
 
-      const edited = editedRows[sheetItem.name];
+      const edited = editedRows[sheetItem.material_name];
 
       return {
         ...sheetItem,
@@ -84,7 +86,7 @@ export default function ReceivingList() {
 
     setEditedRows((prev) => {
       let nextUnitQty =
-        prev[record.name]?.actual_unit_qty ?? record.expected_unit_qty;
+        prev[record.material_name]?.actual_unit_qty ?? record.expected_unit_qty;
       if (record.supplier_g_per_unit) {
         nextUnitQty = Number(
           (nextValue / record.supplier_g_per_unit).toFixed(2),
@@ -92,7 +94,7 @@ export default function ReceivingList() {
       }
       return {
         ...prev,
-        [record.name]: {
+        [record.material_name]: {
           actual_quantity: nextValue,
           actual_unit_qty: nextUnitQty,
         },
@@ -108,13 +110,13 @@ export default function ReceivingList() {
 
     setEditedRows((prev) => {
       let nextGQty =
-        prev[record.name]?.actual_quantity ?? record.expected_quantity;
+        prev[record.material_name]?.actual_quantity ?? record.expected_quantity;
       if (record.supplier_g_per_unit) {
         nextGQty = Number((nextValue * record.supplier_g_per_unit).toFixed(2));
       }
       return {
         ...prev,
-        [record.name]: {
+        [record.material_name]: {
           actual_quantity: nextGQty,
           actual_unit_qty: nextValue,
         },
@@ -138,8 +140,8 @@ export default function ReceivingList() {
               editedRows[item.material_name]?.actual_quantity ??
               Number(
                 sheetItems.find(
-                  (sheetItem) => sheetItem.name === item.material_name,
-                )?.purchase_g ?? 0,
+                  (sheetItem) => sheetItem.material_name === item.material_name,
+                )?.required_g ?? 0,
               ),
           }),
         ),
@@ -158,48 +160,48 @@ export default function ReceivingList() {
 
   const columns: ColumnsType<ReceivingTableRow> = [
     {
-      title: t('procurementColName'),
-      dataIndex: 'name',
-      key: 'name',
+      title: t('purchaseColName'),
+      dataIndex: 'material_name',
+      key: 'material_name',
       width: 160,
     },
     {
-      title: t('procurementColCategory'),
-      dataIndex: 'category',
-      key: 'category',
+      title: t('purchaseColCategory'),
+      dataIndex: 'material_category',
+      key: 'material_category',
       width: 140,
     },
     {
-      title: t('procurementColStockKg'),
+      title: t('purchaseColStockKg'),
       dataIndex: 'stock_g',
       key: 'stock_g',
       width: 120,
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('procurementColDemandKg'),
+      title: t('purchaseColDemandKg'),
       dataIndex: 'demand_g',
       key: 'demand_g',
       width: 120,
       render: (value: number) => formatKg(value),
     },
     {
-      title: t('procurementColDemandUnit'),
-      dataIndex: 'demand_unit_qty',
-      key: 'demand_unit_qty',
+      title: t('purchaseColDemandUnit'),
+      dataIndex: 'demand_special_unit',
+      key: 'demand_special_unit',
       width: 140,
     },
     {
       title: t('commonSupplier'),
-      dataIndex: 'supplier',
-      key: 'supplier',
+      dataIndex: 'supplier_name',
+      key: 'supplier_name',
       width: 180,
       render: (value: string | null) => value ?? '-',
     },
     {
-      title: t('procurementColSupplierUnit'),
-      dataIndex: 'supplier_unit_name',
-      key: 'supplier_unit_name',
+      title: t('purchaseColSupplierUnit'),
+      dataIndex: 'supplier_unit',
+      key: 'supplier_unit',
       width: 120,
       render: (value: string | null) => value ?? '-',
     },
@@ -257,12 +259,12 @@ export default function ReceivingList() {
         </Title>
 
         <Button type="primary" onClick={handleSubmit} disabled={!hasTemplate}>
-          {t('procurementSubmit')}
+          {t('purchaseSubmit')}
         </Button>
       </div>
 
       <Table
-        rowKey={(record, index) => String(record.name ?? index)}
+        rowKey={(record, index) => String(record.material_name ?? index)}
         columns={columns}
         dataSource={tableData}
         loading={loading}

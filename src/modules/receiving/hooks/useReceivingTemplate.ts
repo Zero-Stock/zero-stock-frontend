@@ -4,10 +4,10 @@ import type { SWRKey } from '@/shared/providers/SWRConfigProvider';
 import type { ApiResponseDto } from '@/shared/types/apiResponse.dto';
 import type { ReceivingTemplateSchema } from '@/shared/types/schema';
 
-export function useReceivingTemplate(procurementId?: number) {
-  const key: SWRKey | null = procurementId
+export function useReceivingTemplate(purchaseId?: number) {
+  const key: SWRKey | null = purchaseId
     ? {
-        url: `/api/receiving/${procurementId}/template`,
+        url: `/api/receiving/${purchaseId}/template`,
       }
     : null;
 

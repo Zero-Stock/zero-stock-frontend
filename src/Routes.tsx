@@ -1,4 +1,4 @@
-import { Route } from 'wouter';
+import { Route, Redirect } from 'wouter';
 import {
   lazy,
   type LazyExoticComponent,
@@ -70,11 +70,14 @@ const SupplierDetailPage = lazyPage(
 const CensusListPage = lazyPage(
   () => import('./modules/census/pages/CensusListPage'),
 );
-const ProcurementListPage = lazyPage(
-  () => import('./modules/procurement/pages/ProcurementListPage'),
+const PurchaseListPage = lazyPage(
+  () => import('@/modules/purchase/pages/PurchaseListPage'),
+);
+const PurchaseRecordDetailPage = lazyPage(
+  () => import('@/modules/purchase/pages/PurchaseRecordDetailPage'),
 );
 const ReceivingListPage = lazyPage(
-  () => import('./modules/procurement/pages/ReceivingListPage'),
+  () => import('./modules/receiving/pages/ReceivingListPage'),
 );
 const ProcessingListPage = lazyPage(
   () => import('./modules/processing/pages/ProcessingListPage'),
@@ -151,11 +154,26 @@ export const routes: RouteConfig[] = [
     showInMenu: true,
     children: [
       {
-        path: '/procurement/order',
-        title: 'Procurement Order',
-        titleKey: 'navProcurementOrder',
+        path: '/procurement/purchase/',
+        title: 'Purchase Order',
+        titleKey: 'navPurchaseOrder',
         showInMenu: true,
-        component: ProcurementListPage,
+        component: PurchaseListPage,
+        children: [
+          {
+            path: '/procurement/purchase/:id',
+            title: 'Purchase detail',
+            titleKey: 'purchaseDetail',
+            showInMenu: false,
+            component: PurchaseRecordDetailPage,
+          },
+        ],
+      },
+      {
+        path: '/procurement/order',
+        title: 'Purchase redirect',
+        showInMenu: false,
+        component: () => <Redirect to="/procurement/purchase/" />,
       },
       {
         path: '/procurement/receiving',
@@ -257,7 +275,7 @@ export function renderRoutes(routes: RouteConfig[]) {
       elements.push(
         <Route
           key={route.path}
-          path={route.path}
+          path={route.path.replace(/\/+$/, '') || '/'}
           component={route.component}
         />,
       );
@@ -275,7 +293,15 @@ export function findRouteByPath(
   path: string,
 ): RouteConfig | undefined {
   for (const route of configs) {
-    if (route.path === path) return route;
+    const parts = route.path.replace(/\/$/, '').split('/');
+    const actual = path.replace(/\/$/, '').split('/');
+    if (
+      parts.length === actual.length &&
+      parts.every(
+        (part, index) => part.startsWith(':') || part === actual[index],
+      )
+    )
+      return route;
     if (route.children) {
       const found = findRouteByPath(route.children, path);
       if (found) return found;

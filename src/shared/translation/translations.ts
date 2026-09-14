@@ -27,7 +27,7 @@ export const translations = {
     en: 'Keep the core daily workflow connected from a single view.',
   },
   homeStatDiet: { zh: '膳食菜单项', en: 'Diet Menu Items' },
-  homeStatProcurement: { zh: '待采购单', en: 'Purchase Batches' },
+  homeStatPurchase: { zh: '待采购单', en: 'Purchase Batches' },
   homeStatProcessing: { zh: '加工明细', en: 'Prep Items' },
   homeStatReadiness: { zh: '执行就绪度', en: 'Readiness' },
   homeQuickStartTitle: { zh: '快速开始', en: 'Quick Start' },
@@ -43,7 +43,7 @@ export const translations = {
     zh: '更新各区域各餐次人数，为后续采购和加工提供基础。',
     en: 'Update zone-by-zone headcounts to drive downstream purchasing and prep.',
   },
-  homeQuickProcurementDesc: {
+  homeQuickPurchaseDesc: {
     zh: '查看并生成采购单，跟进供应商分配情况。',
     en: 'Review generated purchase orders and supplier assignments.',
   },
@@ -70,11 +70,11 @@ export const translations = {
     zh: '检查早餐、午餐、晚餐的菜品安排是否符合当日供应计划。',
     en: 'Check breakfast, lunch, and dinner menus against the day’s service plan.',
   },
-  homeStepProcurementTitle: {
+  homeStepPurchaseTitle: {
     zh: '生成采购与加工',
     en: 'Generate Orders and Prep',
   },
-  homeStepProcurementDesc: {
+  homeStepPurchaseDesc: {
     zh: '根据人数和菜单联动生成采购单、收货单与加工单。',
     en: 'Use demand and menu data to generate purchase, receiving, and processing work.',
   },
@@ -92,7 +92,7 @@ export const translations = {
   },
   homeChecklistThree: {
     zh: '在生成采购单前，复核关键菜品的食材配比。',
-    en: 'Review ingredient ratios for key dishes before generating procurement.',
+    en: 'Review ingredient ratios for key dishes before generating a purchase.',
   },
   homeChecklistFour: {
     zh: '加工执行前，核对食材的加工规格与出成率设置。',
@@ -104,7 +104,7 @@ export const translations = {
   navDiet: { zh: '膳食计划', en: 'Diet' },
   navCensus: { zh: '人数统计', en: 'Census' },
   navProcurement: { zh: '采购管理', en: 'Procurement' },
-  navProcurementOrder: { zh: '采购单', en: 'Procurement Order' },
+  navPurchaseOrder: { zh: '采购单', en: 'Purchase Order' },
   navReceivingOrder: { zh: '收货单', en: 'Receiving Order' },
   navProcessing: { zh: '加工管理', en: 'Processing' },
   navDishes: { zh: '菜品管理', en: 'Dishes' },
@@ -393,126 +393,137 @@ export const translations = {
     zh: '暂无数据，请先点击生成',
     en: 'No data. Click Generate.',
   },
-  // ─── Procurement Module ───
-  procurementGenerate: { zh: '生成采购单', en: 'Generate' },
-  procurementSubmit: { zh: '确认采购单', en: 'Submit' },
+  // ─── Purchase Module ───
+  purchaseGenerate: { zh: '生成采购单', en: 'Generate' },
+  purchaseSubmit: { zh: '确认采购单', en: 'Submit' },
 
-  procurementGenerateSuccess: {
+  purchaseGenerateSuccess: {
     zh: '采购单已生成',
-    en: 'Procurement generated',
+    en: 'Purchase generated',
   },
-  procurementGenerateFailed: {
+  purchaseGenerateFailed: {
     zh: '采购单生成失败',
-    en: 'Failed to generate procurement',
+    en: 'Failed to generate purchase',
   },
-  procurementRegenerateSuccess: {
+  purchaseRegenerateSuccess: {
     zh: '采购单已重新生成',
-    en: 'Procurement regenerated',
+    en: 'Purchase regenerated',
   },
-  procurementSubmitSuccess: {
+  purchaseSubmitSuccess: {
     zh: '采购单已确认',
-    en: 'Procurement submitted',
+    en: 'Purchase submitted',
   },
-  procurementSupplierUpdated: {
+  purchaseSupplierUpdated: {
     zh: '供应商已更新',
     en: 'Supplier updated',
   },
 
-  procurementNoData: {
+  purchaseNoData: {
     zh: '暂无采购单，请先点击生成采购单',
-    en: 'No procurement order yet. Please click Generate first.',
+    en: 'No purchase order yet. Please click Generate first.',
   },
-  procurementNoItems: {
+  purchaseNoItems: {
     zh: '暂无采购单明细',
-    en: 'No procurement items',
+    en: 'No purchase items',
   },
   receivingNoData: {
     zh: '暂无可收货的采购单，请先确认采购单',
-    en: 'No receivable procurement order yet. Please submit procurement first.',
+    en: 'No receivable purchase order yet. Please confirm purchase first.',
   },
   receivingNoItems: {
     zh: '暂无收货单明细',
     en: 'No receiving items',
   },
 
-  procurementNeededDate: { zh: '需求日期', en: 'Needed date' },
-  procurementOrderDate: { zh: '下单日期', en: 'Order date' },
-  procurementOrderDateKeep: { zh: '不修改下单日期', en: 'Keep order date' },
-  procurementColName: { zh: '品名', en: 'Name' },
-  procurementColCategory: { zh: '规格/类别', en: 'Category' },
-  procurementFilterCategory: {
+  purchaseRecordId: { zh: '采购单 ID', en: 'Purchase ID' },
+  purchaseStatus: { zh: '状态', en: 'Status' },
+  purchaseDetail: { zh: '详情', en: 'Details' },
+  purchaseBack: { zh: '返回采购单列表', en: 'Back to purchases' },
+  purchaseNotFound: { zh: '采购单不存在', en: 'Purchase not found' },
+  purchaseInvalidId: { zh: '采购单 ID 无效', en: 'Invalid purchase ID' },
+  purchaseLoadFailed: {
+    zh: '采购单不存在或加载失败',
+    en: 'Purchase not found or failed to load',
+  },
+  purchaseRegenerate: { zh: '重新生成采购单', en: 'Regenerate purchase' },
+  purchaseNeededDate: { zh: '需求日期', en: 'Needed date' },
+  purchaseOrderDate: { zh: '下单日期', en: 'Order date' },
+  purchaseOrderDateKeep: { zh: '不修改下单日期', en: 'Keep order date' },
+  purchaseColName: { zh: '品名', en: 'Name' },
+  purchaseColCategory: { zh: '规格/类别', en: 'Category' },
+  purchaseFilterCategory: {
     zh: '按类别筛选',
     en: 'Filter by category',
   },
-  procurementColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
-  procurementColDemandUnit: {
+  purchaseColDemandKg: { zh: '需求(kg)', en: 'Demand (kg)' },
+  purchaseColDemandUnit: {
     zh: '需求(采购单位)',
     en: 'Demand (Purchase Unit)',
   },
-  procurementColStockKg: { zh: '库存(kg)', en: 'Stock (kg)' },
-  procurementColStockUnit: {
+  purchaseColStockKg: { zh: '库存(kg)', en: 'Stock (kg)' },
+  purchaseColStockUnit: {
     zh: '库存(采购单位)',
     en: 'Stock (Purchase Unit)',
   },
-  procurementColPurchaseKg: {
+  purchaseColPurchaseKg: {
     zh: '采购需求(kg)',
     en: 'Purchase (kg)',
   },
-  procurementColPurchaseUnit: {
+  purchaseColPurchaseUnit: {
     zh: '采购需求(采购单位)',
     en: 'Purchase (Purchase Unit)',
   },
-  procurementColSupplierUnit: {
+  purchaseColSupplierUnit: {
     zh: '供应商单位',
     en: 'Supplier Unit',
   },
-  procurementColSupplierKgPerUnit: {
+  purchaseColSupplierKgPerUnit: {
     zh: 'g/单位',
     en: 'g/unit',
   },
-  procurementColSupplierPrice: { zh: '供应商单价', en: 'Supplier Unit Price' },
+  purchaseColSupplierPrice: { zh: '供应商单价', en: 'Supplier Unit Price' },
 
-  procurementEditSupplierTitle: {
+  purchaseEditSupplierTitle: {
     zh: '编辑供应商',
     en: 'Edit Supplier',
   },
-  procurementEditSupplierDesc: {
+  purchaseEditSupplierDesc: {
     zh: '请选择该食材的供应商。',
     en: 'Please select one supplier for this material.',
   },
-  procurementNoAvailableSuppliers: {
+  purchaseNoAvailableSuppliers: {
     zh: '暂无可选供应商',
     en: 'No available suppliers',
   },
 
-  procurementExportTitle: {
+  purchaseExportTitle: {
     zh: '导出 / 打印采购单',
-    en: 'Export / Print Procurement Order',
+    en: 'Export / Print Purchase Order',
   },
-  procurementExportConfirm: {
+  purchaseExportConfirm: {
     zh: '是否先重新生成采购单，确保导出内容为最新？',
-    en: 'Do you want to regenerate the procurement first to make sure the exported content is up to date?',
+    en: 'Do you want to regenerate the purchase first to make sure the exported content is up to date?',
   },
-  procurementExportDirectly: {
+  purchaseExportDirectly: {
     zh: '直接导出 / 打印',
     en: 'Export / Print Directly',
   },
-  procurementExportRegenerateFirst: {
+  purchaseExportRegenerateFirst: {
     zh: '先重新生成',
     en: 'Regenerate First',
   },
 
-  procurementPrintWindowFailed: {
+  purchasePrintWindowFailed: {
     zh: '打开打印窗口失败，请检查浏览器拦截设置',
     en: 'Failed to open print window, please check browser popup blocker',
   },
-  procurementRegenerateBlockedSubmitted: {
+  purchaseRegenerateBlockedSubmitted: {
     zh: '采购单已确认，无法重新生成',
-    en: 'Procurement order already submitted, cannot regenerate',
+    en: 'Purchase order already submitted, cannot regenerate',
   },
-  procurementRegenerateFailed: {
+  purchaseRegenerateFailed: {
     zh: '重新生成采购单失败',
-    en: 'Failed to regenerate procurement order',
+    en: 'Failed to regenerate purchase order',
   },
 
   receivingColExpectedKg: { zh: '应收(kg)', en: 'Expected (kg)' },
@@ -529,21 +540,21 @@ export const translations = {
     zh: '收货单已提交',
     en: 'Receiving submitted',
   },
-  procurementSubmitConfirm: {
+  purchaseSubmitConfirm: {
     zh: '确定要确认这张采购单吗？',
-    en: 'Are you sure you want to submit this procurement order?',
+    en: 'Are you sure you want to submit this purchase order?',
   },
-  procurementItemDataNotReady: {
+  purchaseItemDataNotReady: {
     zh: '采购单明细数据尚未准备好',
-    en: 'Procurement item data is not ready yet',
+    en: 'Purchase item data is not ready yet',
   },
-  procurementItemNotFound: {
+  purchaseItemNotFound: {
     zh: '未找到匹配的采购单明细',
-    en: 'Cannot find matching procurement item',
+    en: 'Cannot find matching purchase item',
   },
-  procurementMissingItemId: {
+  purchaseMissingItemId: {
     zh: '缺少采购单明细 ID',
-    en: 'Missing procurement item id',
+    en: 'Missing purchase item id',
   },
 
   // ─── Material Module ───

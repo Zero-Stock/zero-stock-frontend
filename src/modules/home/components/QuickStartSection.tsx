@@ -24,10 +24,10 @@ const quickLinks = [
     descriptionKey: 'homeQuickCensusDesc',
   },
   {
-    path: '/procurement/order',
+    path: '/procurement/purchase/',
     icon: <ShoppingCartOutlined className="text-xl" />,
-    titleKey: 'navProcurementOrder',
-    descriptionKey: 'homeQuickProcurementDesc',
+    titleKey: 'navPurchaseOrder',
+    descriptionKey: 'homeQuickPurchaseDesc',
   },
   {
     path: '/processing',

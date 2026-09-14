@@ -4,13 +4,13 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from '@/shared/translation/LanguageContext';
 import { useSupplierMaterials } from '@/modules/supplier/hooks/useSupplierMaterials';
 import type {
-  ProcurementPreviewSchema,
+  PurchaseOrderSchema,
   SupplierMaterialPreviewSchema,
 } from '@/shared/types/schema';
 
-interface ProcurementSupplierEditModalProps {
+interface PurchaseSupplierEditModalProps {
   open: boolean;
-  procurementItem: ProcurementPreviewSchema | null;
+  purchaseItem: PurchaseOrderSchema | null;
   onCancel: () => void;
   onSave: (supplierMaterialId: number | null) => Promise<void> | void;
 }
@@ -23,40 +23,40 @@ function sameNumber(
   return Number(left) === Number(right);
 }
 
-export default function ProcurementSupplierEditModal({
+export default function PurchaseSupplierEditModal({
   open,
-  procurementItem,
+  purchaseItem,
   onCancel,
   onSave,
-}: ProcurementSupplierEditModalProps) {
+}: PurchaseSupplierEditModalProps) {
   const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const { materials, isLoading } = useSupplierMaterials(
-    procurementItem?.material_id
-      ? { material_id: procurementItem.material_id }
+    purchaseItem?.material_id
+      ? { material_id: purchaseItem.material_id }
       : undefined,
   );
 
   const selectedSupplierMaterialId = useMemo(() => {
-    if (!procurementItem?.supplier_id) return null;
+    if (!purchaseItem?.supplier_id) return null;
 
     const exactMatch = materials.find((material) => {
       return (
-        material.supplier_id === procurementItem.supplier_id &&
-        material.unit_name === procurementItem.supplier_unit &&
-        sameNumber(material.price_per_unit, procurementItem.supplier_price)
+        material.supplier_id === purchaseItem.supplier_id &&
+        material.unit_name === purchaseItem.supplier_unit &&
+        sameNumber(material.price_per_unit, purchaseItem.supplier_price)
       );
     });
     if (exactMatch) return exactMatch.id;
 
     return (
-      procurementItem.available_suppliers.find(
-        (supplier) => supplier.supplier_id === procurementItem.supplier_id,
+      purchaseItem.available_suppliers.find(
+        (supplier) => supplier.supplier_id === purchaseItem.supplier_id,
       )?.supplier_material_id ?? null
     );
-  }, [materials, procurementItem]);
+  }, [materials, purchaseItem]);
 
   useEffect(() => {
     if (open) {
@@ -92,7 +92,7 @@ export default function ProcurementSupplierEditModal({
       width: 180,
     },
     {
-      title: t('procurementColSupplierPrice'),
+      title: t('purchaseColSupplierPrice'),
       dataIndex: 'price_per_unit',
       key: 'price_per_unit',
       width: 120,
@@ -102,7 +102,7 @@ export default function ProcurementSupplierEditModal({
           : '-',
     },
     {
-      title: t('procurementColSupplierUnit'),
+      title: t('purchaseColSupplierUnit'),
       dataIndex: 'unit_name',
       key: 'unit_name',
       width: 120,
@@ -119,7 +119,7 @@ export default function ProcurementSupplierEditModal({
 
   return (
     <Modal
-      title={`${t('procurementEditSupplierTitle')} - ${procurementItem?.material_name ?? ''}`}
+      title={`${t('purchaseEditSupplierTitle')} - ${purchaseItem?.material_name ?? ''}`}
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
@@ -136,7 +136,7 @@ export default function ProcurementSupplierEditModal({
         loading={isLoading}
         pagination={false}
         tableLayout="fixed"
-        locale={{ emptyText: t('procurementNoAvailableSuppliers') }}
+        locale={{ emptyText: t('purchaseNoAvailableSuppliers') }}
         onRow={(record) => ({
           onClick: () => setSelectedId(record.id),
         })}

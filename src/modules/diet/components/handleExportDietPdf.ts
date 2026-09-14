@@ -21,7 +21,7 @@ export function handleExportDietPdf({
   dishDetails,
 }: ExportDietPdfParams) {
   if (!dayPlans || dayPlans.length === 0) {
-    message.warning(t('procurementNoData'));
+    message.warning(t('purchaseNoData'));
     return;
   }
 

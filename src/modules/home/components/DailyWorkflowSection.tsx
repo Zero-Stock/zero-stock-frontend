@@ -18,8 +18,8 @@ const operationSteps = [
     statusKey: 'homeStatusInProgress',
   },
   {
-    titleKey: 'homeStepProcurementTitle',
-    descriptionKey: 'homeStepProcurementDesc',
+    titleKey: 'homeStepPurchaseTitle',
+    descriptionKey: 'homeStepPurchaseDesc',
     progress: 64,
     statusKey: 'homeStatusAttention',
   },
