@@ -143,7 +143,7 @@ export default function PurchaseOrder({
   const handleOpenSupplierModal = (record: PurchaseOrderItemSchema) => {
     const matchedPurchaseItem =
       purchases.find(
-        (item) => item.procurement_item_id === record.procurement_item_id,
+        (item) => item.po_item_id === record.po_item_id,
       ) ??
       purchases.find((item) => item.material_id === record.material_id) ??
       null;
@@ -158,7 +158,7 @@ export default function PurchaseOrder({
   };
 
   const handleSaveSupplier = async (supplierMaterialId: number | null) => {
-    if (!editingPurchaseItem?.procurement_item_id) {
+    if (!editingPurchaseItem?.po_item_id) {
       message.error(t('purchaseMissingItemId'));
       return;
     }
@@ -167,7 +167,7 @@ export default function PurchaseOrder({
       await assignSuppliersTrigger({
         assignments: [
           {
-            procurement_item_id: editingPurchaseItem.procurement_item_id,
+            po_item_id: editingPurchaseItem.po_item_id,
             supplier_material_id: supplierMaterialId,
           },
         ],
@@ -386,7 +386,7 @@ export default function PurchaseOrder({
       <div id="purchase-print-area">
         <Table
           rowKey={(record, index) =>
-            String(record.procurement_item_id ?? record.material_id ?? index)
+            String(record.po_item_id ?? record.material_id ?? index)
           }
           columns={columns}
           dataSource={purchases}

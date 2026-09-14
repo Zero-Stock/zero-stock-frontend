@@ -45,7 +45,7 @@ export default function ReceivingList() {
     return purchases[0];
   }, [purchases]);
 
-  const purchaseId = currentPurchase?.procurement_record_id;
+  const purchaseId = currentPurchase?.po_id;
 
   const {
     items: sheetItems,

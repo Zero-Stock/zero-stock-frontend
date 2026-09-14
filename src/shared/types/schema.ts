@@ -1558,7 +1558,7 @@ export interface components {
              * @description PurchaseOrder.id
              * @example 1
              */
-            procurement_record_id: number;
+            po_id: number;
             /** @enum {string} */
             status: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
             /** Format: date */
@@ -1633,7 +1633,7 @@ export interface components {
              * @description PurchaseOrder.id
              * @example 1
              */
-            procurement_record_id: number;
+            id: number;
             /** @enum {string} */
             status: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
             /** Format: date */
@@ -1665,7 +1665,7 @@ export interface components {
              * @description Purchase record id
              * @example 1
              */
-            procurement_record_id: number;
+            po_id: number;
             /**
              * Format: date
              * @description Demand date
@@ -1682,7 +1682,7 @@ export interface components {
              * @description Purchase item id
              * @example 1
              */
-            procurement_item_id: number;
+            po_item_id: number;
             /**
              * @description Material id
              * @example 1
@@ -1833,7 +1833,7 @@ export interface components {
             updated: number;
         };
         PurchaseSupplierAssignmentSchema: {
-            procurement_item_id: number;
+            po_item_id: number;
             supplier_material_id?: number | null;
         };
         PurchaseAssignSuppliersSchema: {

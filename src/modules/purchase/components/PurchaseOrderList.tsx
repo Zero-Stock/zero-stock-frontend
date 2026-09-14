@@ -41,8 +41,8 @@ export default function PurchaseOrderList() {
   const columns: ColumnsType<PurchasePreviewSchema> = [
     {
       title: t('purchaseOrderId'),
-      dataIndex: 'procurement_record_id',
-      key: 'procurement_record_id',
+      dataIndex: 'po_id',
+      key: 'po_id',
     },
     { title: t('purchaseStatus'), dataIndex: 'status', key: 'status' },
     {
@@ -60,7 +60,7 @@ export default function PurchaseOrderList() {
       title: t('commonAction'),
       key: 'action',
       render: (_, record) => (
-        <Link href={`/procurement/purchase/${record.procurement_record_id}`}>
+        <Link href={`/procurement/purchase/${record.po_id}`}>
           {t('purchaseDetail')}
         </Link>
       ),
@@ -77,7 +77,7 @@ export default function PurchaseOrderList() {
       </div>
       {error ? <div role="alert">{t('purchaseLoadFailed')}</div> : null}
       <Table
-        rowKey="procurement_record_id"
+        rowKey="po_id"
         columns={columns}
         dataSource={purchases}
         loading={isLoading}
