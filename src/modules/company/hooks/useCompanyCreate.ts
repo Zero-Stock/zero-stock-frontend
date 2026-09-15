@@ -5,11 +5,9 @@ import type {
   CompanyUpsertSchema,
 } from '@/shared/types/schema';
 
-type CompanyCreatePayload = Omit<CompanyUpsertSchema, 'id'>;
-
 export function useCompanyCreate() {
   return {
-    trigger: async (data: CompanyCreatePayload) => {
+    trigger: async (data: CompanyUpsertSchema) => {
       return apiClient.post<ApiResponseDto<CompanyDetailSchema>>(
         '/api/companies',
         { body: data },

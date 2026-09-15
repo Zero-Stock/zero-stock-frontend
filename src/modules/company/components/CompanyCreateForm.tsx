@@ -24,19 +24,15 @@ const companyFieldLabels = {
   'regions.*.name': '区域名称',
 } as const;
 
-type CompanyCreateFormValues = CompanyUpsertSchema & {
-  regions?: CompanyRegionUpsertSchema[];
-};
-
 export default function CompanyCreateForm() {
   const { message } = App.useApp();
   const [, navigate] = useLocation();
-  const [form] = Form.useForm<CompanyCreateFormValues>();
+  const [form] = Form.useForm<CompanyUpsertSchema>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { trigger: createCompany } = useCompanyCreate();
 
-  const onFinish = async (values: CompanyCreateFormValues) => {
+  const onFinish = async (values: CompanyUpsertSchema) => {
     setIsSubmitting(true);
     try {
       const regions =
@@ -90,7 +86,7 @@ export default function CompanyCreateForm() {
   };
 
   return (
-    <Form<CompanyCreateFormValues>
+    <Form<CompanyUpsertSchema>
       form={form}
       layout="vertical"
       onFinish={onFinish}
