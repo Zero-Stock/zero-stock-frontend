@@ -8,9 +8,21 @@ import type {
   CompanyRegionUpsertSchema,
   CompanyUpsertSchema,
 } from '@/shared/types/schema';
+import { CompaniesControllerCreateCompanyBody } from '@/shared/types/company.zod';
+import { zodErrorToFormFields } from '@/shared/utils/form';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
+
+const companyFieldLabels = {
+  name: '名称',
+  code: '公司编码',
+  contact_person: '联系人',
+  phone: '电话',
+  address: '地址',
+  description: '描述',
+  'regions.*.name': '区域名称',
+} as const;
 
 type CompanyCreateFormValues = CompanyUpsertSchema & {
   regions?: CompanyRegionUpsertSchema[];
@@ -49,7 +61,17 @@ export default function CompanyCreateForm() {
         regions,
       };
 
-      const createdCompany = await createCompany(payload);
+      const parsedPayload =
+        CompaniesControllerCreateCompanyBody.safeParse(payload);
+      if (!parsedPayload.success) {
+        form.setFields(
+          zodErrorToFormFields(parsedPayload.error, companyFieldLabels),
+        );
+        message.error('请检查表单内容');
+        return;
+      }
+
+      const createdCompany = await createCompany(parsedPayload.data);
       const companyId = createdCompany.result.id;
 
       if (!companyId) {
@@ -77,19 +99,11 @@ export default function CompanyCreateForm() {
       <Title level={4}>{'基础信息'}</Title>
 
       <div className="grid w-full grid-cols-4 gap-4">
-        <Form.Item
-          label={'名称'}
-          name="name"
-          rules={[{ required: true, message: '必填' }]}
-        >
+        <Form.Item label={'名称'} name="name">
           <Input placeholder={'公司名称'} />
         </Form.Item>
 
-        <Form.Item
-          label={'公司编码'}
-          name="code"
-          rules={[{ required: true, message: '必填' }]}
-        >
+        <Form.Item label={'公司编码'} name="code">
           <Input placeholder={'公司编码'} />
         </Form.Item>
 

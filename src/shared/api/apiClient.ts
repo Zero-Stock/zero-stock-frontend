@@ -1,10 +1,8 @@
 import qs from 'qs';
-import { getSelectedDate } from '@/shared/stores/dateStore';
 import {
   createApiError,
   getApiErrorDto,
   isApiErrorDto,
-  isPlainObject,
   parseJsonSafe,
 } from '@/shared/utils/api';
 
@@ -58,17 +56,6 @@ function buildUrl(path: string, query?: Query) {
   }
 
   return url;
-}
-
-function withSelectedDateBody(body: unknown) {
-  if (!isPlainObject(body) || body.date) {
-    return body;
-  }
-
-  return {
-    ...body,
-    date: getSelectedDate(),
-  };
 }
 
 export class ApiClient {
@@ -144,7 +131,7 @@ export class ApiClient {
         requestBody = formData;
         finalHeaders.delete('Content-Type');
       } else if (body !== undefined) {
-        requestBody = JSON.stringify(withSelectedDateBody(body));
+        requestBody = JSON.stringify(body);
         if (!finalHeaders.has('Content-Type')) {
           finalHeaders.set('Content-Type', 'application/json');
         }

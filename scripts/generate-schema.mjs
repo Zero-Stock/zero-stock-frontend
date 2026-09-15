@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -116,13 +116,36 @@ const openApiPath = (process.env.OPENAPI_PATH ?? 'openapi').replace(/^\/+/, '');
 const openApiUrl =
   process.env.OPENAPI_URL ?? `http://${localIp}:${apiPort}/${openApiPath}.json`;
 const outputPath = path.resolve(__dirname, '../src/shared/types/schema.ts');
-const command = `npx --yes openapi-typescript "${openApiUrl}" -o "${outputPath}" --root-types --root-types-no-schema-prefix`;
+const companyZodOutputPath = path.resolve(
+  __dirname,
+  '../src/shared/types/company.zod.ts',
+);
+const orvalConfigPath = path.resolve(__dirname, '../orval.config.mjs');
 
 try {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  execSync(command, { stdio: 'inherit' });
+  execFileSync(
+    'pnpm',
+    [
+      'exec',
+      'openapi-typescript',
+      openApiUrl,
+      '-o',
+      outputPath,
+      '--root-types',
+      '--root-types-no-schema-prefix',
+    ],
+    { stdio: 'inherit' },
+  );
   stripPaths(outputPath);
   generateEnumConstants(outputPath);
+  execFileSync('pnpm', ['exec', 'orval', '--config', orvalConfigPath], {
+    stdio: 'inherit',
+    env: { ...process.env, OPENAPI_URL: openApiUrl },
+  });
+  execFileSync('pnpm', ['exec', 'prettier', '--write', companyZodOutputPath], {
+    stdio: 'inherit',
+  });
 } catch {
   process.exit(1);
 }

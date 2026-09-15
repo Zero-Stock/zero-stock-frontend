@@ -130,6 +130,7 @@ export default function ReceivingList() {
 
     try {
       await createReceivingTrigger({
+        date,
         procurement_id: template.procurement_id,
         items: (template.items ?? []).map(
           (item: ReceivingTemplateItemSchema) => ({

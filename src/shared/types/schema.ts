@@ -1629,17 +1629,17 @@ export interface components {
             needed_date: string;
         };
         PurchaseDetailSchema: {
-            /**
-             * @description PurchaseOrder.id
-             * @example 1
-             */
-            id: number;
             /** @enum {string} */
             status: "INIT" | "PENDING" | "UPDATED" | "COMPLETED" | "CANCELLED";
             /** Format: date */
             needed_date: string;
             /** Format: date */
             order_date: string | null;
+            /**
+             * @description PurchaseOrder.id
+             * @example 1
+             */
+            id: number;
             company_id: number;
             company: string;
         };
